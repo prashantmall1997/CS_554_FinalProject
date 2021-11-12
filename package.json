@@ -1,0 +1,23 @@
+{
+  "name": "sit_scheduler_v2",
+  "version": "1.0.0",
+  "description": "CS-554_Final_Project_Fantastic_Five",
+  "main": "echo \"Error: no main file defined",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\" "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prashantmall1997/sit_scheduler_v2.git"
+  },
+  "author": "Fantastic_Five",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/prashantmall1997/sit_scheduler_v2/issues"
+  },
+  "homepage": "https://github.com/prashantmall1997/sit_scheduler_v2#readme",
+  "devDependencies": {
+    "concurrently": "^6.3.0"
+  }
+}
