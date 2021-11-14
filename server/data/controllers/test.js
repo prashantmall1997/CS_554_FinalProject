@@ -4,7 +4,7 @@ const Kitten = require("../models/test");
 //CREATE
 exports.create = async function (req, res) {
   try {
-    const fluffy = new Kitten({ name: "CAT0" });
+    const fluffy = new Kitten({ name: "LMAO" });
     fluffy.save((err) => {
       if (err) {
         console.log(err.errors.name.kind);
