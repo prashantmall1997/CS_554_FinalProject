@@ -3,10 +3,10 @@ var uniqueValidator = require("mongoose-unique-validator");
 
 // Define your schema as normal.
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  schedules: [{ type: String, required: true, unique: false }],
-  admin: { type: Boolean, required: true, unique: false }
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    schedules: [{ type: String, required: true, unique: false }],
+    admin: { type: Boolean, required: true, unique: false }
 }, { collection: 'users'});
 
 // Apply the uniqueValidator plugin to userSchema.
