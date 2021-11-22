@@ -17,7 +17,10 @@ const create = async(username, email) => {
     });
     let added = await created.save();
     const user = await User.find({ username: username , email: email }).exec();
-    return user;  
+    if(user.length > 0) {
+      return user[0];
+    }
+    else throw new Error("User not created!");
   }
   catch(err) {
     if(err.errors) {
@@ -36,7 +39,122 @@ const create = async(username, email) => {
   }
 }
 
+/**
+ * Finds a user in the database using a username
+ * @param {String} username The username of the user.
+ * @returns the user object, or null if not found
+ */
+const readByUsername = async(username) => {
+  try {
+    const user = await User.find({ username: username }).exec();
+    if(user.length > 0) {
+      return user[0];
+    }
+    else return null;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Finds a user in the database using an email
+ * @param {String} email The email of the user.
+ * @returns the user object, or null if not found
+ */
+const readByEmail = async(email) => {
+  try {
+    const user = await User.find({ email: email }).exec();
+    if(user.length > 0) {
+      return user[0];
+    }
+    else return null;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Finds all of the users in the database
+ * @returns an array of user objects, or null if there are no users
+ */
+const readAll = async() => {
+  try {
+    const users = await User.find({}).exec();
+    if(users.length > 0) {
+      return users;
+    }
+    else return null;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Adds a scheduleId to the list of schedules of a user with a specific username
+ * @param {String} username The username of the user.
+ * @param {String} scheduleId A stringified ObjectId of a Schedule.
+ * @returns true if the schedule is added to the array, false if not
+ */
+const addSchedule = async(username, scheduleId) => {
+  try {
+    let updated = await User.updateOne({ username: username }, { $push: { schedules: scheduleId } }).exec();
+    if(updated.modifiedCount == 1) {
+      return true;
+    }
+    return false;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Removes a scheduleId from the list of schedules of a user with a specific username
+ * @param {String} username The username of the user.
+ * @param {String} scheduleId A stringified ObjectId of a Schedule.
+ * @returns true if the schedule is remove from the array, false if not
+ */
+const removeSchedule = async(username, scheduleId) => {
+  try {
+    let updated = await User.updateOne({ username: username }, { $pullAll: { schedules: [scheduleId] } }).exec();
+    if(updated.modifiedCount == 1) {
+      return true;
+    }
+    return false;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Removes a user from the database
+ * @param {String} username The username of the user.
+ * @returns true if the user is removed, false if not
+ */
+const remove = async(username) => {
+  try {
+    let removed = await User.deleteOne({ username: username }).exec();
+    if(removed.deletedCount == 1) {
+      return true;
+    }
+    return false;
+  }
+  catch(err) {
+    throw new Error(err);
+  }
+}
+
 module.exports = {
   description: "User functions",
-  create
+  create,
+  readByUsername,
+  readByEmail,
+  readAll,
+  addSchedule,
+  removeSchedule,
+  remove
 }
