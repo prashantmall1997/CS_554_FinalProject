@@ -3,8 +3,8 @@ const router = express.Router();
 const UserData = require("../data/controllers/user");
 
 router.get("/", async (req, res) => {
-    //returns a list of user objects, or null if there are none
     try {
+        //returns a list of user objects, or null if there are none
         let data = await UserData.readAll();
         res.json(data);
     }
@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 
 router.post("/create", async (req, res) => {
     try {
-        //Takes in a username and email, creates a user in the database
+        //Takes in a username and email and CWID, creates a user in the database
         //returns the created object if successful
         let body = req.body;
         if(body.constructor === Object && Object.keys(body).length === 0) throw new Error("must provide a request body");
