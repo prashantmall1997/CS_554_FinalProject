@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     schedules: [{ type: String, required: true, unique: false }],
     admin: { type: Boolean, required: true, unique: false },
+    CWID: { type: String, required: true, unique: false },
   },
   { collection: "users" }
 );
