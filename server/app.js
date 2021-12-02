@@ -14,6 +14,7 @@ app.use('*', async(req, res, next) => {
   let reqroute = req.originalUrl;
   let message = `[${date}]: ${reqmethod} ${reqroute}`;
   console.log(message);
+  res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
