@@ -37,16 +37,21 @@
   }
 }
 
+body {
+  background-color: #ddd;
+  height: 100%;
+}
+
 .sidebar {
   background-color: #333;
   color: white;
-  height: 100vh;
-  width: 225px;
-  min-width: 225px;
+  width: 20%;
   text-align: left;
   font-size: 1.5em;
-  position: relative;
+  position: fixed;
   float: left;
+	vertical-align: top;
+	height: 100vh;
 }
 
 .sidebar-text {
@@ -80,11 +85,28 @@
   font-weight: bold;
   text-align: left;
   overflow: hidden;
+  position: fixed;
+  height: 50px;
   top: 0; 
   width: 100%;
   padding-left: 10px;
+  z-index: 1;
 }
 
 .main-content {
   padding: 1.5rem;
+  margin-left: 20%;
+  margin-top: 50px;
+  width: 80%
+}
+
+.scroll-table {
+  overflow-y: scroll;
+  height: 200px;
+  margin: 10px;
+  border-radius: 20px;
+}
+
+.transparent-img {
+  background-color: #ddd;
 }
