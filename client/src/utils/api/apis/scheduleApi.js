@@ -53,7 +53,7 @@ export const updateScheduleName = async(id, name) => {
     return data.data;
 }
 
-export const removeSchedule = async() => {
+export const removeSchedule = async(id) => {
     let payload = {
         id: id
     }
