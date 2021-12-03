@@ -61,7 +61,7 @@ const create = async (
     if (err.errors) {
       if (err.errors.courseTotal) {
         if (err.errors.courseTotal.kind === "mongoose-unique-validator") {
-          console.log("ERROR: courseTotal must be unique");
+          throw new Error("ERROR: courseTotal must be unique");
         }
       }
     } else throw new Error(err);

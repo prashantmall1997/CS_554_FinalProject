@@ -5,18 +5,20 @@ const User = require("../models/users");
  * Creates a user within the database
  * @param {String} username The username of the user. Should be unique.
  * @param {String} email User email also for account identification. Should also be unique.
+ * @param {String} CWID the users campus wide ID number in string form
  * @returns the created object if created
  */
-const create = async (username, email) => {
+const create = async (username, email, CWID) => {
   try {
     const created = new User({
       username: username,
       email: email,
       schedules: [],
       admin: false,
+      CWID: CWID,
     });
     let added = await created.save();
-    const user = await User.find({ username: username, email: email }).exec();
+    const user = await User.find({ username: username, email: email, CWID: CWID }).exec();
     if (user.length > 0) {
       return user[0];
     } else throw new Error("User not created!");
