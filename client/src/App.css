@@ -56,6 +56,7 @@ body {
 
 .sidebar-text {
   padding: 1.5rem;
+  overflow-x: clip;
 }
 
 .sidebar-button {
@@ -137,12 +138,41 @@ input[type=radio] {
 
 input[type=checkbox]:checked,
 input[type=radio]:checked {
-  background-color: red;
+  background-color: #BB0F17;
   box-shadow: 0 0 0 0.1em rgba(0, 0, 0, 0.25);
 }
 
 .schedule-form-card {
   text-align: left;
   border: #999 1px solid;
+  border-radius: 1rem;
   background-color: #ddd;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.class-results-card {
+  border-radius: 1rem;
+  padding: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #bbb; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #BB0F17; 
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: gray; 
+}
+
+.schedule-select {
+  display: inline;
 }
