@@ -3,7 +3,6 @@
 }
 
 .homebody {
-	background-image: url("../src/images/bg1.jpg");
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -24,14 +23,7 @@
 	font-family: sans;
 	color: white;
 }
-.profilepagelink {
-	padding: 0.4rem 0.8rem;
-	background-color: white;
-	border-radius: 3px;
-	color: #800000;
-	text-decoration: none !important;
-	margin: 5px;
-}
+
 /* 
 .App-logo {
   height: 40vmin;
