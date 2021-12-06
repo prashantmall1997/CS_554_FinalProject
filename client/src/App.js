@@ -2,6 +2,8 @@ import logo from './logo.svg';
 import './App.css';
 import { readAllClasses } from "./utils/api";
 import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import SchedulesPage from "./components/SchedulesPage";
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
@@ -30,6 +32,13 @@ function App() {
           <p>you get the point</p> */}
         </div>
       </header>
+      <Router>
+			<div className="App">
+				<Switch>
+					<Route exact path="/schedulespage" component={SchedulesPage} />
+				</Switch>
+			</div>
+		</Router>
     </div>
   );
 }
