@@ -1,7 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
 import { readAllClasses } from "./utils/api";
 import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import userProfile from './components/userProfile';
+
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
@@ -30,6 +32,9 @@ function App() {
           <p>you get the point</p> */}
         </div>
       </header>
+      <Router>
+          <Route exact path="/userProfile" component = { userProfile } />
+      </Router>
     </div>
   );
 }
