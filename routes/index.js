@@ -4,7 +4,7 @@ const schedules = require("./schedules");
 const users = require("./users");
 
 const constructorMethod = (app) => {
-  app.use("/", API);
+  app.use("/API", API);
   app.use("/classes", classes);
   app.use("/schedules", schedules);
   app.use("/users", users);
