@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"cd server && npm i && npm start\" \"cd client && npm i && npm start\" ",
+    "heroku-postbuild": "cd client && npm run build",
     "dev": "concurrently \"cd server && npm i && npm run dev\" \"cd client && npm i && npm start\" "
   },
   "repository": {
