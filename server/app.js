@@ -8,7 +8,7 @@ const configRoutes = require("./routes");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('*', async(req, res, next) => {
+app.use("*", async (req, res, next) => {
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;
@@ -19,6 +19,10 @@ app.use('*', async(req, res, next) => {
 });
 
 configRoutes(app);
+
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+}
 
 app.listen(process.env.PORT, () => {
   console.log("We've now got a server!");
