@@ -1,7 +1,7 @@
 import apiClient from "../client";
 
 export const readAllUsers = async () => {
-    let data = await apiClient.get("/users/", payload);
+    let data = await apiClient.get("/users/");
     return data.data;
 }
 
