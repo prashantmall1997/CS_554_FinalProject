@@ -109,13 +109,11 @@ export function CreateSchedule() {
     const subjects = ["CS", "ME", "SYS", "MA", "CH", "SOC", "FIN"];
     const formats = ["Lecture", "Thesis", "Laboratory", "Recitation", "Internship", "Seminar"];
 
-    const schedules = ["Schedule1", "Schedule2"];
-
     const courseData = [
         {
             coursePrefix: "CS",
             courseCode: 554,
-            courseTitle: "Web Development II",
+            courseTitle: "Web Programming II",
             courseTotal: "CS 554-A - Web Programming II",
             courseLevel: "Graduate",
             courseTime: "2022 Spring",
@@ -130,7 +128,7 @@ export function CreateSchedule() {
         {
             coursePrefix: "CS",
             courseCode: 546,
-            courseTitle: "Web Development I",
+            courseTitle: "Web Programming I",
             courseTotal: "CS 546-WS - Web Programming I",
             courseLevel: "Graduate",
             courseTime: "2022 Spring",
@@ -159,7 +157,20 @@ export function CreateSchedule() {
             deliveryMode: "Online",
             enrolledCapacity: "26/40"
         }
-    ]
+    ];
+
+    let schedules = [
+        {
+            name: "Schedule1",
+            courses: [
+                courseData[0]
+            ]
+        },
+        {
+            name: "Schedule2",
+            courses: []
+        }
+    ];
 
     const handleTextSearch = (e) => {
         setSearch({
@@ -251,7 +262,7 @@ export function CreateSchedule() {
     let courseSearch = search.name.trim().toLowerCase();
 
     if (courseSearch.length > 0) {
-      courses = courses.filter(val => val.courseTitle.toLowerCase().match(courseSearch));
+      courses = courses.filter(val => val.courseTitle.toLowerCase().includes(courseSearch));
     }
     
     courseSearch = search.semester.trim().toLowerCase();
@@ -287,8 +298,56 @@ export function CreateSchedule() {
         }
     }
 
+    const showSchedule = () => {
+        if (activeSchedule === "") {
+            return;
+        } else {
+            for (let i of schedules) {
+                if (i.name === activeSchedule) {
+                    return (
+                        <div>
+                            <h2>Courses in {activeSchedule}</h2>
+                            <Row xs={4}>
+                                {i.courses.map(course => 
+                                    <Col className="p-2 mt-2">
+                                        <Card className="class-results-card">
+                                            <Card.Title>{course.courseTotal}</Card.Title>
+                                            <Card.Body>
+                                            <p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p>
+                                            <p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p>
+                                            <p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p>
+                                            <p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p>
+                                            <p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p>
+                                            </Card.Body>
+                                            <Card.Footer>
+                                                <img 
+                                                    src="https://img.icons8.com/color/48/000000/minus.png"
+                                                    onClick={() => {removeClassFromSchedule(course)}}
+                                                />
+                                                Remove from schedule
+                                            </Card.Footer>
+                                        </Card>
+                                    </Col>
+                                )}
+                            </Row>
+                        </div>
+                    );
+                }
+            }
+            return;
+        }
+    }
+
     const addClassToSchedule = (courseInfo) => {
         // todo add function to add class to active schedule
+    }
+
+    const removeClassFromSchedule = (courseInfo) => {
+        for (let sch in schedules) {
+            if (sch.name === activeSchedule) {
+                schedules[sch].courses = schedules[sch].courses.filter(function(e) { return e.courseTotal !== courseInfo.courseTotal });
+            }
+        }
     }
 
     const courseForm = () => {
@@ -314,7 +373,7 @@ export function CreateSchedule() {
                                         value={semester}
                                         onChange={(e) => handleSemesterSearch(e)} 
                                     />
-                                    <label for="semester">{semester}</label>
+                                    <label htmlFor="semester">{semester}</label>
                                     <br />
                                 </div>
                             )}
@@ -330,7 +389,7 @@ export function CreateSchedule() {
                                         value={level}
                                         onChange={(e) => handleLevelSearch(e)} 
                                     />
-                                    <label for={level.toLowerCase}>{level}</label>
+                                    <label htmlFor={level.toLowerCase}>{level}</label>
                                     <br />
                                 </div>
                             )}
@@ -345,7 +404,7 @@ export function CreateSchedule() {
                                         name={subject.replace(" ", "").toLowerCase}
                                         value={subject}
                                     />
-                                    <label for={subject.replace(" ", "").toLowerCase}>{subject}</label>
+                                    <label htmlFor={subject.replace(" ", "").toLowerCase}>{subject}</label>
                                     <br />
                                 </div>
                             )}
@@ -360,7 +419,7 @@ export function CreateSchedule() {
                                     value="Open"
                                     onChange={(e) => handleStatusSearch(e)} 
                                 />
-                                <label for="open">Open</label>
+                                <label htmlFor="open">Open</label>
                                 <br />
                             </div>
                             <div>
@@ -371,7 +430,7 @@ export function CreateSchedule() {
                                     value="Closed"
                                     onChange={(e) => handleStatusSearch(e)} 
                                 />
-                                <label for="closed">Closed</label>
+                                <label htmlFor="closed">Closed</label>
                                 <br />
                             </div>
                         </Card>
@@ -386,7 +445,7 @@ export function CreateSchedule() {
                                         value={format}
                                         onChange={(e) => handleFormatSearch(e)} 
                                     />
-                                    <label for={format.replace(" ", "").toLowerCase}>{format}</label>
+                                    <label htmlFor={format.replace(" ", "").toLowerCase}>{format}</label>
                                     <br />
                                 </div>
                             )}
@@ -401,7 +460,7 @@ export function CreateSchedule() {
                                     value="In-Person"
                                     onChange={(e) => handleDeliveryModeSearch(e)} 
                                 />
-                                <label for="in-person">In-Person</label>
+                                <label htmlFor="in-person">In-Person</label>
                                 <br />
                             </div>
                             <div>
@@ -412,7 +471,7 @@ export function CreateSchedule() {
                                     value="Online"
                                     onChange={(e) => handleDeliveryModeSearch(e)} 
                                 />
-                                <label for="online">Online</label>
+                                <label htmlFor="online">Online</label>
                                 <br />
                             </div>
                         </Card>
@@ -424,8 +483,12 @@ export function CreateSchedule() {
                                 <Card className="class-results-card">
                                     <Card.Title>{course.courseTotal}</Card.Title>
                                     <Card.Body>
-                                        <Row>
-                                            <Col xs={11}>test1</Col>
+                                    <Row xs={1} md={2}>
+                                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
                                         </Row>
                                     </Card.Body>
                                     <Card.Footer>
@@ -470,9 +533,10 @@ export function CreateSchedule() {
                     <h2>Select Schedule</h2>
                     {schedules.map((schedule) =>
                         <div className="schedule-select">
-                            {scheduleSection(schedule)}
+                            {scheduleSection(schedule.name)}
                         </div>
                     )}
+                    {showSchedule()}
                     <br />
                     {courseForm()}
                 </div>
