@@ -1,3 +1,5 @@
+console.clear();
+require("./config/mongoConnection");
 require("dotenv").config();
 const express = require("express");
 const app = express();
