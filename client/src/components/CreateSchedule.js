@@ -320,11 +320,12 @@ export function CreateSchedule() {
                                             <p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p>
                                             </Card.Body>
                                             <Card.Footer>
-                                                <img 
-                                                    src="https://img.icons8.com/color/48/000000/minus.png"
-                                                    onClick={() => {removeClassFromSchedule(course)}}
-                                                />
-                                                Remove from schedule
+                                                <button 
+                                                    className="add-remove-course" 
+                                                    onClick={() => {removeClassFromSchedule(course)}}>
+                                                    <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
+                                                    Remove
+                                                </button>
                                             </Card.Footer>
                                         </Card>
                                     </Col>
@@ -339,22 +340,26 @@ export function CreateSchedule() {
     }
 
     const addClassToSchedule = (courseInfo) => {
-        // todo add function to add class to active schedule
+        for (let i in schedules) {
+            if (schedules[i].name === activeSchedule) {
+                schedules[i].courses.push(courseInfo);
+            }
+        }
     }
 
     const removeClassFromSchedule = (courseInfo) => {
-        for (let sch in schedules) {
-            if (sch.name === activeSchedule) {
-                schedules[sch].courses = schedules[sch].courses.filter(function(e) { return e.courseTotal !== courseInfo.courseTotal });
+        for (let i in schedules) {
+            if (schedules[i].name === activeSchedule) {
+                schedules[i].courses = schedules[i].courses.filter(e => e.courseTotal !== courseInfo.courseTotal);
             }
         }
     }
 
     const courseForm = () => {
         return (
-            <form>
                 <Row>
                     <Col xs={12} md={3}>
+            <form>
                         <h2>Search</h2>
                         <input 
                             onChange={(e) => handleTextSearch(e)} 
@@ -475,35 +480,36 @@ export function CreateSchedule() {
                                 <br />
                             </div>
                         </Card>
-                    </Col>
-                    <Col xs={12} md={9}>
-                        <h2>Courses</h2>
-                        {courses.map(course => 
-                            <Col className="p-2 mt-2">
-                                <Card className="class-results-card">
-                                    <Card.Title>{course.courseTotal}</Card.Title>
-                                    <Card.Body>
-                                    <Row xs={1} md={2}>
-                                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
-                                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
-                                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
-                                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
-                                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
-                                        </Row>
-                                    </Card.Body>
-                                    <Card.Footer>
-                                        <img 
-                                            src="https://img.icons8.com/color/48/000000/add--v1.png"
-                                            onClick={() => {addClassToSchedule(course)}}
-                                        />
-                                        Add to schedule
-                                    </Card.Footer>
-                                </Card>
-                            </Col>
-                        )}
-                    </Col>
-                </Row>
 			</form>
+                    </Col>
+            <Col xs={12} md={9}>
+                <h2>Courses</h2>
+                {courses.map(course => 
+                    <Col className="p-2 mt-2">
+                        <Card className="class-results-card">
+                            <Card.Title>{course.courseTotal}</Card.Title>
+                            <Card.Body>
+                            <Row xs={1} md={2}>
+                                <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                                <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                                <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                                <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                                <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                                </Row>
+                            </Card.Body>
+                            <Card.Footer>
+                                <button 
+                                    className="add-remove-course" 
+                                    onClick={() => {addClassToSchedule(course)}}>
+                                    <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
+                                    Add to schedule
+                                </button>
+                            </Card.Footer>
+                        </Card>
+                    </Col>
+                )}
+            </Col>
+            </Row>
         );
     }
 
