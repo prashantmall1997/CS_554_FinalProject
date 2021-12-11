@@ -8,14 +8,20 @@ export default class FileReader extends Component {
     super(props);
     this.state = {
       status: "File Not Yet Inserted",
+      success: "N/A",
+      fail: "N/A",
     }
   }
 
   handleOnDrop = async (data) => { //when the file is uplaoded
     this.setState({
-      status: "File Inserted Successfully, Parsing File and adding to Mongo (WARNING: Do not close this page!)"
+      status: "File Inserted Successfully (WARNING: Do not close this page!)",
+      success: "N/A",
+      fail: "N/A",
     });
     let rowCount = 1;
+    let numSuccess = 0;
+    let numFail = 0;
     let courseTime = null;
     let courseLevel = null;
     console.log('---------------------------');
@@ -53,6 +59,8 @@ export default class FileReader extends Component {
           console.log("Error in file formatting");
           this.setState({
             status: "Error in file formatting",
+            success: "N/A",
+            fail: "N/A",
           })
           break;
         }
@@ -66,8 +74,13 @@ export default class FileReader extends Component {
           break;
         }
         else {
+          this.setState({
+            status: "Parsing File and adding to Mongo (WARNING: Do not close this page!)",
+            success: numSuccess,
+            fail: numFail,
+          });
           try {
-            let courseTotal = row.data[0];
+            let courseTotal = row.data[0].replace('--', "-");
             let coursePrefix = courseTotal.split(' ')[0];
             let courseCode = courseTotal.split(' ')[1].split('-')[0];
             let courseSection = courseTotal.split(' ')[1].split('-')[1];
@@ -98,11 +111,13 @@ export default class FileReader extends Component {
             if(data.error) throw data.error;
             console.timeEnd(`Successful completion for line ${rowCount} took`);
             rowCount++;
+            numSuccess++;
             continue;
           }
           catch(e) {
             console.log(`Error occured on line ${rowCount}: ${e}`);
             rowCount++;
+            numFail++;
             continue;
           }
         }
@@ -111,6 +126,8 @@ export default class FileReader extends Component {
     console.log('---------------------------');
     this.setState({
       status: "File Done Being Inserted. Check the console (right click -> inspect element in chrome) to see the output. Safe to close the page.",
+      success: numSuccess,
+      failed: numFail,
     });
   }
 
@@ -118,6 +135,8 @@ export default class FileReader extends Component {
     console.log(err)
     this.setState({
       status: "Error with file.",
+      success: "N/A",
+      fail: "N/A",
     });
   }
 
@@ -129,7 +148,7 @@ export default class FileReader extends Component {
     return (
       <div>
         <p>Tutorial: go to workday, academics, find course sections, hit the three dots next to "Find Course Sections" once on the page, hit standard report then schedule, select find course sections and run now.</p>
-        <p>Once on the Schedule a Report page, select a single semester, select <strong>ONE</strong> academic level (ONLY select Gradaute, or ONLY select Undergraduate, etc.), and leave campus locations blank. Then hit ok on the bottom, download the xlsx file, use <a href="https://cloudconvert.com/xlsx-to-csv">anything</a> to convert that to a csv file.</p>
+        <p>Once on the Schedule a Report page, select a single semester, select <strong>ONE</strong> academic level (ONLY select Gradaute, or ONLY select Undergraduate, etc.), and leave campus locations blank. Then hit ok on the bottom, download the xlsx file, use <a target="_blank" href="https://cloudconvert.com/xlsx-to-csv">anything</a> to convert that to a csv file.</p>
         <p>Upload the file below, and wait for it to run! It will begin running as soon as the file is uploaded.</p>
         <CSVReader
           onDrop={this.handleOnDrop}
@@ -140,7 +159,7 @@ export default class FileReader extends Component {
         >
           <span>Drop CSV file here or click to upload.</span>
         </CSVReader>
-        <p>Current Status: {this.state.status}</p>
+        <p>Current Status: {this.state.status} | Successes: {this.state.success} | Failures: {this.state.fail}</p>
       </div>
     )
   }
