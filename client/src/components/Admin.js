@@ -6,7 +6,11 @@ export function Admin() {
     const [file, setFile] = useState("");
     const [userToDelete, setUserToDelete] = useState("");
 
-    const deleteConfirmButton = (email) => {
+    const deleteConfirmButton = (email, isAdmin) => {
+        if (isAdmin === true) {
+            return "Admin cannot be deleted";
+        }
+
         if (email !== userToDelete) {
             return (
                 <Button variant="danger" size="sm" onClick={() => {setUserToDelete(email)}}>Delete User</Button>
@@ -41,34 +45,60 @@ export function Admin() {
     // dummy user data
     const userList = [
         {
+            username: "jperalta",
             email: "jperalta@stevens.edu",
-            savedSchedules: 0
+            schedules: [],
+            CWID: "04200420",
+            admin: false
         },
         {
+            username: "asantiago",
             email: "asantiago@stevens.edu",
-            savedSchedules: 8
+            schedules: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"],
+            CWID: "12345678",
+            admin: true
         },
         {
+            username: "rholt",
             email: "rholt@stevens.edu",
-            savedSchedules: 5
+            schedules: ["s1", "s2", "s3", "s4", "s5"],
+            CWID: "11111111",
+            admin: false
         },
         {
+            username: "rdiaz",
             email: "rdiaz@stevens.edu",
-            savedSchedules: 1
+            schedules: ["s1"],
+            CWID: "00000000",
+            admin: false
         },
         {
+            username: "tjeffords",
             email: "tjeffords@stevens.edu",
-            savedSchedules: 3
+            schedules: ["s1", "s2", "s3"],
+            CWID: "99999999",
+            admin: false
         },
         {
+            username: "cboyle",
             email: "cboyle@stevens.edu",
-            savedSchedules: 4
+            schedules: ["s1", "s2", "s3", "s4"],
+            CWID: "10000000",
+            admin: false
         },
         {
+            username: "glinetti",
             email: "glinetti@stevens.edu",
-            savedSchedules: 0
+            schedules: [],
+            CWID: "77777777",
+            admin: false
         }
     ];
+
+    let totalSavedSchedules = 0;
+    for (let user of userList) {
+        totalSavedSchedules += user.schedules.length;
+    }
 
     return (
         <div>
@@ -84,18 +114,21 @@ export function Admin() {
             </div>
             <div className="main-content">
                 <div>
-                    <h1>Upload Latest Schedules</h1>
+                    <h1>Administration</h1>
+                    <h2>Upload Latest Schedules</h2>
                     <br />
                     <input type="file" accept=".csv" onChange={handleUpload} />
                 </div>
                 <br />
                 <div>
-                    <h1>Users</h1>
+                    <h2>Users</h2>
                     <div className="scroll-table">
                         <Table variant="dark">
                             <thead>
                                 <tr>
-                                    <th>User Email</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>CWID</th>
                                     <th>Saved Schedules</th>
                                     <th>Task</th>
                                 </tr>
@@ -103,9 +136,11 @@ export function Admin() {
                             <tbody>
                                 {userList.map((user) =>
                                     <tr>
+                                        <td>{user.username}</td>
                                         <td>{user.email}</td>
-                                        <td>{user.savedSchedules}</td>
-                                        <td>{deleteConfirmButton(user.email)}</td>
+                                        <td>{user.CWID}</td>
+                                        <td>{user.schedules.length}</td>
+                                        <td>{deleteConfirmButton(user.email, user.admin)}</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -113,7 +148,7 @@ export function Admin() {
                     </div>
                 </div>
                 <br />
-                <h1>Site Metrics</h1>
+                <h2>Site Metrics</h2>
                 <Row xs={1} sm={2} md={3} lg={3} xl={3} className="g-4">
                     <Col>
                         <Card className="p-2">
@@ -132,7 +167,7 @@ export function Admin() {
                             <Card.Body>
                                 <Card.Title className="text-center">SCHEDULES SAVED</Card.Title>
                                 <Card.Text>
-                                    21
+                                    {totalSavedSchedules}
                                 </Card.Text>
                             </Card.Body>
                         </Card>

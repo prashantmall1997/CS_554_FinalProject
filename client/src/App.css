@@ -102,11 +102,28 @@ body {
 
 .scroll-table {
   overflow-y: scroll;
-  height: 200px;
+  height: 300px;
   margin: 10px;
   border-radius: 20px;
 }
 
 .transparent-img {
   background-color: #ddd;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #bbb; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #BB0F17; 
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: gray; 
 }
