@@ -1,6 +1,9 @@
 import "./App.css";
-import Admin from "./components/Admin";
+import Admin from "./Components/Admin";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
+import { readAllClasses } from "./utils/api/apis/classApi";
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);

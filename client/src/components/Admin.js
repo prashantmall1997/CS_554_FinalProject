@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "../App.css";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
+import FileReader from "./FileReader";
 
 export function Admin() {
-    const [file, setFile] = useState("");
     const [userToDelete, setUserToDelete] = useState("");
 
     const deleteConfirmButton = (email, isAdmin) => {
@@ -29,11 +29,6 @@ export function Admin() {
     const deleteUser = (email) => {
         // todo add delete user code
         setUserToDelete("");
-    }
-
-    function handleUpload(event) {
-        setFile(event.target.files[0]);
-        // send to backend
     }
 
     const handleSignout = () => {
@@ -117,7 +112,7 @@ export function Admin() {
                     <h1>Administration</h1>
                     <h2>Upload Latest Schedules</h2>
                     <br />
-                    <input type="file" accept=".csv" onChange={handleUpload} />
+                    <FileReader />
                 </div>
                 <br />
                 <div>
