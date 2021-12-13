@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../App.css";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
+import moment from "moment";
 
 export function CreateSchedule() {
     const [activeSchedule, setActiveSchedule] = useState("");
@@ -149,7 +150,7 @@ export function CreateSchedule() {
             courseLevel: "Graduate",
             courseTime: "2022 Summer",
             courseSection: "WS",
-            sectionDetails: "Web Campus |",
+            sectionDetails: "Web Campus | Monday | 5:00 PM - 7:30 PM",
             sectionStatus: "Open",
             instructor: "Jerry Sellers",
             campus: "Web Campus",
@@ -288,6 +289,87 @@ export function CreateSchedule() {
     courseSearch = search.deliveryMode;
     if (courseSearch.length > 0) {
         courses = courses.filter(val => courseSearch.includes(val.deliveryMode));
+    }
+
+    // filter out classes already in the selected schedule
+    for (let i in schedules) {
+        if (schedules[i].name === activeSchedule) {
+            courses = courses.filter(val => !schedules[i].courses.includes(val));
+        }
+    }
+
+    const getTimes = (course) => {
+        // initialize course time
+        let times = {
+            /*monday: false,
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: false,
+            saturday: false,
+            sunday: false,*/
+            days: [],
+            start: moment("12:00 AM", "h:mm A"),
+            end: moment("12:00 AM", "h:mm A")
+        }
+
+        /*if (course.sectionDetails.includes("Monday")) times.monday = true;
+        if (course.sectionDetails.includes("Tuesday")) times.tuesday = true;
+        if (course.sectionDetails.includes("Wednesday")) times.wednesday = true;
+        if (course.sectionDetails.includes("Thursday")) times.thursday = true;
+        if (course.sectionDetails.includes("Friday")) times.friday = true;
+        if (course.sectionDetails.includes("Saturday")) times.saturday = true;
+        if (course.sectionDetails.includes("Sunday")) times.sunday = true;*/
+        if (course.sectionDetails.includes("Monday")) times.days.push("Monday");
+        if (course.sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
+        if (course.sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
+        if (course.sectionDetails.includes("Thursday")) times.days.push("Thursday");
+        if (course.sectionDetails.includes("Friday")) times.days.push("Friday");
+        if (course.sectionDetails.includes("Saturday")) times.days.push("Saturday");
+        if (course.sectionDetails.includes("Sunday")) times.days.push("Sunday");
+        
+        let timeRange = course.sectionDetails.substring(course.sectionDetails.lastIndexOf("|") + 1);
+        times.start = moment(timeRange.split("-")[0], "h:mm A");
+        times.end = moment(timeRange.split("-")[1], "h:mm A");
+
+        return times;
+    }
+
+    const compareTimesWithActiveSchedule = (course) => {
+        for (let i in schedules) {
+            if (schedules[i].name === activeSchedule) {
+                console.log("in if")
+                for (let j in schedules[i].courses) {
+                    let existingTimes = getTimes(schedules[i].courses[j]);
+                    let courseTimes = getTimes(course)
+
+                    let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
+                    let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
+                    let start2 = courseTimes.start.hour() + courseTimes.start.minute()/60;
+                    let end2 = courseTimes.end.hour() + courseTimes.end.minute()/60;
+       
+                    const overlappingDays = courseTimes.days.filter(day => existingTimes.days.includes(day));
+
+                    if (overlappingDays.length === 0) {
+                        return "";
+                    }
+
+                    // todo need to check this logic to make sure it catches the right overlaps
+                    if (start1 <= start2 && end1 > start2) {
+                        return "result-conflict";
+                    } else if (start1 < end2 && end1 > end2) {
+                        return "result-conflict";
+                    } else if (start2 <= start1 && end2 > start1) {
+                        return "result-conflict";
+                    } else if (start2 < end2 && end2 > end1) {
+                        return "result-conflict";
+                    } else { 
+                        return "";
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     const scheduleSection = (scheduleName) => {
@@ -486,7 +568,7 @@ export function CreateSchedule() {
                 <h2>Courses</h2>
                 {courses.map(course => 
                     <Col className="p-2 mt-2">
-                        <Card className="class-results-card">
+                        <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
                             <Card.Title>{course.courseTotal}</Card.Title>
                             <Card.Body>
                             <Row xs={1} md={2}>
@@ -503,6 +585,8 @@ export function CreateSchedule() {
                                     onClick={() => {addClassToSchedule(course)}}>
                                     <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
                                     Add to schedule
+                                    <br />
+                                    {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
                                 </button>
                             </Card.Footer>
                         </Card>

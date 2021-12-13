@@ -156,6 +156,14 @@ input[type=radio]:checked {
   padding: 4px;
 }
 
+.result-conflict {
+  background-color: #ffbdc0 !important;
+}
+
+.btn-secondary:disabled {
+  background-color: #313538 !important;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
