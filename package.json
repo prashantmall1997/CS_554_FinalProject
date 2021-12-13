@@ -5,7 +5,8 @@
   "main": "echo \"Error: no main file defined",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\" "
+    "start": "concurrently \"cd server && npm i && npm start\" \"cd client && npm i && npm start\" ",
+    "dev": "concurrently \"cd server && npm i && npm run dev\" \"cd client && npm i && npm start\" "
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
     "url": "https://github.com/prashantmall1997/sit_scheduler_v2/issues"
   },
   "homepage": "https://github.com/prashantmall1997/sit_scheduler_v2#readme",
-  "devDependencies": {
+  "dependencies": {
     "concurrently": "^6.3.0"
   }
 }
