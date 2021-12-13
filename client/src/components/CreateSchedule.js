@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
-import { Table, Button, Row, Col, Card } from "react-bootstrap";
+import { Button, Row, Col, Card } from "react-bootstrap";
+import { readAllClasses, readSchedulesByUser } from "../utils/api";
 import moment from "moment";
 
 export function CreateSchedule() {
     const [activeSchedule, setActiveSchedule] = useState("");
+    const [allClasses, setAllClasses] = useState([]);
+    useEffect(() => {
+        readAllClasses().then((classes) => {
+        setAllClasses(classes);
+        });
+    }, []);
     const [search, setSearch] = useState({
         name: "",
         semester: "",
@@ -104,67 +111,18 @@ export function CreateSchedule() {
     //     }
     // }
     
-    const academicLevels = ["Certificate Programs", "Doctoral", "Graduate", "Non-Degree", "Undergraduate"];
-    const semesters = ["2022 Spring", "2022 Summer", "2022 Summer Session 1", "2022 Summer Session 2", "2022 Winter Intersession"];
-    //const subjects = ["Computer Science", "Mechanical Engineering", "Systems Engineering"];
-    const subjects = ["CS", "ME", "SYS", "MA", "CH", "SOC", "FIN"];
-    const formats = ["Lecture", "Thesis", "Laboratory", "Recitation", "Internship", "Seminar"];
-
-    const courseData = [
-        {
-            coursePrefix: "CS",
-            courseCode: 554,
-            courseTitle: "Web Programming II",
-            courseTotal: "CS 554-A - Web Programming II",
-            courseLevel: "Graduate",
-            courseTime: "2022 Spring",
-            courseSection: "A",
-            sectionDetails: "Monday | 3:00 PM - 5:30 PM",
-            sectionStatus: "Open",
-            instructor: "Patrick Hill",
-            format: "Lecture",
-            deliveryMode: "In-Person",
-            enrolledCapacity: "32/50"
-        },
-        {
-            coursePrefix: "CS",
-            courseCode: 546,
-            courseTitle: "Web Programming I",
-            courseTotal: "CS 546-WS - Web Programming I",
-            courseLevel: "Graduate",
-            courseTime: "2022 Spring",
-            courseSection: "WS",
-            sectionDetails: "Web Campus |",
-            sectionStatus: "Closed",
-            instructor: "Patrick Hill",
-            campus: "",
-            format: "Lecture",
-            deliveryMode: "Online",
-            enrolledCapacity: "50/50"
-        },
-        {
-            coursePrefix: "SYS",
-            courseCode: 635,
-            courseTitle: "Human Spaceflight",
-            courseTotal: "SYS 635-WS - Human Spaceflight",
-            courseLevel: "Graduate",
-            courseTime: "2022 Summer",
-            courseSection: "WS",
-            sectionDetails: "Web Campus | Monday | 5:00 PM - 7:30 PM",
-            sectionStatus: "Open",
-            instructor: "Jerry Sellers",
-            campus: "Web Campus",
-            format: "Lecture",
-            deliveryMode: "Online",
-            enrolledCapacity: "26/40"
-        }
-    ];
+    // get distinct values to populate the search options
+    const academicLevels = [...new Set(allClasses.map(item => item.courseLevel))];
+    const semesters = [...new Set(allClasses.map(item => item.courseTime))];
+    const subjects = [...new Set(allClasses.map(item => item.coursePrefix))];
+    const formats = [...new Set(allClasses.map(item => item.format))];
+    const deliveryModes = [...new Set(allClasses.map(item => item.deliveryMode))];
 
     let schedules = [
         {
             name: "Schedule1",
             courses: [
-                courseData[0]
+                allClasses[0]
             ]
         },
         {
@@ -259,7 +217,8 @@ export function CreateSchedule() {
         });
     };
 
-    let courses = courseData;
+    //let courses = courseData; //dev
+    let courses = allClasses;
     let courseSearch = search.name.trim().toLowerCase();
 
     if (courseSearch.length > 0) {
@@ -291,6 +250,13 @@ export function CreateSchedule() {
         courses = courses.filter(val => courseSearch.includes(val.deliveryMode));
     }
 
+    // if there are no filters selected, don't show any classes -- that list will be looong
+    if (search.name === "" && search.semester === "" &&
+        search.level.length === 0 && search.status.length === 0 &&
+        search.format.length === 0 && search.deliveryMode.length === 0) {
+        courses = [];
+    }
+
     // filter out classes already in the selected schedule
     for (let i in schedules) {
         if (schedules[i].name === activeSchedule) {
@@ -301,25 +267,11 @@ export function CreateSchedule() {
     const getTimes = (course) => {
         // initialize course time
         let times = {
-            /*monday: false,
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-            sunday: false,*/
             days: [],
             start: moment("12:00 AM", "h:mm A"),
             end: moment("12:00 AM", "h:mm A")
         }
 
-        /*if (course.sectionDetails.includes("Monday")) times.monday = true;
-        if (course.sectionDetails.includes("Tuesday")) times.tuesday = true;
-        if (course.sectionDetails.includes("Wednesday")) times.wednesday = true;
-        if (course.sectionDetails.includes("Thursday")) times.thursday = true;
-        if (course.sectionDetails.includes("Friday")) times.friday = true;
-        if (course.sectionDetails.includes("Saturday")) times.saturday = true;
-        if (course.sectionDetails.includes("Sunday")) times.sunday = true;*/
         if (course.sectionDetails.includes("Monday")) times.days.push("Monday");
         if (course.sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
         if (course.sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
@@ -338,7 +290,6 @@ export function CreateSchedule() {
     const compareTimesWithActiveSchedule = (course) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule) {
-                console.log("in if")
                 for (let j in schedules[i].courses) {
                     let existingTimes = getTimes(schedules[i].courses[j]);
                     let courseTimes = getTimes(course)
@@ -361,7 +312,7 @@ export function CreateSchedule() {
                         return "result-conflict";
                     } else if (start2 <= start1 && end2 > start1) {
                         return "result-conflict";
-                    } else if (start2 < end2 && end2 > end1) {
+                    } else if (start2 < end1 && end2 > end1) {
                         return "result-conflict";
                     } else { 
                         return "";
@@ -439,9 +390,9 @@ export function CreateSchedule() {
 
     const courseForm = () => {
         return (
-                <Row>
-                    <Col xs={12} md={3}>
-            <form>
+            <Row>
+                <Col xs={12} md={3}>
+                    <form>
                         <h2>Search</h2>
                         <input 
                             onChange={(e) => handleTextSearch(e)} 
@@ -539,60 +490,51 @@ export function CreateSchedule() {
                         </Card>
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Delivery Format</Card.Title>
-                            <div>
-                                <input 
-                                    type="checkbox" 
-                                    id="in-person"
-                                    name="in-person"
-                                    value="In-Person"
-                                    onChange={(e) => handleDeliveryModeSearch(e)} 
-                                />
-                                <label htmlFor="in-person">In-Person</label>
-                                <br />
-                            </div>
-                            <div>
-                                <input 
-                                    type="checkbox" 
-                                    id="online"
-                                    name="online"
-                                    value="Online"
-                                    onChange={(e) => handleDeliveryModeSearch(e)} 
-                                />
-                                <label htmlFor="online">Online</label>
-                                <br />
-                            </div>
-                        </Card>
-			</form>
-                    </Col>
-            <Col xs={12} md={9}>
-                <h2>Courses</h2>
-                {courses.map(course => 
-                    <Col className="p-2 mt-2">
-                        <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
-                            <Card.Title>{course.courseTotal}</Card.Title>
-                            <Card.Body>
-                            <Row xs={1} md={2}>
-                                <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
-                                <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
-                                <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
-                                <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
-                                <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
-                                </Row>
-                            </Card.Body>
-                            <Card.Footer>
-                                <button 
-                                    className="add-remove-course" 
-                                    onClick={() => {addClassToSchedule(course)}}>
-                                    <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
-                                    Add to schedule
+                            {deliveryModes.map((deliveryMode) =>
+                                <div>
+                                    <input 
+                                        type="checkbox" 
+                                        id={deliveryMode.replace(" ", "").toLowerCase} 
+                                        name={deliveryMode.replace(" ", "").toLowerCase}
+                                        value={deliveryMode}
+                                        onChange={(e) => handleDeliveryModeSearch(e)} 
+                                    />
+                                    <label htmlFor={deliveryMode.replace(" ", "").toLowerCase}>{deliveryMode}</label>
                                     <br />
-                                    {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
-                                </button>
-                            </Card.Footer>
+                                </div>
+                            )}
                         </Card>
-                    </Col>
-                )}
-            </Col>
+			        </form>
+                </Col>
+                <Col xs={12} md={9}>
+                    <h2>Courses</h2>
+                    {courses.map(course => 
+                        <Col className="p-2 mt-2">
+                            <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
+                                <Card.Title>{course.courseTotal}</Card.Title>
+                                <Card.Body>
+                                <Row xs={1} md={2}>
+                                    <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                                    <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                                    <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                                    <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                                    <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                                    </Row>
+                                </Card.Body>
+                                <Card.Footer>
+                                    <button 
+                                        className="add-remove-course" 
+                                        onClick={() => {addClassToSchedule(course)}}>
+                                        <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
+                                        Add to schedule
+                                        <br />
+                                        {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
+                                    </button>
+                                </Card.Footer>
+                            </Card>
+                        </Col>
+                    )}
+                </Col>
             </Row>
         );
     }

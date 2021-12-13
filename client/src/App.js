@@ -1,8 +1,9 @@
+import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { readAllClasses } from "./utils/api";
 import React, { useEffect, useState } from "react";
-import FirebaseTest from "./Components/FirebaseTest";
+import FirebaseTest from "./components/FirebaseTest";
 import CreateSchedule from "./components/CreateSchedule";
 
 function App() {
@@ -12,12 +13,11 @@ function App() {
       setAllClasses(classes);
     });
   }, []);
-  console.log(allClasses);
+  //console.log(allClasses);
   return (
     <Router>
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+        {/* <header className="App-header">
           <div>
             {allClasses.map((theClass) => {
               return (
@@ -30,10 +30,10 @@ function App() {
             })}
             {/* <p>ID: {allClasses[0]._id}</p> */}
             {/* <p>courseTime: {allClasses[0].courseTime}</p> */}
-            <p>you get the point</p>
+            {/* <p>you get the point</p>
           </div>
-        </header>
-        <FirebaseTest />
+        </header> 
+        <FirebaseTest /> */ }
             <div className="App-body">
                 <Route exact path="/createschedule" component={CreateSchedule} />
             </div>

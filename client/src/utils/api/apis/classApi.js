@@ -1,8 +1,12 @@
 import apiClient from "../client";
 
 export const readAllClasses = async () => {
-    let data = await apiClient.get("/classes/");
-    return data.data;
+    try {
+        let data = await apiClient.get("/classes/");
+        return data.data;
+    } catch(error) {
+        console.log(error.message);
+    }
 };
 
 export const createClass = async (courseTime, courseLevel, courseTotal, coursePrefix, courseCode, courseSection, courseTitle, sectionStatus, instructor, sectionDetails, campus, format, deliveryMode, enrolledCapacity) => {
