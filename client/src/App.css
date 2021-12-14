@@ -38,6 +38,7 @@
 }
 
 body {
+
 /*<<<<<<< homepage*/
   background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
   background-color: black;
@@ -153,7 +154,7 @@ input {
   width: 100%;
   outline: none;
   padding: 10px;
-/*=======*/
+
   background-color: #ddd;
   height: 100%;
 }
@@ -172,6 +173,8 @@ input {
 
 .sidebar-text {
   padding: 1.5rem;
+  overflow-x: clip;
+
 }
 
 .sidebar-button {
@@ -218,7 +221,8 @@ input {
 
 .scroll-table {
   overflow-y: scroll;
-  height: 300px;
+  height: 200px;
+
   margin: 10px;
   border-radius: 20px;
 }
@@ -226,6 +230,59 @@ input {
 .transparent-img {
   background-color: #ddd;
 }
+
+input[type=checkbox] {
+  width: 1em;
+  height: 1em;
+  background-color: white;
+  border-radius: 20%;
+  border: 1px solid #999;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: .5s;
+  margin-right: 0.2em;
+}
+
+input[type=radio] {
+  width: 1em;
+  height: 1em;
+  background-color: white;
+  border-radius: 50%;
+  border: 1px solid #999;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: .5s;
+  margin-right: 0.2em;
+}
+
+input[type=checkbox]:checked,
+input[type=radio]:checked {
+  background-color: #BB0F17;
+  box-shadow: 0 0 0 0.1em rgba(0, 0, 0, 0.25);
+}
+
+.schedule-form-card {
+  text-align: left;
+  border: #999 1px solid;
+  border-radius: 1rem;
+  background-color: #ddd;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.class-results-card {
+  border-radius: 1rem;
+  padding: 4px;
+}
+
+.result-conflict {
+  background-color: #ffbdc0 !important;
+}
+
+.btn-secondary:disabled {
+  background-color: #313538 !important;
+}
+
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -242,5 +299,21 @@ input {
 
 ::-webkit-scrollbar-thumb:hover {
   background: gray; 
-/*>>>>>>> production*/
+}
+
+.schedule-select {
+  display: inline;
+}
+
+.course-details {
+  line-height: 1em;
+  font-size: 0.9rem;
+}
+
+.add-remove-course {
+  border: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  background: transparent;
+
 }

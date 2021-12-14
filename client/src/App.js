@@ -3,12 +3,11 @@ import Home from "./components/Home";
 
 
 import "./App.css";
-import Admin from "./Components/Admin";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import { readAllClasses } from "./utils/api/apis/classApi";
-
+import { readAllClasses } from "./utils/api";
+import React, { useEffect, useState } from "react";
+import FirebaseTest from "./components/FirebaseTest";
+import CreateSchedule from "./components/CreateSchedule";
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
@@ -17,13 +16,14 @@ function App() {
       setAllClasses(classes);
     });
   }, []);
-  console.log(allClasses);
+  //console.log(allClasses);
   return (
     <Router>
         <div className="App">
             <div className="App-body">
                 <Route exact path="/" component={Home} />
                 <Route exact path="/admin" component={Admin} />
+                <Route exact path="/createschedule" component={CreateSchedule} />
             </div>
         </div>
     </Router>
