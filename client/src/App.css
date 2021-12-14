@@ -23,7 +23,22 @@
 	font-family: sans;
 	color: white;
 }
+.schedules-box {
+	width: 100%;
+}
 
+.schedules-view {
+	width: 70%;
+	float: left;
+	height: 200%;
+	margin: 10px;
+}
+.schedules-sidenav {
+	width: 25%;
+	float: right;
+	height: 100px;
+	margin: 10px;
+}
 /* 
 .App-logo {
   height: 40vmin;
@@ -35,8 +50,6 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
-
 
 .App-link {
   color: #61dafb;
