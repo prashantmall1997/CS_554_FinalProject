@@ -36,3 +36,94 @@
     transform: rotate(360deg);
   }
 }
+
+body {
+  background-color: #ddd;
+  height: 100%;
+}
+
+.sidebar {
+  background-color: #333;
+  color: white;
+  width: 20%;
+  text-align: left;
+  font-size: 1.5em;
+  position: fixed;
+  float: left;
+	vertical-align: top;
+	height: 100vh;
+}
+
+.sidebar-text {
+  padding: 1.5rem;
+}
+
+.sidebar-button {
+  display: block;
+  text-decoration: none;
+  padding: 1.5rem;
+  color: white;
+  transition-duration: 1s;
+  cursor: pointer;
+}
+
+.sidebar-button:hover {
+  color: lightgrey;
+  background-color: black;
+  font-weight: bold;
+}
+
+.sidebar-button-active {
+  color: lightgrey;
+  background-color: black;
+}
+
+.topbar {
+  background-color: #BB0F17;
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: left;
+  overflow: hidden;
+  position: fixed;
+  height: 50px;
+  top: 0; 
+  width: 100%;
+  padding-left: 10px;
+  z-index: 1;
+}
+
+.main-content {
+  padding: 1.5rem;
+  margin-left: 20%;
+  margin-top: 50px;
+  width: 80%
+}
+
+.scroll-table {
+  overflow-y: scroll;
+  height: 300px;
+  margin: 10px;
+  border-radius: 20px;
+}
+
+.transparent-img {
+  background-color: #ddd;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #bbb; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #BB0F17; 
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: gray; 
+}
