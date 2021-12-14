@@ -1,4 +1,7 @@
-import logo from "./logo.svg";
+
+import Home from "./components/Home";
+
+
 import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { readAllClasses } from "./utils/api";
@@ -16,28 +19,13 @@ function App() {
   //console.log(allClasses);
   return (
     <Router>
-      <div className="App">
-        {/* <header className="App-header">
-          <div>
-            {allClasses.map((theClass) => {
-              return (
-                <>
-                  <p>ID: {theClass._id}</p>
-                  <p>courseTime: {theClass.courseTime}</p>
-                  <p>you get the point</p>
-                </>
-              );
-            })}
-            {/* <p>ID: {allClasses[0]._id}</p> */}
-            {/* <p>courseTime: {allClasses[0].courseTime}</p> */}
-            {/* <p>you get the point</p>
-          </div>
-        </header> 
-        <FirebaseTest /> */ }
+        <div className="App">
             <div className="App-body">
+                <Route exact path="/" component={Home} />
+                <Route exact path="/admin" component={Admin} />
                 <Route exact path="/createschedule" component={CreateSchedule} />
             </div>
-      </div>
+        </div>
     </Router>
   );
 }
