@@ -79,19 +79,20 @@ function SchedulesPage() {
 								image={stevenscardlogo}
 								alt="stevens logo"
 							/>
+
 							<CardContent>
 								<p>Term</p>
 								<p>Courses</p>
+								<CardActions>
+									<div>
+										<input type="checkbox" id="scales" name="scales" />
+										<label for="scales">Closed</label>
+										<input type="checkbox" id="scales" name="scales" />
+										<label for="scales">Cancelled</label>
+									</div>
+								</CardActions>
 								<p>Version 2.0 Copyright ©2021 Fantastic Five</p>
 							</CardContent>
-							<CardActions>
-								<div>
-									<input type="checkbox" id="scales" name="scales" />
-									<label for="scales">Closed</label>
-									<input type="checkbox" id="scales" name="scales" />
-									<label for="scales">Cancelled</label>
-								</div>
-							</CardActions>
 						</Card>
 					</div>
 				</div>
