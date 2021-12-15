@@ -1,11 +1,14 @@
+
 import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { readAllClasses } from "./utils/api/apis/classApi";
 import React, { useEffect, useState } from "react";
 import FirebaseTest from "./Components/FirebaseTest";
 import CreateSchedule from "./Components/CreateSchedule";
 import Admin from "./Components/Admin";
 import Home from "./Components/Home";
+import { readAllClasses } from "./utils/api";
+import UserProfile from './Components/UserProfile';
+
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
@@ -22,6 +25,7 @@ function App() {
           <Route exact path="/" component={Home} />
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/createschedule" component={CreateSchedule} />
+          <Route exact path="/userProfile/:username" component = { UserProfile } />
         </div>
       </div>
     </Router>

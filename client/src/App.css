@@ -38,8 +38,6 @@
 }
 
 body {
-
-/*<<<<<<< homepage*/
   background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
   background-color: black;
   background-size: cover;
@@ -317,3 +315,13 @@ input[type=radio]:checked {
   background: transparent;
 
 }
+
+/* .profileImage{
+  width: 0.5rem;
+  height: 5rem;
+} */
+
+.profileButtons {
+  padding: 1rem;
+}
+
