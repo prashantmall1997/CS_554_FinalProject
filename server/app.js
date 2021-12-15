@@ -7,7 +7,8 @@ const configRoutes = require("./routes");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+var cors = require('cors')
+app.use(cors())
 app.use('*', async(req, res, next) => {
   let date = new Date().toUTCString();
   let reqmethod = req.method;

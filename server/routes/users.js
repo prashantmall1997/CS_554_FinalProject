@@ -42,6 +42,7 @@ router.post("/readByUsername", async (req, res) => {
         //Takes in a username, finds the user object
         //returns the found object or null if not found
         let body = req.body;
+        console.log(body);
         if (body.constructor === Object && Object.keys(body).length === 0) throw new Error("must provide a request body");
         let username = body.username;
         if (!username) throw new Error("must provide a username");

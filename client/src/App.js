@@ -2,7 +2,7 @@ import './App.css';
 import { readAllClasses } from "./utils/api";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import userProfile from './components/userProfile';
+import UserProfile from './components/UserProfile';
 
 
 function App() {
@@ -15,10 +15,10 @@ function App() {
   console.log(allClasses);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      {/* <header className="App-header"> */}
+        {/* <img src={logo} className="App-logo" alt="logo" /> */}
         <div>
-          {allClasses.map((theClass) => {
+          {/* {allClasses.map((theClass) => {
             return(
               <>
                 <p>ID: {theClass._id}</p>
@@ -26,14 +26,14 @@ function App() {
                 <p>you get the point</p>
               </>
             );
-          })}
+          })} */}
           {/* <p>ID: {allClasses[0]._id}</p>
           <p>courseTime: {allClasses[0].courseTime}</p>
           <p>you get the point</p> */}
         </div>
-      </header>
+      {/* </header> */}
       <Router>
-          <Route exact path="/userProfile" component = { userProfile } />
+          <Route exact path="/userProfile/:username" component = { UserProfile } />
       </Router>
     </div>
   );
