@@ -1,15 +1,29 @@
 console.clear();
+
 require("./config/mongoConnection");
 require("dotenv").config();
+
 const express = require("express");
-const app = express();
+const cors = require("cors");
+
 const configRoutes = require("./routes");
+const firebase = require("./middlewares/firebase");
+
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var cors = require('cors')
-app.use(cors())
+
+app.use(
+  cors({
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+app.use("/firebaseTest", firebase.decodeToken);
+
+
 app.use('*', async(req, res, next) => {
+
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;

@@ -1,8 +1,13 @@
-import './App.css';
-import { readAllClasses } from "./utils/api";
-import React, { useEffect, useState } from "react";
+
+import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import UserProfile from './components/UserProfile';
+import React, { useEffect, useState } from "react";
+import FirebaseTest from "./Components/FirebaseTest";
+import CreateSchedule from "./Components/CreateSchedule";
+import Admin from "./Components/Admin";
+import Home from "./Components/Home";
+import { readAllClasses } from "./utils/api";
+import UserProfile from './Components/UserProfile';
 
 
 function App() {
@@ -12,30 +17,18 @@ function App() {
       setAllClasses(classes);
     });
   }, []);
-  console.log(allClasses);
+  //console.log(allClasses);
   return (
-    <div className="App">
-      {/* <header className="App-header"> */}
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <div>
-          {/* {allClasses.map((theClass) => {
-            return(
-              <>
-                <p>ID: {theClass._id}</p>
-                <p>courseTime: {theClass.courseTime}</p>
-                <p>you get the point</p>
-              </>
-            );
-          })} */}
-          {/* <p>ID: {allClasses[0]._id}</p>
-          <p>courseTime: {allClasses[0].courseTime}</p>
-          <p>you get the point</p> */}
-        </div>
-      {/* </header> */}
-      <Router>
+    <Router>
+      <div className="App">
+        <div className="App-body">
+          <Route exact path="/" component={Home} />
+          <Route exact path="/admin" component={Admin} />
+          <Route exact path="/createschedule" component={CreateSchedule} />
           <Route exact path="/userProfile/:username" component = { UserProfile } />
-      </Router>
-    </div>
+        </div>
+      </div>
+    </Router>
   );
 }
 
