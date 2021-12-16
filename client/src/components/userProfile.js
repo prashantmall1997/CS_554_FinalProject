@@ -112,7 +112,15 @@ function UserProfile(props) {
                 <br></br>
                 <Card>
                     <br />
-                    <Form id = "user-form" name = "user-form">
+                    <Form id="user-form" name="user-form">
+                         <Row>
+                            <Col lg={2} sm={2} md={2}>
+                                <Form.Label>CWID</Form.Label>
+                            </Col>
+                            <Col lg={10} sm={10} md={10}>
+                                <Form.Control id="cwid" type="number" placeholder="Enter CWID" defaultValue={userData.CWID} disabled = "true"/>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col lg={2} sm={2} md={2}>
                                 <Form.Label>Email Id</Form.Label>
@@ -140,14 +148,7 @@ function UserProfile(props) {
                             </Col>
                         </Row>
                         <br></br>
-                        <Row>
-                            <Col lg={2} sm={2} md={2}>
-                                <Form.Label>CWID</Form.Label>
-                            </Col>
-                            <Col lg={10} sm={10} md={10}>
-                                <Form.Control id="cwid" type="number" placeholder="Enter CWID" defaultValue={userData.CWID} disabled={ isDisabled}/>
-                            </Col>
-                        </Row>
+                       
                         <br></br>
                     
                         <Button className="profileButtons" variant="primary"  onClick = {handleEdit}>
