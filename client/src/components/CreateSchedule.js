@@ -1,15 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { useAsync } from "react-async";
 import "../App.css";
 import { Button, Row, Col, Card } from "react-bootstrap";
-import { readAllClasses, readSchedulesByUser } from "../utils/api";
+import { readAllClasses, readSchedulesByUser, addClassToSchedule, readClassById } from "../utils/api";
 import moment from "moment";
 
 export function CreateSchedule() {
-    const [activeSchedule, setActiveSchedule] = useState("");
+    //const [activeSchedule, setActiveSchedule] = useState("");
+    const [activeSchedule, setActiveSchedule] = useState({
+        _id: "",
+        name: "",
+        time: "",
+        creator: "",
+        classes: []
+    });
     const [allClasses, setAllClasses] = useState([]);
+    const [schedules, setSchedules] = useState([]);
+
+    // todo replace with actual id of logged in user
+    const userId = "61a7c026ebec6df893bd3b64";
+
     useEffect(() => {
         readAllClasses().then((classes) => {
         setAllClasses(classes);
+        });
+    }, []);
+    useEffect(() => { //todo replace with id of logged in user
+        readSchedulesByUser(userId).then((schedules) => {
+        setSchedules(schedules);
         });
     }, []);
     const [search, setSearch] = useState({
@@ -117,19 +135,6 @@ export function CreateSchedule() {
     const subjects = [...new Set(allClasses.map(item => item.coursePrefix))];
     const formats = [...new Set(allClasses.map(item => item.format))];
     const deliveryModes = [...new Set(allClasses.map(item => item.deliveryMode))];
-
-    let schedules = [
-        {
-            name: "Schedule1",
-            courses: [
-                allClasses[0]
-            ]
-        },
-        {
-            name: "Schedule2",
-            courses: []
-        }
-    ];
 
     const handleTextSearch = (e) => {
         setSearch({
@@ -259,19 +264,23 @@ export function CreateSchedule() {
 
     // filter out classes already in the selected schedule
     for (let i in schedules) {
-        if (schedules[i].name === activeSchedule) {
-            courses = courses.filter(val => !schedules[i].courses.includes(val));
+        if (schedules[i].name === activeSchedule.name) {
+            courses = courses.filter(val => !schedules[i].classes.includes(val));
         }
     }
 
-    const getTimes = (course) => {
+    const getTimes = (courseInfo) => {
         // initialize course time
         let times = {
             days: [],
             start: moment("12:00 AM", "h:mm A"),
             end: moment("12:00 AM", "h:mm A")
         }
-
+    
+        //const data = <GetClass id={courseInfo} />
+    
+          let course = {sectionDetails: "Monday | 12:00 AM - 3:00 AM"}
+    
         if (course.sectionDetails.includes("Monday")) times.days.push("Monday");
         if (course.sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
         if (course.sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
@@ -289,10 +298,10 @@ export function CreateSchedule() {
 
     const compareTimesWithActiveSchedule = (course) => {
         for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                for (let j in schedules[i].courses) {
-                    let existingTimes = getTimes(schedules[i].courses[j]);
-                    let courseTimes = getTimes(course)
+            if (schedules[i].name === activeSchedule.name) {
+                for (let j in schedules[i].classes) {
+                    let existingTimes = getTimes(schedules[i].classes[j]);
+                    let courseTimes = getTimes(course._id);
 
                     let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
                     let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
@@ -323,25 +332,55 @@ export function CreateSchedule() {
         return "";
     }
 
-    const scheduleSection = (scheduleName) => {
-        if (activeSchedule === scheduleName) {
-            return <Button variant="secondary" className="m-1" disabled>{scheduleName} (active)</Button>
+    const scheduleSection = (schedule) => {
+        if (activeSchedule.name === schedule.name) {
+            return <Button variant="secondary" className="m-1" disabled>{schedule.name} (active)</Button>
         } else {
-            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(scheduleName)}}>Select {scheduleName}</Button>
+            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(schedule)}}>Select {schedule.name}</Button>
+        }
+    }
+
+    const addRemoveButton = (course) => {
+        if (activeSchedule.classes.includes(course._id)) {
+            return (
+                <button 
+                    className="add-remove-course" 
+                    onClick={() => {removeClassFromSchedule(course._id)}}>
+                    <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
+                    Remove
+                </button>
+            );
+        } else {
+            return (
+                <button 
+                    className="add-remove-course" 
+                    onClick={() => {addToSchedule(course._id)}}>
+                    <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
+                    Add to schedule
+                    <br />
+                    {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
+                </button>
+            );
         }
     }
 
     const showSchedule = () => {
-        if (activeSchedule === "") {
+        if (activeSchedule.name === "") {
             return;
         } else {
             for (let i of schedules) {
-                if (i.name === activeSchedule) {
+                if (i.name === activeSchedule.name) {
+                    let scheduledClasses = [];
+                    for (let s of i.classes) {
+                        readClassById(s).then(function(result) {
+                            scheduledClasses.push(result);
+                        })
+                    }
                     return (
                         <div>
-                            <h2>Courses in {activeSchedule}</h2>
+                            <h2>Courses in {activeSchedule.name}</h2>
                             <Row xs={4}>
-                                {i.courses.map(course => 
+                                {scheduledClasses.map(course => 
                                     <Col className="p-2 mt-2">
                                         <Card className="class-results-card">
                                             <Card.Title>{course.courseTotal}</Card.Title>
@@ -372,18 +411,19 @@ export function CreateSchedule() {
         }
     }
 
-    const addClassToSchedule = (courseInfo) => {
+    const addToSchedule = (id) => {
         for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                schedules[i].courses.push(courseInfo);
+            if (schedules[i].name === activeSchedule.name) {
+                //schedules[i].courses.push(courseInfo);
+                addClassToSchedule(schedules[i]._id, id);
             }
         }
     }
 
-    const removeClassFromSchedule = (courseInfo) => {
+    const removeClassFromSchedule = (id) => {
         for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                schedules[i].courses = schedules[i].courses.filter(e => e.courseTotal !== courseInfo.courseTotal);
+            if (schedules[i].name === activeSchedule.name) {
+                //schedules[i].courses = schedules[i].courses.filter(e => e.courseTotal !== courseInfo.courseTotal);
             }
         }
     }
@@ -394,6 +434,7 @@ export function CreateSchedule() {
                 <Col xs={12} md={3}>
                     <form>
                         <h2>Search</h2>
+                        <label htmlFor="courseKeywords" />
                         <input 
                             onChange={(e) => handleTextSearch(e)} 
                             id="courseKeywords" 
@@ -404,9 +445,10 @@ export function CreateSchedule() {
                             <Card.Title className="text-center">Semester</Card.Title>
                             {semesters.map((semester) =>
                                 <div>
+                                    <label htmlFor={semester.replace(" ", "").toLowerCase} />
                                     <input 
                                         type="radio" 
-                                        id={semester.replace(" ", "").toLowerCase} 
+                                        id={semester.replace(" ", "").toLowerCase}
                                         name="semester"
                                         value={semester}
                                         onChange={(e) => handleSemesterSearch(e)} 
@@ -513,23 +555,24 @@ export function CreateSchedule() {
                             <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
                                 <Card.Title>{course.courseTotal}</Card.Title>
                                 <Card.Body>
-                                <Row xs={1} md={2}>
-                                    <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                                    <Row xs={1} md={2}>
+                                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
                                     </Row>
                                 </Card.Body>
                                 <Card.Footer>
-                                    <button 
+                                    {/* <button 
                                         className="add-remove-course" 
-                                        onClick={() => {addClassToSchedule(course)}}>
+                                        onClick={() => {addToSchedule(course)}}>
                                         <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
                                         Add to schedule
                                         <br />
                                         {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
-                                    </button>
+                                    </button> */}
+                                    {addRemoveButton(course)}
                                 </Card.Footer>
                             </Card>
                         </Col>
@@ -565,7 +608,7 @@ export function CreateSchedule() {
                     <h2>Select Schedule</h2>
                     {schedules.map((schedule) =>
                         <div className="schedule-select">
-                            {scheduleSection(schedule.name)}
+                            {scheduleSection(schedule)}
                         </div>
                     )}
                     {showSchedule()}
