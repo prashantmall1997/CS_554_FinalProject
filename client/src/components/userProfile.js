@@ -1,10 +1,9 @@
 import React,  { useEffect,useState} from 'react';
 import { Navbar, Nav, Button, Form, Row, Col, Card} from 'react-bootstrap';
-// import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBCard, MDBCardBody, MDBIcon } from 'mdbreact';
 import userProfileImage from '../assets/images/userProfile.jpeg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
-import axios from 'axios';
+import {readUserByUsername} from '../utils/api/apis/userApi.js';
  
 function UserProfile(props) {
     console.log("props "+props.match.params.username);
@@ -15,7 +14,7 @@ function UserProfile(props) {
     const [isDisabled, setIsDisabled] = useState(true);
    
     let email = document.getElementById('email');
-    let password = document.getElementById('password');
+    // let password = document.getElementById('password');
     let cwid = document.getElementById('cwid');
     let username = document.getElementById('username');
     
@@ -25,26 +24,24 @@ function UserProfile(props) {
 
     const handleUpdate = () => {
         console.log("new email " + email.value);
-        console.log("new email " + password.value);
-        console.log("new email " + cwid.value);
-        console.log("new email " + username.value);
+        // console.log("new password " + password.value);
+        console.log("new username " + username.value);
 
     };
 
     useEffect(() => {
         async function fetchData() {
             try { 
-                let reqBody = { username: props.match.params.username }
-                console.log(reqBody);
-                const { data: userData } = await axios.post('http://localhost:4000/users/readByUsername', reqBody);
+                let username = props.match.params.username;
+                const userData = await readUserByUsername(username);
 
-                if (userData.length === 0 || userData === undefined) {
+                if (userData ===  null || userData === undefined) {
                     setError(true);
                 } else {
                     console.log(userData)
                     setUserData(userData);
                 }
-                // console.log(data);
+                console.log(userData);
                 setLoading(false);
             } catch (error) {   
                 console.log(error);
@@ -82,10 +79,7 @@ function UserProfile(props) {
                     </Navbar.Collapse>
                 </Navbar>
                 <br></br>
-                {/* <p>
-
-                    {JSON.stringify(userData)}
-                </p> */}
+                
                 <Card>
                     <Row>
                         <Col lg={1} md={1} sm={1}>
@@ -121,6 +115,7 @@ function UserProfile(props) {
                                 <Form.Control id="cwid" type="number" placeholder="Enter CWID" defaultValue={userData.CWID} disabled = "true"/>
                             </Col>
                         </Row>
+                        <br/>
                         <Row>
                             <Col lg={2} sm={2} md={2}>
                                 <Form.Label>Email Id</Form.Label>
@@ -139,14 +134,14 @@ function UserProfile(props) {
                             </Col>
                         </Row>
                         <br></br>
-                        <Row>
+                        {/* <Row>
                             <Col lg={2} sm={2} md={2}>
                                 <Form.Label>Password</Form.Label>
                             </Col>
                             <Col lg={10} sm={10} md={10}>
                                 <Form.Control id = "password" type="password" placeholder="Password" disabled={ isDisabled}/>
                             </Col>
-                        </Row>
+                        </Row> */}
                         <br></br>
                        
                         <br></br>
