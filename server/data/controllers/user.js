@@ -153,6 +153,7 @@ const remove = async (username) => {
  */
 const update = async (username, email, CWID) => {
   try {
+    console.log("update in data");
     let updated = await User.updateOne(
       { CWID: CWID },
       { $set: { username: username, email: email } }
