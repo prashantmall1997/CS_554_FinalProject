@@ -133,4 +133,30 @@ router.post("/remove", async (req, res) => {
     }
 });
 
+router.post('/update', async (req, res) => {
+    try {
+        //Takes in username, email, cwid 
+        //returns the updated user 
+        let body = req.body;
+        if (body.constructor === Object && Object.keys(body).length === 0) throw new Error("must provide a request body");
+        
+        let newUsername = body.username;
+        let newEmail = body.email;
+       
+        if (!newUsername ) throw new Error("must provide a username");
+        if (typeof newUsername  != "string" || newUsername .replace(/\s/g, '') == "") throw new Error("username must be a valid string");
+
+        if (!newEmail) throw new Error("must provide an email");
+        if (typeof newEmail != "string" || newEmail.replace(/\s/g, '') == "") throw new Error("email must be a valid string");
+        
+        let data = await UserData.update(newUsername, newEmail, body.CWID);
+        res.json(data);
+    }
+    catch (err) {
+        res.json({ error: `${err}` });
+    }
+    
+})
+
+
 module.exports = router;

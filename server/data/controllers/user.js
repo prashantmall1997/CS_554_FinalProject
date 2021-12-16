@@ -144,6 +144,28 @@ const remove = async (username) => {
   }
 };
 
+/**
+ * Updates a user within the database
+ * @param {String} username The username of the user. Should be unique.
+ * @param {String} email User email also for account identification. Should also be unique.
+ * @param {String} CWID the users campus wide ID number in string form
+ * @returns the created object if updated
+ */
+const update = async (username, email, CWID) => {
+  try {
+    let updated = await User.updateOne(
+      { CWID: CWID },
+      { $addToSet: { username: username, email: email } }
+    ).exec();
+    if (updated.modifiedCount == 1) {
+      return true;
+    }
+    return false;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
 module.exports = {
   description: "User functions",
   create,
@@ -153,4 +175,5 @@ module.exports = {
   addSchedule,
   removeSchedule,
   remove,
+  update
 };
