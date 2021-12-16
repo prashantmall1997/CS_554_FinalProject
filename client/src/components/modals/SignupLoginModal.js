@@ -30,13 +30,13 @@ function SignupLoginModal(props) {
           <h2>Log in now to use SIT Scheduler!</h2>
           <div>
             <label htmlFor="email">
-              <input name="email" id="email" type="email" placeholder="Enter email" required />
+              <input className="auth" name="email" id="email" type="email" placeholder="Enter email" required />
             </label>
           </div>
           <br />
           <div>
             <label htmlFor="password">
-              <input name="password" id="password" type="password" placeholder="Enter password" required />
+              <input className="auth" name="password" id="password" type="password" placeholder="Enter password" required />
             </label>
           </div>
           <br />
@@ -55,19 +55,19 @@ function SignupLoginModal(props) {
             <h2>Register now to use SIT Scheduler!</h2>
           <div>
             <label htmlFor="email">
-              <input name="email" id="email" type="email" placeholder="Enter email" required />
+              <input className="auth" name="email" id="email" type="email" placeholder="Enter email" required />
             </label>
           </div>
           <br />
           <div>
             <label htmlFor="password">
-              <input name="password" id="password" type="password" placeholder="Enter password" required />
+              <input className="auth" name="password" id="password" type="password" placeholder="Enter password" required />
             </label>
           </div>
           <br />
           <div>
             <label htmlFor="password2">
-              <input name="password2" id="password2" type="password2" placeholder="Confirm password" required />
+              <input className="auth" name="password2" id="password2" type="password2" placeholder="Confirm password" required />
             </label>
           </div>
           <br />

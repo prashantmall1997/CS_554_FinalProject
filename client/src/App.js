@@ -8,6 +8,7 @@ import { readAllClasses } from "./utils/api";
 import React, { useEffect, useState } from "react";
 import FirebaseTest from "./components/FirebaseTest";
 import CreateSchedule from "./components/CreateSchedule";
+import Admin from "./components/Admin";
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
