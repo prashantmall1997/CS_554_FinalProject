@@ -38,6 +38,123 @@
 }
 
 body {
+
+/*<<<<<<< homepage*/
+  background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
+  background-color: black;
+  background-size: cover;
+  font-family: Geneva, Verdana, Tahoma, sans-serif;
+}
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.home-content {
+  align-self: center;
+  color: white;
+  text-shadow: 3px 3px black;
+}
+
+.login-button {
+  background-color: #9D1535;
+  color: white;
+}
+
+.login-button, .signup-button {
+  border-radius: 15px;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 2em;
+  transition-duration: 1s;
+  cursor: pointer;
+  margin-right: 5px;
+  margin-left: 5px;
+  outline-style: none;
+  border: 1px solid black;
+}
+
+.login-button:hover {
+  background-color: #111;
+  color: white;
+}
+
+.signup-button:hover {
+  background-color: #111;
+  color: white;
+}
+
+.modal-button {
+  border-radius: 15px;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1em;
+  transition-duration: 1s;
+  cursor: pointer;
+  margin-right: 5px;
+  margin-left: 5px;
+  outline-style: none;
+  border: 1px solid black;
+}
+
+.modal-button:hover {
+  background-color: #111;
+  color: white;
+}
+
+.modal-confirm-button {
+  background-color: #9D1535;
+  color: white;
+}
+
+.home-title {
+  font-size: 4em !important;
+}
+
+.home-modal {
+  background: #fff;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  position: relative;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open{
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close{
+  opacity: 0;
+}
+
+input {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 2px;
+  box-sizing: border-box;
+  font-size: 1.5em;
+  display: block;
+  width: 100%;
+  outline: none;
+  padding: 10px;
+
   background-color: #ddd;
   height: 100%;
 }
@@ -57,6 +174,7 @@ body {
 .sidebar-text {
   padding: 1.5rem;
   overflow-x: clip;
+
 }
 
 .sidebar-button {
@@ -104,6 +222,7 @@ body {
 .scroll-table {
   overflow-y: scroll;
   height: 200px;
+
   margin: 10px;
   border-radius: 20px;
 }
@@ -164,6 +283,7 @@ input[type=radio]:checked {
   background-color: #313538 !important;
 }
 
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -195,4 +315,5 @@ input[type=radio]:checked {
   font-weight: bold;
   font-size: 0.9rem;
   background: transparent;
+
 }
