@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useAsync } from "react-async";
 import "../App.css";
 import { Button, Row, Col, Card } from "react-bootstrap";
 import { readAllClasses, readSchedulesByUser, addClassToSchedule, readClassById } from "../utils/api";
@@ -373,15 +372,17 @@ export function CreateSchedule() {
                     let scheduledClasses = [];
                     for (let s of i.classes) {
                         readClassById(s).then(function(result) {
-                            scheduledClasses.push(result);
+                            return scheduledClasses.push(result);
+                            // console.log(scheduledClasses)
                         })
                     }
+                    
                     return (
                         <div>
                             <h2>Courses in {activeSchedule.name}</h2>
                             <Row xs={4}>
                                 {scheduledClasses.map(course => 
-                                    <Col className="p-2 mt-2">
+                                    <Col className="p-2 mt-2" key={course._id}>
                                         <Card className="class-results-card">
                                             <Card.Title>{course.courseTotal}</Card.Title>
                                             <Card.Body>
@@ -414,7 +415,6 @@ export function CreateSchedule() {
     const addToSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
-                //schedules[i].courses.push(courseInfo);
                 addClassToSchedule(schedules[i]._id, id);
             }
         }
@@ -423,7 +423,7 @@ export function CreateSchedule() {
     const removeClassFromSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
-                //schedules[i].courses = schedules[i].courses.filter(e => e.courseTotal !== courseInfo.courseTotal);
+                removeClassFromSchedule(schedules[i]._id, id)
             }
         }
     }
@@ -444,7 +444,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Semester</Card.Title>
                             {semesters.map((semester) =>
-                                <div>
+                                <div key={semester}>
                                     <label htmlFor={semester.replace(" ", "").toLowerCase} />
                                     <input 
                                         type="radio" 
@@ -461,7 +461,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Course Level</Card.Title>
                             {academicLevels.map((level) =>
-                                <div>
+                                <div key={level}>
                                     <input 
                                         type="checkbox" 
                                         id={level.replace(" ", "").toLowerCase} 
@@ -477,7 +477,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Subjects</Card.Title>
                             {subjects.map((subject) =>
-                                <div>
+                                <div key={subject}>
                                     <input 
                                         type="checkbox" 
                                         id={subject.replace(" ", "").toLowerCase} 
@@ -491,7 +491,7 @@ export function CreateSchedule() {
                         </Card>
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Status</Card.Title>
-                            <div>
+                            <div key="openstatus">
                                 <input 
                                     type="checkbox" 
                                     id="open"
@@ -502,7 +502,7 @@ export function CreateSchedule() {
                                 <label htmlFor="open">Open</label>
                                 <br />
                             </div>
-                            <div>
+                            <div key="closedstatus">
                                 <input 
                                     type="checkbox" 
                                     id="closed"
@@ -517,7 +517,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Formats</Card.Title>
                             {formats.map((format) =>
-                                <div>
+                                <div key={format}>
                                     <input 
                                         type="checkbox" 
                                         id={format.replace(" ", "").toLowerCase} 
@@ -533,7 +533,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Delivery Format</Card.Title>
                             {deliveryModes.map((deliveryMode) =>
-                                <div>
+                                <div key={deliveryMode}>
                                     <input 
                                         type="checkbox" 
                                         id={deliveryMode.replace(" ", "").toLowerCase} 
@@ -551,7 +551,7 @@ export function CreateSchedule() {
                 <Col xs={12} md={9}>
                     <h2>Courses</h2>
                     {courses.map(course => 
-                        <Col className="p-2 mt-2">
+                        <Col className="p-2 mt-2" key={course._id}>
                             <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
                                 <Card.Title>{course.courseTotal}</Card.Title>
                                 <Card.Body>
@@ -607,7 +607,7 @@ export function CreateSchedule() {
                     <h1>Create a Schedule</h1>
                     <h2>Select Schedule</h2>
                     {schedules.map((schedule) =>
-                        <div className="schedule-select">
+                        <div className="schedule-select" key={schedule}>
                             {scheduleSection(schedule)}
                         </div>
                     )}
