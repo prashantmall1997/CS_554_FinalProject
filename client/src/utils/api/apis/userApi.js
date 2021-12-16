@@ -1,7 +1,7 @@
 import apiClient from "../client";
 
 export const readAllUsers = async () => {
-    let data = await apiClient.get("/users/", payload);
+    let data = await apiClient.get("/users/");
     return data.data;
 }
 
@@ -64,5 +64,13 @@ export const updateUser = async(username, email, CWID) => {
         CWID: CWID
     }
     let data = await apiClient.post("/users/update", payload);
+    return data.data;
+}
+
+export const readUserByCWID = async(CWID) => {
+    let payload = {
+        CWID: CWID
+    }
+    let data = await apiClient.post("/users/readByCWID", payload);
     return data.data;
 }
