@@ -1,4 +1,4 @@
-console.clear();
+// console.clear();
 
 require("./config/mongoConnection");
 require("dotenv").config();
@@ -8,6 +8,14 @@ const cors = require("cors");
 
 const configRoutes = require("./routes");
 const firebase = require("./middlewares/firebase");
+
+const elasticsearch = require("elasticsearch");
+var connectionString = process.env.SEARCHBOX_URL;
+var client = new elasticsearch.Client({
+  host: connectionString,
+});
+console.log("connectionString -> " + connectionString);
+console.log("client -> " + client);
 
 const app = express();
 
