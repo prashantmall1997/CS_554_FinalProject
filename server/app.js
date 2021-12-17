@@ -1,4 +1,4 @@
-// console.clear();
+console.clear();
 
 require("./config/mongoConnection");
 require("dotenv").config();

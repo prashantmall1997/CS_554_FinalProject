@@ -8,9 +8,14 @@ import {
   onAuthStateChanged,
   signOut,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./../../config/firebase-config";
 import axios from "axios";
+import { createUser } from "./../../utils/api/index";
+
+const provider = new GoogleAuthProvider();
 
 ReactModal.setAppElement("#root");
 
@@ -30,21 +35,6 @@ function SignupLoginModal(props) {
     setUser(currentUser);
   });
 
-  useEffect(() => {
-    if (userLoginToken) {
-      fetchData(userLoginToken);
-    }
-  }, [userLoginToken]);
-
-  const fetchData = async (userToken) => {
-    const res = await axios.get("http://localhost:4000/firebaseTest", {
-      headers: {
-        Authorization: "Bearer " + userToken,
-      },
-    });
-    setData(res.data.data);
-  };
-
   const handleCloseModal = () => {
     setShowModal(true);
     props.handleClose(false);
@@ -52,7 +42,6 @@ function SignupLoginModal(props) {
 
   const loginForm = async (event) => {
     event.preventDefault();
-    // fill with login stuff
     try {
       const user = await signInWithEmailAndPassword(
         auth,
@@ -68,7 +57,6 @@ function SignupLoginModal(props) {
 
   const signupForm = async (event) => {
     event.preventDefault();
-    // fill with signup stuff
     try {
       const user = await createUserWithEmailAndPassword(
         auth,
@@ -77,15 +65,12 @@ function SignupLoginModal(props) {
       );
       console.log(user);
       if (user) {
-        const updateDbUser = await axios.post(
-          "http://localhost:4000/users/create",
-          {
-            username: registerEmail.split("@")[0],
-            email: registerEmail,
-            CWID: registerCwid,
-          }
+        const addToDb = await createUser(
+          registerEmail.split("$")[0],
+          registerEmail,
+          registerCwid
         );
-        console.log(updateDbUser);
+        console.log(addToDb);
       }
     } catch (error) {
       console.log(error.message);
@@ -94,9 +79,35 @@ function SignupLoginModal(props) {
 
   const forgotPassword = async (event) => {
     event.preventDefault();
-    // fill with signup stuff
     try {
       await sendPasswordResetEmail(auth, loginEmail);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const googleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const user = await signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // The email of the user's account used.
+          const email = error.email;
+          // The AuthCredential type that was used.
+          const credential = GoogleAuthProvider.credentialFromError(error);
+          // ...
+        });
     } catch (error) {
       console.log(error.message);
     }
@@ -141,6 +152,12 @@ function SignupLoginModal(props) {
         <br />
         <button className="modal-button modal-confirm-button" type="submit">
           Log in
+        </button>
+        <button
+          className="modal-button modal-confirm-button"
+          onClick={googleLogin}
+        >
+          Log in with Google
         </button>
         <button className="modal-button" onClick={handleCloseModal}>
           Cancel
