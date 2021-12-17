@@ -38,6 +38,7 @@ export function CreateSchedule() {
     const [search, setSearch] = useState({
         name: "",
         semester: "",
+        subjects: [],
         level: [],
         status: [],
         format: [],
@@ -145,6 +146,7 @@ export function CreateSchedule() {
         setSearch({
             name: e.target.value,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -156,6 +158,24 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: e.target.value,
+            subjects: search.subjects,
+            level: search.level,
+            status: search.status,
+            format: search.format,
+            deliveryMode: search.deliveryMode
+        });
+    };
+
+    const handleSubjectSearch = (e) => {
+        let arr = [...search.subjects, e.target.value];
+        if (search.subjects.includes(e.target.value)) {
+            arr = arr.filter(val => val !== e.target.value);
+        }
+
+        setSearch({
+            name: search.name,
+            semester: search.semester,
+            subjects: arr,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -172,6 +192,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: arr,
             status: search.status,
             format: search.format,
@@ -188,6 +209,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: arr,
             format: search.format,
@@ -204,6 +226,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: arr,
@@ -220,6 +243,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -235,9 +259,14 @@ export function CreateSchedule() {
       courses = courses.filter(val => val.courseTitle.toLowerCase().includes(courseSearch));
     }
     
-    courseSearch = search.semester.trim().toLowerCase();
+    courseSearch = search.semester;
     if (courseSearch.length > 0) {
-        courses = courses.filter(val => val.courseTime.toLowerCase().match(courseSearch));
+        courses = courses.filter(val => val.courseTime.match(courseSearch));
+    }
+    
+    courseSearch = search.subjects;
+    if (courseSearch.length > 0) {
+        courses = courses.filter(val => courseSearch.includes(val.coursePrefix));
     }
     
     courseSearch = search.level;
@@ -262,6 +291,7 @@ export function CreateSchedule() {
 
     // if there are no filters selected, don't show any classes -- that list will be looong
     if (search.name === "" && search.semester === "" &&
+        search.subjects.length === 0 &&
         search.level.length === 0 && search.status.length === 0 &&
         search.format.length === 0 && search.deliveryMode.length === 0) {
         courses = [];
@@ -352,8 +382,6 @@ export function CreateSchedule() {
         }
     }
 
-    console.log(activeSchedule)
-
     const scheduleSection = () => {
         if (schedules === null || schedules.length === 0) {
             return (<h3>No schedules exist yet</h3>);
@@ -393,7 +421,6 @@ export function CreateSchedule() {
     }
 
     const handleRemoveSchedule = (e) => {
-        console.log("who clicked you??")
         removeSchedule(activeSchedule._id);
         setActiveSchedule({
             _id: "",
@@ -414,7 +441,6 @@ export function CreateSchedule() {
                     for (let s of i.classes) {
                         readClassById(s).then(function(result) {
                             return scheduledClasses.push(result);
-                            // console.log(scheduledClasses)
                         })
                     }
                     
@@ -492,10 +518,10 @@ export function CreateSchedule() {
                             <Card.Title className="text-center">Semester</Card.Title>
                             {semesters.map((semester) =>
                                 <div key={`time-${semester}`}>
-                                    <label htmlFor={semester.replace(" ", "").toLowerCase} />
+                                    <label htmlFor={semester} />
                                     <input 
                                         type="radio" 
-                                        id={semester.replace(" ", "").toLowerCase}
+                                        id={semester}
                                         name="semester"
                                         value={semester}
                                         onChange={(e) => handleSemesterSearch(e)} 
@@ -530,6 +556,7 @@ export function CreateSchedule() {
                                         id={subject.replace(" ", "").toLowerCase} 
                                         name={subject.replace(" ", "").toLowerCase}
                                         value={subject}
+                                        onChange={(e) => handleSubjectSearch(e)}
                                     />
                                     <label htmlFor={subject.replace(" ", "").toLowerCase}>{subject}</label>
                                     <br />
