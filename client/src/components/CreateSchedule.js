@@ -23,6 +23,7 @@ export function CreateSchedule() {
     const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [schedules, setSchedules] = useState([]);
+    const [softRefresh, setSoftRefresh] = useState(false);
 
     // todo replace with actual id of logged in user
     const userId = "61a7c026ebec6df893bd3b64";
@@ -36,10 +37,9 @@ export function CreateSchedule() {
         readSchedulesByUser(userId).then((schedules) => {
         setSchedules(schedules);
         });
-    }, [activeClasses]);
+    }, []);
     useEffect(() => {
         if (activeSchedule._id !== "") {
-            console.log("in effect")
             readClassesBySchedule(activeSchedule._id).then((classes) => {
                 setActiveClasses(classes);
             })
@@ -55,96 +55,6 @@ export function CreateSchedule() {
         format: [],
         deliveryMode: []
     });
-
-    // todo move this elsewhere?
-    // function disciplineCodeMapping(fullName) {
-    //     switch (fullName) {
-    //         case "Accounting":
-    //             return "ACC";
-    //         case "Applied Artificial Intelligence":
-    //             return "AAI";
-    //         case "Biomedical Engineering":
-    //             return "BME";
-    //         case "Business and Technology":
-    //             return "BT";
-    //         case "Business Intelligence and Analytics":
-    //             return "BIA";
-    //         case "Civil Engineering":
-    //             return "CE";
-    //         case "Chemistry":
-    //             return "CH";
-    //         case "Chemical Engineering":
-    //             return "CHE";
-    //         case "Construction Management":
-    //             return "CM";
-    //         case "College of Arts and Letters":
-    //             return "CAL";
-    //         case "Professional Communications":
-    //             return "COMM";
-    //         case "Computer Engineering":
-    //             return "CPE";
-    //         case "Computer Science":
-    //             return "CS";
-    //         case "Dean's Office":
-    //             return "DEAN";
-    //         case "Mechanical Engineering":
-    //             return "ME";
-    //         case "Electrical Engineering":
-    //             return "EE";
-    //         case "Management":
-    //             return "MGT";
-    //         case "Financial Engineering":
-    //             return "FE";
-    //         case "Information Systems":
-    //             return "MIS";
-    //         case "Systems Engineering":
-    //             return "SYS";
-    //         case "Physics and Engineering Physics":
-    //             return "PEP";
-    //         case "Materials Engineering":
-    //             return "MT";
-    //         case "Ocean Engineering":
-    //             return "OE";
-    //         case "Environmental Engineering":
-    //             return "EN";
-    //         case "Finance":
-    //             return "FIN";
-    //         case "Mathematics":
-    //             return "MA";
-    //         case "Networked Information Systems":
-    //             return "NIS";
-    //         case "Executive Management of Technology":
-    //             return "EMT";
-    //         case "Software Engineering":
-    //             return "SSW";
-    //         case "Pharmaceutical Manufacturing":
-    //             return "PME";
-    //         case "Engineering Management":
-    //             return "EM";
-    //         case "Financial Analytics":
-    //             return "FA";
-    //         case "Sustainability Management":
-    //             return "SM";
-    //         case "English Language and Communication":
-    //             return "ELC";
-    //         case "Biology":
-    //             return "BIO";
-    //         case "Telecommunications Management":
-    //             return "TM";
-    //         case "Nanotechnology":
-    //             return "NANO";
-    //         case "Service Oriented Computing":
-    //             return "SOC";
-    //         case "Integrated Product Development":
-    //             return "IPD";
-    //         case "Provost":
-    //             return "PRV";
-    //         case "Enterprise Systems":
-    //             return "ES";
-    //         case "Bioengineering":
-    //             return "BIOE";
-    //     }
-    // }
     
     // get distinct values to populate the search options
     const academicLevels = [...new Set(allClasses.map(item => item.courseLevel))];
@@ -309,13 +219,13 @@ export function CreateSchedule() {
     }
 
     // filter out classes already in the selected schedule
-    for (let i in schedules) {
-        if (schedules[i].name === activeSchedule.name) {
-            courses = courses.filter(val => !schedules[i].classes.includes(val));
+    if (activeSchedule._id !== "") {
+        for (let cl in activeClasses) {
+            courses = courses.filter(val => cl._id !== val._id);
         }
     }
 
-    const getTimes = (courseInfo) => {
+    const getTimes = (sectionDetails) => {
         // initialize course time
         let times = {
             days: [],
@@ -323,19 +233,15 @@ export function CreateSchedule() {
             end: moment("12:00 AM", "h:mm A")
         }
     
-        //const data = <GetClass id={courseInfo} />
-    
-          let course = {sectionDetails: "Monday | 12:00 AM - 3:00 AM"}
-    
-        if (course.sectionDetails.includes("Monday")) times.days.push("Monday");
-        if (course.sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
-        if (course.sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
-        if (course.sectionDetails.includes("Thursday")) times.days.push("Thursday");
-        if (course.sectionDetails.includes("Friday")) times.days.push("Friday");
-        if (course.sectionDetails.includes("Saturday")) times.days.push("Saturday");
-        if (course.sectionDetails.includes("Sunday")) times.days.push("Sunday");
+        if (sectionDetails.includes("Monday")) times.days.push("Monday");
+        if (sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
+        if (sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
+        if (sectionDetails.includes("Thursday")) times.days.push("Thursday");
+        if (sectionDetails.includes("Friday")) times.days.push("Friday");
+        if (sectionDetails.includes("Saturday")) times.days.push("Saturday");
+        if (sectionDetails.includes("Sunday")) times.days.push("Sunday");
         
-        let timeRange = course.sectionDetails.substring(course.sectionDetails.lastIndexOf("|") + 1);
+        let timeRange = sectionDetails.substring(sectionDetails.lastIndexOf("|") + 1);
         times.start = moment(timeRange.split("-")[0], "h:mm A");
         times.end = moment(timeRange.split("-")[1], "h:mm A");
 
@@ -343,36 +249,43 @@ export function CreateSchedule() {
     }
 
     const compareTimesWithActiveSchedule = (course) => {
-        for (let i in schedules) {
-            if (schedules[i].name === activeSchedule.name) {
-                for (let j in schedules[i].classes) {
-                    let existingTimes = getTimes(schedules[i].classes[j]);
-                    let courseTimes = getTimes(course._id);
+        let conflicts = [];
+        for (let i in activeClasses) {
+            let existingTimes = getTimes(activeClasses[i].sectionDetails);
+            let courseTimes = getTimes(course.sectionDetails);
 
-                    let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
-                    let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
-                    let start2 = courseTimes.start.hour() + courseTimes.start.minute()/60;
-                    let end2 = courseTimes.end.hour() + courseTimes.end.minute()/60;
-       
-                    const overlappingDays = courseTimes.days.filter(day => existingTimes.days.includes(day));
+            let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
+            let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
+            let start2 = courseTimes.start.hour() + courseTimes.start.minute()/60;
+            let end2 = courseTimes.end.hour() + courseTimes.end.minute()/60;
 
-                    if (overlappingDays.length === 0) {
-                        return "";
-                    }
+            const overlappingDays = courseTimes.days.filter(day => existingTimes.days.includes(day));
 
-                    // todo need to check this logic to make sure it catches the right overlaps
-                    if (start1 <= start2 && end1 > start2) {
-                        return "result-conflict";
-                    } else if (start1 < end2 && end1 > end2) {
-                        return "result-conflict";
-                    } else if (start2 <= start1 && end2 > start1) {
-                        return "result-conflict";
-                    } else if (start2 < end1 && end2 > end1) {
-                        return "result-conflict";
-                    } else { 
-                        return "";
-                    }
-                }
+            conflicts.push({
+                overlappingDays: overlappingDays,
+                start1: start1,
+                end1: end1,
+                start2: start2,
+                end2: end2
+            })
+        }
+        
+        if (conflicts.length === 0) {
+            return "";
+        }
+
+        // todo check extensively to make sure this logic is right
+        for (let conflict of conflicts) {
+            if (conflict.overlappingDays.length !== 0) {
+                if (conflict.start1 <= conflict.start2 && conflict.end1 > conflict.start2) {
+                    return "result-conflict";
+                } else if (conflict.start1 < conflict.end2 && conflict.end1 > conflict.end2) {
+                    return "result-conflict";
+                } else if (conflict.start2 <= conflict.start1 && conflict.end2 > conflict.start1) {
+                    return "result-conflict";
+                } else if (conflict.start2 < conflict.end1 && conflict.end2 > conflict.end1) {
+                    return "result-conflict";
+                } 
             }
         }
         return "";
@@ -432,7 +345,7 @@ export function CreateSchedule() {
     }
 
     const handleRemoveSchedule = (e) => {
-        removeSchedule(activeSchedule._id);
+        setSoftRefresh(!softRefresh);
         setActiveSchedule({
             _id: "",
             name: "",
@@ -440,6 +353,7 @@ export function CreateSchedule() {
             creator: "",
             classes: []
         });
+        removeSchedule(activeSchedule._id);
     }
 
     const showSchedule = () => {
@@ -448,11 +362,9 @@ export function CreateSchedule() {
         } else {
             for (let i of schedules) {
                 if (i.name === activeSchedule.name) {
-                    console.log(activeSchedule)
-                    console.log(activeClasses)
                     return (
                         <div>
-                            <h2>Courses in {activeSchedule.name}</h2>
+                            <h2>Courses in "{activeSchedule.name}"</h2>
                             <Button variant="danger" onClick={(e) => handleRemoveSchedule(e)}>Delete Schedule</Button>
                             <Row xs={4}>
                                 {activeClasses.map(course => 
@@ -489,24 +401,25 @@ export function CreateSchedule() {
     const addToSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
+                setSoftRefresh(!softRefresh);
                 addClassToSchedule(schedules[i]._id, id);
             }
         }
-        window.location.reload(false); // todo why doesn't a state change refresh the page??
     }
 
     const removeFromSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
-                removeClassFromSchedule(schedules[i]._id, id)
+                setSoftRefresh(!softRefresh);
+                removeClassFromSchedule(schedules[i]._id, id);
             }
         }
-        window.location.reload(false); // todo why doesn't a state change refresh the page??
     }
 
     const handleAddSchedule = (e) => {
+        setSoftRefresh(!softRefresh)
         createSchedule(e.target.form[0].value, e.target.form[1].value, userId); // todo replace userId with actual user
-        window.location.reload(false); // todo why doesn't a state change refresh the page??
+        setSoftRefresh(!softRefresh)
     }
 
     const courseForm = () => {
@@ -646,14 +559,6 @@ export function CreateSchedule() {
                                     </Row>
                                 </Card.Body>
                                 <Card.Footer>
-                                    {/* <button 
-                                        className="add-remove-course" 
-                                        onClick={() => {addToSchedule(course)}}>
-                                        <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
-                                        Add to schedule
-                                        <br />
-                                        {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
-                                    </button> */}
                                     {addRemoveButton(course)}
                                 </Card.Footer>
                             </Card>
@@ -687,9 +592,9 @@ export function CreateSchedule() {
             <div className="main-content">
                 <div>
                     <h1>Create a Schedule</h1>
-                    <h2>Select Schedule</h2>
+                    <h2>Add New Schedule</h2>
                     <form>
-                        <label htmlFor="addSchedule">Create new schedule: </label>
+                        <label htmlFor="addSchedule" />
                         <input 
                             id="addSchedule" 
                             name="addSchedule" 
@@ -713,6 +618,7 @@ export function CreateSchedule() {
                             onClick={(e) => {handleAddSchedule(e)}}
                         >Create</Button>
                     </form>
+                    <h2>Select Existing Schedule</h2>
                     {scheduleSection()}
                     {showSchedule()}
                     <br />
