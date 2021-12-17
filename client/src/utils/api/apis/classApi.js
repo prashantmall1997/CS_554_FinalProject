@@ -1,8 +1,12 @@
 import apiClient from "../client";
 
 export const readAllClasses = async () => {
-    let data = await apiClient.get("/classes/");
-    return data.data;
+    try {
+        let data = await apiClient.get("/classes/");
+        return data.data;
+    } catch(error) {
+        console.log(error.message);
+    }
 };
 
 export const createClass = async (courseTime, courseLevel, courseTotal, coursePrefix, courseCode, courseSection, courseTitle, sectionStatus, instructor, sectionDetails, campus, format, deliveryMode, enrolledCapacity) => {
@@ -82,4 +86,19 @@ export const removeClassById = async(id) => {
 export const removeAllClasses = async() => {
     let data = await apiClient.get("/classes/removeAll");
     return data.data;
+}
+
+export const readClassesBySchedule = async(id) => {
+    let payload = {
+        id: id
+    }
+    let data = await apiClient.post("/schedules/readById", payload);
+    let schedule = data.data;
+    if(schedule.error) return null;
+    let classes = [];
+    for(let classId of schedule.classes) {
+        let thisClass = await readClassById(classId);
+        classes.push(thisClass);
+    }
+    return classes;
 }

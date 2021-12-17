@@ -1,14 +1,34 @@
 console.clear();
+
 require("./config/mongoConnection");
 require("dotenv").config();
+
 const express = require("express");
-const app = express();
+const cors = require("cors");
+
 const configRoutes = require("./routes");
+const firebase = require("./middlewares/firebase");
+
+const elasticsearch = require("elasticsearch");
+var connectionString = process.env.SEARCHBOX_URL;
+var client = new elasticsearch.Client({
+  host: connectionString,
+});
+console.log("connectionString -> " + connectionString);
+console.log("client -> " + client);
+
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+app.use("/firebaseTest", firebase.decodeToken);
 
-app.use('*', async(req, res, next) => {
+app.use("*", async (req, res, next) => {
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;
