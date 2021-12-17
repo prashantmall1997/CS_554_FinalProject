@@ -13,7 +13,7 @@ import "../App.css";
 // } from "@syncfusion/ej2-react-schedule";
 import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";	
+import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import stevenscardlogo from "../img/stevenslogo.png";
@@ -109,7 +109,11 @@ function SchedulesPage() {
 					<h1> Schedule Courses</h1>
 					<Link className="profilepagelink" to="/profilepage">
 						Profile Page
+					</Link>{" "}
+					<Link className="profilepagelink" to="/createschedule">
+						Create New Schedule
 					</Link>
+					{/* username and CWID is to be added , need to call the parser function for timing from create schedule */}
 				</div>
 				<br />
 				<div>
@@ -144,21 +148,37 @@ function SchedulesPage() {
 							<CardContent>
 								<p>Term</p>
 								<Dropdown>
-									<Dropdown.Toggle variant="success">Open Menu</Dropdown.Toggle>
+									<Dropdown.Toggle variant="success">
+										Select Term
+									</Dropdown.Toggle>
 									<Dropdown.Menu>
-										<Dropdown.Item href="#">Home Page</Dropdown.Item>
-										<Dropdown.Item href="#">Settings</Dropdown.Item>
-										<Dropdown.Item href="#">Logout</Dropdown.Item>
+										<Dropdown.Item href="#">Spring 2021</Dropdown.Item>
+										<Dropdown.Item href="#">Fall 2021</Dropdown.Item>
+										<Dropdown.Item href="#">Spring 2022</Dropdown.Item>
+										<Dropdown.Item href="#">And more terms...</Dropdown.Item>
 									</Dropdown.Menu>
 								</Dropdown>
 								<p>Courses</p>
+								<Dropdown>
+									<Dropdown.Toggle variant="success">
+										Select Courses
+									</Dropdown.Toggle>
+									<Dropdown.Menu>
+										<Dropdown.Item href="#">CS 546</Dropdown.Item>
+										<Dropdown.Item href="#">CS 555</Dropdown.Item>
+										<Dropdown.Item href="#">CS 545</Dropdown.Item>
+										<Dropdown.Item href="#">CS 554</Dropdown.Item>
+										<Dropdown.Item href="#">CS 570</Dropdown.Item>
+										<Dropdown.Item href="#">CS 561</Dropdown.Item>
+										<Dropdown.Item href="#">And more courses...</Dropdown.Item>
+									</Dropdown.Menu>
+								</Dropdown>
+								<br />
 								<CardActions>
-									<div>
-										<input type="checkbox" id="scales" name="scales" />
-										<label for="scales">Closed</label>
-										<input type="checkbox" id="scales" name="scales" />
-										<label for="scales">Cancelled</label>
-									</div>
+									<input type="checkbox" id="scales" name="scales" />
+									<label for="scales">Closed</label>
+									<input type="checkbox" id="scales" name="scales" />
+									<label for="scales">Cancelled</label>
 								</CardActions>
 								<p>Version 2.0 Copyright ©2021 Fantastic Five</p>
 							</CardContent>
