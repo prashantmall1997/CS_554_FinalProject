@@ -24,7 +24,7 @@ function App() {
 						<Route exact path="/" component={Home} />
 						<Route exact path="/admin" component={Admin} />
 						<Route exact path="/createschedule" component={CreateSchedule} />
-						<Route exact path="/schedulespage" component={SchedulesPage} />
+						<Route exact path="/schedules" component={SchedulesPage} />
 					</Switch>
 				</div>
 			</div>
