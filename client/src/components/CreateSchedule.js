@@ -12,7 +12,6 @@ import {
 import moment from "moment";
 
 export function CreateSchedule() {
-    //const [activeSchedule, setActiveSchedule] = useState("");
     const [activeSchedule, setActiveSchedule] = useState({
         _id: "",
         name: "",
@@ -342,9 +341,18 @@ export function CreateSchedule() {
         if (activeSchedule.name === schedule.name) {
             return <Button variant="secondary" className="m-1" disabled>{schedule.name} (active)</Button>
         } else {
-            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(schedule)}}>Select {schedule.name}</Button>
+            const active = {
+                _id: schedule._id,
+                name: schedule.name,
+                time: schedule.time,
+                creator: schedule.creator,
+                classes: schedule.classes
+            }
+            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(active)}}>Select {schedule.name}</Button>
         }
     }
+
+    console.log(activeSchedule)
 
     const scheduleSection = () => {
         if (schedules === null || schedules.length === 0) {
@@ -384,6 +392,18 @@ export function CreateSchedule() {
         }
     }
 
+    const handleRemoveSchedule = (e) => {
+        console.log("who clicked you??")
+        removeSchedule(activeSchedule._id);
+        setActiveSchedule({
+            _id: "",
+            name: "",
+            time: "",
+            creator: "",
+            classes: []
+        });
+    }
+
     const showSchedule = () => {
         if (activeSchedule.name === "") {
             return;
@@ -401,7 +421,7 @@ export function CreateSchedule() {
                     return (
                         <div>
                             <h2>Courses in {activeSchedule.name}</h2>
-                            <Button variant="danger" onClick={handleRemoveSchedule()}>Delete Schedule</Button>
+                            <Button variant="danger" onClick={(e) => handleRemoveSchedule(e)}>Delete Schedule</Button>
                             <Row xs={4}>
                                 {scheduledClasses.map(course => 
                                     <Col className="p-2 mt-2" key={`schedule-${course._id}`}>
@@ -453,17 +473,6 @@ export function CreateSchedule() {
     const handleAddSchedule = (e) => {
         createSchedule(e.target.form[0].value, e.target.form[1].value, userId); // todo replace userId with actual user
         window.location.reload(false); // todo why doesn't a state change refresh the page??
-    }
-
-    const handleRemoveSchedule = () => {
-        removeSchedule(activeSchedule._id);
-        setActiveSchedule({
-            _id: "",
-            name: "",
-            time: "",
-            creator: "",
-            classes: []
-        });
     }
 
     const courseForm = () => {
