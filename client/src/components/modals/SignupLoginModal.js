@@ -123,6 +123,7 @@ function SignupLoginModal(props) {
           <label htmlFor="email">
             <input
               name="email"
+              className="auth"
               id="email"
               type="email"
               placeholder="Enter email"
@@ -138,6 +139,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password">
             <input
               name="password"
+              className="auth"
               id="password"
               type="password"
               placeholder="Enter password"
@@ -175,6 +177,7 @@ function SignupLoginModal(props) {
           <label htmlFor="email">
             <input
               name="email"
+              className="auth"
               id="email"
               type="email"
               placeholder="Enter email"
@@ -205,6 +208,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password">
             <input
               name="password"
+              className="auth"
               id="password"
               type="password"
               placeholder="Enter password"
@@ -217,6 +221,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password2">
             <input
               name="password2"
+              className="auth"
               id="password2"
               type="password"
               placeholder="Confirm password"

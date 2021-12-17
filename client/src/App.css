@@ -40,7 +40,22 @@
 	margin: 10px;
 }
 
+/* This Git Conflict has to be manually fixed */
 body {
+/* <<<<<<< createschedule */
+  font-family: Geneva, Verdana, Tahoma, sans-serif;
+}
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
+  background-color: black;
+  background-size: cover;
+/* ======= */
 	background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
 	background-color: black;
 	background-size: cover;
@@ -53,6 +68,7 @@ body {
 	align-items: center;
 	text-align: center;
 	min-height: 100vh;
+/* >>>>>>> production */
 }
 
 .home-content {
@@ -146,7 +162,7 @@ body {
 	opacity: 0;
 }
 
-input {
+input.auth {
 	background: #fff;
 	border: 1px solid #dbdbdb;
 	border-radius: 2px;

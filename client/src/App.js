@@ -1,5 +1,5 @@
 import "./App.css";
-import { readAllClasses } from "./utils/api/apis/classApi";
+import { readAllClasses, readClassesBySchedule } from "./utils/api/apis/classApi";
 import React, { useEffect, useState } from "react";
 import FirebaseTest from "./Components/FirebaseTest";
 import CreateSchedule from "./Components/CreateSchedule";
