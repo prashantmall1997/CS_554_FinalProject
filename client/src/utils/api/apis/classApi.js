@@ -87,3 +87,19 @@ export const removeAllClasses = async() => {
     let data = await apiClient.get("/classes/removeAll");
     return data.data;
 }
+
+export const readClassesBySchedule = async(id) => {
+    let payload = {
+        id: id
+    }
+    let data = await apiClient.post("/schedules/readById", payload);
+    let schedule = data.data;
+    console.log(schedule);
+    let classes = [];
+    for(let classId of schedule.classes) {
+        console.log(classId);
+        let thisClass = await readClassById(classId);
+        classes.push(thisClass);
+    }
+    return classes;
+}
