@@ -5,9 +5,10 @@ import {
     readAllClasses, 
     readSchedulesByUser, 
     addClassToSchedule, 
-    readClassById,
+    readClassesBySchedule,
     createSchedule,
-    removeSchedule
+    removeSchedule,
+    removeClassFromSchedule
 } from "../utils/api";
 import moment from "moment";
 
@@ -19,6 +20,7 @@ export function CreateSchedule() {
         creator: "",
         classes: []
     });
+    const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [schedules, setSchedules] = useState([]);
 
@@ -34,7 +36,16 @@ export function CreateSchedule() {
         readSchedulesByUser(userId).then((schedules) => {
         setSchedules(schedules);
         });
-    }, []);
+    }, [activeClasses]);
+    useEffect(() => {
+        if (activeSchedule._id !== "") {
+            console.log("in effect")
+            readClassesBySchedule(activeSchedule._id).then((classes) => {
+                setActiveClasses(classes);
+            })
+        }
+      }, [activeSchedule._id]);
+
     const [search, setSearch] = useState({
         name: "",
         semester: "",
@@ -401,7 +412,7 @@ export function CreateSchedule() {
             return (
                 <button 
                     className="add-remove-course" 
-                    onClick={() => {removeClassFromSchedule(course._id)}}>
+                    onClick={() => {removeFromSchedule(course._id)}}>
                     <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
                     Remove
                 </button>
@@ -437,19 +448,14 @@ export function CreateSchedule() {
         } else {
             for (let i of schedules) {
                 if (i.name === activeSchedule.name) {
-                    let scheduledClasses = [];
-                    for (let s of i.classes) {
-                        readClassById(s).then(function(result) {
-                            return scheduledClasses.push(result);
-                        })
-                    }
-                    
+                    console.log(activeSchedule)
+                    console.log(activeClasses)
                     return (
                         <div>
                             <h2>Courses in {activeSchedule.name}</h2>
                             <Button variant="danger" onClick={(e) => handleRemoveSchedule(e)}>Delete Schedule</Button>
                             <Row xs={4}>
-                                {scheduledClasses.map(course => 
+                                {activeClasses.map(course => 
                                     <Col className="p-2 mt-2" key={`schedule-${course._id}`}>
                                         <Card className="class-results-card">
                                             <Card.Title>{course.courseTotal}</Card.Title>
@@ -463,7 +469,7 @@ export function CreateSchedule() {
                                             <Card.Footer>
                                                 <button 
                                                     className="add-remove-course" 
-                                                    onClick={() => {removeClassFromSchedule(course)}}>
+                                                    onClick={() => {removeFromSchedule(course._id)}}>
                                                     <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
                                                     Remove
                                                 </button>
@@ -486,14 +492,16 @@ export function CreateSchedule() {
                 addClassToSchedule(schedules[i]._id, id);
             }
         }
+        window.location.reload(false); // todo why doesn't a state change refresh the page??
     }
 
-    const removeClassFromSchedule = (id) => {
+    const removeFromSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
                 removeClassFromSchedule(schedules[i]._id, id)
             }
         }
+        window.location.reload(false); // todo why doesn't a state change refresh the page??
     }
 
     const handleAddSchedule = (e) => {

@@ -9,16 +9,7 @@ import Home from "./components/Home";
 
 function App() {
   const [allClasses, setAllClasses] = useState([]);
-  useEffect(() => {
-    // readAllClasses().then((classes) => {
-    //   setAllClasses(classes);
-    // });
-    readClassesBySchedule("61bbec42c07e3ad153e05946").then((classes) => {
-      setAllClasses(classes);
-      console.log(classes);
-    })
-  }, []);
-  //console.log(allClasses);
+
   return (
     <Router>
       <div className="App">
