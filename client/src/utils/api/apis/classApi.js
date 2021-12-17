@@ -94,6 +94,7 @@ export const readClassesBySchedule = async(id) => {
     }
     let data = await apiClient.post("/schedules/readById", payload);
     let schedule = data.data;
+    if(schedule.error) return null;
     let classes = [];
     for(let classId of schedule.classes) {
         let thisClass = await readClassById(classId);
