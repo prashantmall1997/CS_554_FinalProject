@@ -1,115 +1,60 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
 import { Button, Row, Col, Card } from "react-bootstrap";
-import { readAllClasses, readSchedulesByUser } from "../utils/api";
+import { 
+    readAllClasses, 
+    readSchedulesByUser, 
+    addClassToSchedule, 
+    readClassesBySchedule,
+    createSchedule,
+    removeSchedule,
+    removeClassFromSchedule
+} from "../utils/api";
 import moment from "moment";
 
 export function CreateSchedule() {
-    const [activeSchedule, setActiveSchedule] = useState("");
+    const [activeSchedule, setActiveSchedule] = useState({
+        _id: "",
+        name: "",
+        time: "",
+        creator: "",
+        classes: []
+    });
+    const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
+    const [schedules, setSchedules] = useState([]);
+    const [softRefresh, setSoftRefresh] = useState(false);
+
+    // todo replace with actual id of logged in user
+    const userId = "61a7c026ebec6df893bd3b64";
+
     useEffect(() => {
         readAllClasses().then((classes) => {
         setAllClasses(classes);
         });
     }, []);
+    useEffect(() => { //todo replace with id of logged in user
+        readSchedulesByUser(userId).then((schedules) => {
+        setSchedules(schedules);
+        });
+    }, []);
+    useEffect(() => {
+        if (activeSchedule._id !== "") {
+            readClassesBySchedule(activeSchedule._id).then((classes) => {
+                setActiveClasses(classes);
+            })
+        }
+      }, [activeSchedule._id]);
+
     const [search, setSearch] = useState({
         name: "",
         semester: "",
+        subjects: [],
         level: [],
         status: [],
         format: [],
         deliveryMode: []
     });
-
-    // todo move this elsewhere?
-    // function disciplineCodeMapping(fullName) {
-    //     switch (fullName) {
-    //         case "Accounting":
-    //             return "ACC";
-    //         case "Applied Artificial Intelligence":
-    //             return "AAI";
-    //         case "Biomedical Engineering":
-    //             return "BME";
-    //         case "Business and Technology":
-    //             return "BT";
-    //         case "Business Intelligence and Analytics":
-    //             return "BIA";
-    //         case "Civil Engineering":
-    //             return "CE";
-    //         case "Chemistry":
-    //             return "CH";
-    //         case "Chemical Engineering":
-    //             return "CHE";
-    //         case "Construction Management":
-    //             return "CM";
-    //         case "College of Arts and Letters":
-    //             return "CAL";
-    //         case "Professional Communications":
-    //             return "COMM";
-    //         case "Computer Engineering":
-    //             return "CPE";
-    //         case "Computer Science":
-    //             return "CS";
-    //         case "Dean's Office":
-    //             return "DEAN";
-    //         case "Mechanical Engineering":
-    //             return "ME";
-    //         case "Electrical Engineering":
-    //             return "EE";
-    //         case "Management":
-    //             return "MGT";
-    //         case "Financial Engineering":
-    //             return "FE";
-    //         case "Information Systems":
-    //             return "MIS";
-    //         case "Systems Engineering":
-    //             return "SYS";
-    //         case "Physics and Engineering Physics":
-    //             return "PEP";
-    //         case "Materials Engineering":
-    //             return "MT";
-    //         case "Ocean Engineering":
-    //             return "OE";
-    //         case "Environmental Engineering":
-    //             return "EN";
-    //         case "Finance":
-    //             return "FIN";
-    //         case "Mathematics":
-    //             return "MA";
-    //         case "Networked Information Systems":
-    //             return "NIS";
-    //         case "Executive Management of Technology":
-    //             return "EMT";
-    //         case "Software Engineering":
-    //             return "SSW";
-    //         case "Pharmaceutical Manufacturing":
-    //             return "PME";
-    //         case "Engineering Management":
-    //             return "EM";
-    //         case "Financial Analytics":
-    //             return "FA";
-    //         case "Sustainability Management":
-    //             return "SM";
-    //         case "English Language and Communication":
-    //             return "ELC";
-    //         case "Biology":
-    //             return "BIO";
-    //         case "Telecommunications Management":
-    //             return "TM";
-    //         case "Nanotechnology":
-    //             return "NANO";
-    //         case "Service Oriented Computing":
-    //             return "SOC";
-    //         case "Integrated Product Development":
-    //             return "IPD";
-    //         case "Provost":
-    //             return "PRV";
-    //         case "Enterprise Systems":
-    //             return "ES";
-    //         case "Bioengineering":
-    //             return "BIOE";
-    //     }
-    // }
     
     // get distinct values to populate the search options
     const academicLevels = [...new Set(allClasses.map(item => item.courseLevel))];
@@ -118,23 +63,11 @@ export function CreateSchedule() {
     const formats = [...new Set(allClasses.map(item => item.format))];
     const deliveryModes = [...new Set(allClasses.map(item => item.deliveryMode))];
 
-    let schedules = [
-        {
-            name: "Schedule1",
-            courses: [
-                allClasses[0]
-            ]
-        },
-        {
-            name: "Schedule2",
-            courses: []
-        }
-    ];
-
     const handleTextSearch = (e) => {
         setSearch({
             name: e.target.value,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -146,6 +79,24 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: e.target.value,
+            subjects: search.subjects,
+            level: search.level,
+            status: search.status,
+            format: search.format,
+            deliveryMode: search.deliveryMode
+        });
+    };
+
+    const handleSubjectSearch = (e) => {
+        let arr = [...search.subjects, e.target.value];
+        if (search.subjects.includes(e.target.value)) {
+            arr = arr.filter(val => val !== e.target.value);
+        }
+
+        setSearch({
+            name: search.name,
+            semester: search.semester,
+            subjects: arr,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -162,6 +113,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: arr,
             status: search.status,
             format: search.format,
@@ -178,6 +130,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: arr,
             format: search.format,
@@ -194,6 +147,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: arr,
@@ -210,6 +164,7 @@ export function CreateSchedule() {
         setSearch({
             name: search.name,
             semester: search.semester,
+            subjects: search.subjects,
             level: search.level,
             status: search.status,
             format: search.format,
@@ -225,9 +180,14 @@ export function CreateSchedule() {
       courses = courses.filter(val => val.courseTitle.toLowerCase().includes(courseSearch));
     }
     
-    courseSearch = search.semester.trim().toLowerCase();
+    courseSearch = search.semester;
     if (courseSearch.length > 0) {
-        courses = courses.filter(val => val.courseTime.toLowerCase().match(courseSearch));
+        courses = courses.filter(val => val.courseTime.match(courseSearch));
+    }
+    
+    courseSearch = search.subjects;
+    if (courseSearch.length > 0) {
+        courses = courses.filter(val => courseSearch.includes(val.coursePrefix));
     }
     
     courseSearch = search.level;
@@ -252,35 +212,36 @@ export function CreateSchedule() {
 
     // if there are no filters selected, don't show any classes -- that list will be looong
     if (search.name === "" && search.semester === "" &&
+        search.subjects.length === 0 &&
         search.level.length === 0 && search.status.length === 0 &&
         search.format.length === 0 && search.deliveryMode.length === 0) {
         courses = [];
     }
 
     // filter out classes already in the selected schedule
-    for (let i in schedules) {
-        if (schedules[i].name === activeSchedule) {
-            courses = courses.filter(val => !schedules[i].courses.includes(val));
+    if (activeSchedule._id !== "") {
+        for (let cl in activeClasses) {
+            courses = courses.filter(val => cl._id !== val._id);
         }
     }
 
-    const getTimes = (course) => {
+    const getTimes = (sectionDetails) => {
         // initialize course time
         let times = {
             days: [],
             start: moment("12:00 AM", "h:mm A"),
             end: moment("12:00 AM", "h:mm A")
         }
-
-        if (course.sectionDetails.includes("Monday")) times.days.push("Monday");
-        if (course.sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
-        if (course.sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
-        if (course.sectionDetails.includes("Thursday")) times.days.push("Thursday");
-        if (course.sectionDetails.includes("Friday")) times.days.push("Friday");
-        if (course.sectionDetails.includes("Saturday")) times.days.push("Saturday");
-        if (course.sectionDetails.includes("Sunday")) times.days.push("Sunday");
+    
+        if (sectionDetails.includes("Monday")) times.days.push("Monday");
+        if (sectionDetails.includes("Tuesday")) times.days.push("Tuesday");
+        if (sectionDetails.includes("Wednesday")) times.days.push("Wednesday");
+        if (sectionDetails.includes("Thursday")) times.days.push("Thursday");
+        if (sectionDetails.includes("Friday")) times.days.push("Friday");
+        if (sectionDetails.includes("Saturday")) times.days.push("Saturday");
+        if (sectionDetails.includes("Sunday")) times.days.push("Sunday");
         
-        let timeRange = course.sectionDetails.substring(course.sectionDetails.lastIndexOf("|") + 1);
+        let timeRange = sectionDetails.substring(sectionDetails.lastIndexOf("|") + 1);
         times.start = moment(timeRange.split("-")[0], "h:mm A");
         times.end = moment(timeRange.split("-")[1], "h:mm A");
 
@@ -288,61 +249,126 @@ export function CreateSchedule() {
     }
 
     const compareTimesWithActiveSchedule = (course) => {
-        for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                for (let j in schedules[i].courses) {
-                    let existingTimes = getTimes(schedules[i].courses[j]);
-                    let courseTimes = getTimes(course)
+        let conflicts = [];
+        for (let i in activeClasses) {
+            let existingTimes = getTimes(activeClasses[i].sectionDetails);
+            let courseTimes = getTimes(course.sectionDetails);
 
-                    let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
-                    let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
-                    let start2 = courseTimes.start.hour() + courseTimes.start.minute()/60;
-                    let end2 = courseTimes.end.hour() + courseTimes.end.minute()/60;
-       
-                    const overlappingDays = courseTimes.days.filter(day => existingTimes.days.includes(day));
+            let start1 = existingTimes.start.hour() + existingTimes.start.minute()/60;
+            let end1 = existingTimes.end.hour() + existingTimes.end.minute()/60;
+            let start2 = courseTimes.start.hour() + courseTimes.start.minute()/60;
+            let end2 = courseTimes.end.hour() + courseTimes.end.minute()/60;
 
-                    if (overlappingDays.length === 0) {
-                        return "";
-                    }
+            const overlappingDays = courseTimes.days.filter(day => existingTimes.days.includes(day));
 
-                    // todo need to check this logic to make sure it catches the right overlaps
-                    if (start1 <= start2 && end1 > start2) {
-                        return "result-conflict";
-                    } else if (start1 < end2 && end1 > end2) {
-                        return "result-conflict";
-                    } else if (start2 <= start1 && end2 > start1) {
-                        return "result-conflict";
-                    } else if (start2 < end1 && end2 > end1) {
-                        return "result-conflict";
-                    } else { 
-                        return "";
-                    }
-                }
+            conflicts.push({
+                overlappingDays: overlappingDays,
+                start1: start1,
+                end1: end1,
+                start2: start2,
+                end2: end2
+            })
+        }
+        
+        if (conflicts.length === 0) {
+            return "";
+        }
+
+        // todo check extensively to make sure this logic is right
+        for (let conflict of conflicts) {
+            if (conflict.overlappingDays.length !== 0) {
+                if (conflict.start1 <= conflict.start2 && conflict.end1 > conflict.start2) {
+                    return "result-conflict";
+                } else if (conflict.start1 < conflict.end2 && conflict.end1 > conflict.end2) {
+                    return "result-conflict";
+                } else if (conflict.start2 <= conflict.start1 && conflict.end2 > conflict.start1) {
+                    return "result-conflict";
+                } else if (conflict.start2 < conflict.end1 && conflict.end2 > conflict.end1) {
+                    return "result-conflict";
+                } 
             }
         }
         return "";
     }
 
-    const scheduleSection = (scheduleName) => {
-        if (activeSchedule === scheduleName) {
-            return <Button variant="secondary" className="m-1" disabled>{scheduleName} (active)</Button>
+    const scheduleSelectButtons = (schedule) => {
+        if (activeSchedule.name === schedule.name) {
+            return <Button variant="secondary" className="m-1" disabled>{schedule.name} (active)</Button>
         } else {
-            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(scheduleName)}}>Select {scheduleName}</Button>
+            const active = {
+                _id: schedule._id,
+                name: schedule.name,
+                time: schedule.time,
+                creator: schedule.creator,
+                classes: schedule.classes
+            }
+            return <Button variant="success" className="m-1" onClick={() => {setActiveSchedule(active)}}>Select {schedule.name}</Button>
         }
     }
 
+    const scheduleSection = () => {
+        if (schedules === null || schedules.length === 0) {
+            return (<h3>No schedules exist yet</h3>);
+        } else {
+            return (
+                schedules.map((schedule) =>
+                    <div className="schedule-select" key={`schedules-${schedule}`}>
+                        {scheduleSelectButtons(schedule)}
+                    </div>
+                )
+            );
+        }
+    }
+
+    const addRemoveButton = (course) => {
+        if (activeSchedule.classes.includes(course._id)) {
+            return (
+                <button 
+                    className="add-remove-course" 
+                    onClick={() => {removeFromSchedule(course._id)}}>
+                    <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
+                    Remove
+                </button>
+            );
+        } else {
+            return (
+                <button 
+                    className="add-remove-course" 
+                    onClick={() => {addToSchedule(course._id)}}>
+                    <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
+                    Add to schedule
+                    <br />
+                    {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
+                </button>
+            );
+        }
+    }
+
+    const handleRemoveSchedule = (e) => {
+        setSoftRefresh(!softRefresh);
+        setActiveSchedule({
+            _id: "",
+            name: "",
+            time: "",
+            creator: "",
+            classes: []
+        });
+        removeSchedule(activeSchedule._id);
+    }
+
     const showSchedule = () => {
-        if (activeSchedule === "") {
+        if (activeSchedule.name === "") {
             return;
         } else {
             for (let i of schedules) {
-                if (i.name === activeSchedule) {
+                if (i.name === activeSchedule.name) {
                     return (
                         <div>
-                            <h2>Courses in {activeSchedule}</h2>
+                            <h2>Courses in "{activeSchedule.name}"</h2>
+                            <Button variant="danger" onClick={(e) => handleRemoveSchedule(e)}>Delete Schedule</Button>
                             <Row xs={4}>
-                                {i.courses.map(course => 
-                                    <Col className="p-2 mt-2">
+                                {activeClasses.map(course => 
+                                    <Col className="p-2 mt-2" key={`schedule-${course._id}`}>
                                         <Card className="class-results-card">
                                             <Card.Title>{course.courseTotal}</Card.Title>
                                             <Card.Body>
@@ -355,7 +381,7 @@ export function CreateSchedule() {
                                             <Card.Footer>
                                                 <button 
                                                     className="add-remove-course" 
-                                                    onClick={() => {removeClassFromSchedule(course)}}>
+                                                    onClick={() => {removeFromSchedule(course._id)}}>
                                                     <img src='https://img.icons8.com/color/48/000000/minus.png' alt="remove from schedule" />
                                                     Remove
                                                 </button>
@@ -372,20 +398,28 @@ export function CreateSchedule() {
         }
     }
 
-    const addClassToSchedule = (courseInfo) => {
+    const addToSchedule = (id) => {
         for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                schedules[i].courses.push(courseInfo);
+            if (schedules[i].name === activeSchedule.name) {
+                setSoftRefresh(!softRefresh);
+                addClassToSchedule(schedules[i]._id, id);
             }
         }
     }
 
-    const removeClassFromSchedule = (courseInfo) => {
+    const removeFromSchedule = (id) => {
         for (let i in schedules) {
-            if (schedules[i].name === activeSchedule) {
-                schedules[i].courses = schedules[i].courses.filter(e => e.courseTotal !== courseInfo.courseTotal);
+            if (schedules[i].name === activeSchedule.name) {
+                setSoftRefresh(!softRefresh);
+                removeClassFromSchedule(schedules[i]._id, id);
             }
         }
+    }
+
+    const handleAddSchedule = (e) => {
+        setSoftRefresh(!softRefresh)
+        createSchedule(e.target.form[0].value, e.target.form[1].value, userId); // todo replace userId with actual user
+        setSoftRefresh(!softRefresh)
     }
 
     const courseForm = () => {
@@ -394,6 +428,7 @@ export function CreateSchedule() {
                 <Col xs={12} md={3}>
                     <form>
                         <h2>Search</h2>
+                        <label htmlFor="courseKeywords" />
                         <input 
                             onChange={(e) => handleTextSearch(e)} 
                             id="courseKeywords" 
@@ -403,10 +438,11 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Semester</Card.Title>
                             {semesters.map((semester) =>
-                                <div>
+                                <div key={`time-${semester}`}>
+                                    <label htmlFor={semester} />
                                     <input 
                                         type="radio" 
-                                        id={semester.replace(" ", "").toLowerCase} 
+                                        id={semester}
                                         name="semester"
                                         value={semester}
                                         onChange={(e) => handleSemesterSearch(e)} 
@@ -419,7 +455,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Course Level</Card.Title>
                             {academicLevels.map((level) =>
-                                <div>
+                                <div key={`level-${level}`}>
                                     <input 
                                         type="checkbox" 
                                         id={level.replace(" ", "").toLowerCase} 
@@ -435,12 +471,13 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Subjects</Card.Title>
                             {subjects.map((subject) =>
-                                <div>
+                                <div key={`subject-${subject}`}>
                                     <input 
                                         type="checkbox" 
                                         id={subject.replace(" ", "").toLowerCase} 
                                         name={subject.replace(" ", "").toLowerCase}
                                         value={subject}
+                                        onChange={(e) => handleSubjectSearch(e)}
                                     />
                                     <label htmlFor={subject.replace(" ", "").toLowerCase}>{subject}</label>
                                     <br />
@@ -449,7 +486,7 @@ export function CreateSchedule() {
                         </Card>
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Status</Card.Title>
-                            <div>
+                            <div key="openstatus">
                                 <input 
                                     type="checkbox" 
                                     id="open"
@@ -460,7 +497,7 @@ export function CreateSchedule() {
                                 <label htmlFor="open">Open</label>
                                 <br />
                             </div>
-                            <div>
+                            <div key="closedstatus">
                                 <input 
                                     type="checkbox" 
                                     id="closed"
@@ -475,7 +512,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Formats</Card.Title>
                             {formats.map((format) =>
-                                <div>
+                                <div key={`format-${format}`}>
                                     <input 
                                         type="checkbox" 
                                         id={format.replace(" ", "").toLowerCase} 
@@ -491,7 +528,7 @@ export function CreateSchedule() {
                         <Card className="p-3 mt-3 schedule-form-card">
                             <Card.Title className="text-center">Delivery Format</Card.Title>
                             {deliveryModes.map((deliveryMode) =>
-                                <div>
+                                <div key={`delivery-${deliveryMode}`}>
                                     <input 
                                         type="checkbox" 
                                         id={deliveryMode.replace(" ", "").toLowerCase} 
@@ -509,27 +546,20 @@ export function CreateSchedule() {
                 <Col xs={12} md={9}>
                     <h2>Courses</h2>
                     {courses.map(course => 
-                        <Col className="p-2 mt-2">
+                        <Col className="p-2 mt-2" key={`courselist-${course._id}`}>
                             <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
                                 <Card.Title>{course.courseTotal}</Card.Title>
                                 <Card.Body>
-                                <Row xs={1} md={2}>
-                                    <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
-                                    <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                                    <Row xs={1} md={2}>
+                                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
                                     </Row>
                                 </Card.Body>
                                 <Card.Footer>
-                                    <button 
-                                        className="add-remove-course" 
-                                        onClick={() => {addClassToSchedule(course)}}>
-                                        <img src="https://img.icons8.com/color/48/000000/add--v1.png" alt="add to schedule" />
-                                        Add to schedule
-                                        <br />
-                                        {compareTimesWithActiveSchedule(course) !== "" ? "Warning: This course section conflicts with one already in the selected schedule" : ""}
-                                    </button>
+                                    {addRemoveButton(course)}
                                 </Card.Footer>
                             </Card>
                         </Col>
@@ -562,12 +592,34 @@ export function CreateSchedule() {
             <div className="main-content">
                 <div>
                     <h1>Create a Schedule</h1>
-                    <h2>Select Schedule</h2>
-                    {schedules.map((schedule) =>
-                        <div className="schedule-select">
-                            {scheduleSection(schedule.name)}
-                        </div>
-                    )}
+                    <h2>Add New Schedule</h2>
+                    <form>
+                        <label htmlFor="addSchedule" />
+                        <input 
+                            id="addSchedule" 
+                            name="addSchedule" 
+                            placeholder="Enter schedule name"
+                        />
+                        {semesters.map((semester) =>
+                            <div key={`schedulesemester-${semester}`}>
+                                <input 
+                                    type="radio" 
+                                    id={semester}
+                                    name="time"
+                                    value={semester}
+                                />
+                                <label htmlFor={semester}>{semester}</label>
+                                <br />
+                            </div>
+                        )}
+                        <Button 
+                            variant="success" 
+                            className="m-1" 
+                            onClick={(e) => {handleAddSchedule(e)}}
+                        >Create</Button>
+                    </form>
+                    <h2>Select Existing Schedule</h2>
+                    {scheduleSection()}
                     {showSchedule()}
                     <br />
                     {courseForm()}
