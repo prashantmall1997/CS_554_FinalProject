@@ -4,7 +4,10 @@ require("./config/mongoConnection");
 require("dotenv").config();
 
 const redis = require("redis");
-const redis_client = redis.createClient({ url: process.env.REDIS_URL });
+const client = redis.createClient({ url: process.env.REDIS_URL });
+const bluebird = require('bluebird');
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 const express = require("express");
 const cors = require("cors");
