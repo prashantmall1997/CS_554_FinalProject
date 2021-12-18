@@ -13,10 +13,10 @@ router.post("/create", async (req, res) => {
         let creator = body.creator;
         if (!name) throw new Error("must provide a name");
         if (typeof name != "string" || name.replace(/\s/g, '') == "") throw new Error("name must be a valid string");
-        if (!time) throw new Error("must provide an email");
+        if (!time) throw new Error("must provide a time");
         if (typeof time != "string" || time.replace(/\s/g, '') == "") throw new Error("time must be a valid string");
         if (!creator) throw new Error("must provide a creator");
-        if (typeof creator != "string" || creator.replace(/\s/g, '') == "") throw new Error("creator  must be a valid string");
+        if (typeof creator != "string" || creator.replace(/\s/g, '') == "") throw new Error("creator must be a valid string");
 
         let data = await ScheduleData.create(name, time, creator);
         res.json(data);

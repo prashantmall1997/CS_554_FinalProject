@@ -8,6 +8,9 @@ import Admin from "./Components/Admin";
 import Home from "./Components/Home";
 import { readAllClasses } from "./utils/api";
 import UserProfile from './Components/UserProfile';
+import { readAllClasses, readClassesBySchedule } from "./utils/api/apis/classApi";
+import React, { useEffect, useState } from "react";
+//import FirebaseTest from "./components/FirebaseTest";
 
 
 function App() {
@@ -25,11 +28,12 @@ function App() {
           <Route exact path="/" component={Home} />
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/createschedule" component={CreateSchedule} />
-          <Route exact path="/userProfile/:username" component = { UserProfile } />
+          <Route exact path="/userProfile" component={UserProfile} />
         </div>
       </div>
     </Router>
   );
+
 }
 
 export default App;
