@@ -3,6 +3,9 @@ console.clear();
 require("./config/mongoConnection");
 require("dotenv").config();
 
+const redis = require("redis");
+const redis_client = redis.createClient({ url: process.env.REDIS_URL });
+
 const express = require("express");
 const cors = require("cors");
 
@@ -11,11 +14,9 @@ const firebase = require("./middlewares/firebase");
 
 const elasticsearch = require("elasticsearch");
 var connectionString = process.env.SEARCHBOX_URL;
-var client = new elasticsearch.Client({
+var elasticsearch_client = new elasticsearch.Client({
   host: connectionString,
 });
-console.log("connectionString -> " + connectionString);
-console.log("client -> " + client);
 
 const app = express();
 
