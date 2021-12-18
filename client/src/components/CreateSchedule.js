@@ -25,7 +25,6 @@ export function CreateSchedule() {
     const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [schedules, setSchedules] = useState([]);
-    const [softRefresh, setSoftRefresh] = useState(false);
 
     // todo replace with actual id of logged in user
     const userId = "61a7c026ebec6df893bd3b64";
@@ -407,7 +406,9 @@ export function CreateSchedule() {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
                 addClassToSchedule(schedules[i]._id, id).then(() => {
-                    setSoftRefresh(!softRefresh)
+                    readClassesBySchedule(activeSchedule._id).then((classes) => {
+                        setActiveClasses(classes);
+                    })
                 });
             }
         }
@@ -417,7 +418,9 @@ export function CreateSchedule() {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
                 removeClassFromSchedule(schedules[i]._id, id).then(() => {
-                    setSoftRefresh(!softRefresh)
+                    readClassesBySchedule(activeSchedule._id).then((classes) => {
+                        setActiveClasses(classes);
+                    })
                 });
             }
         }
