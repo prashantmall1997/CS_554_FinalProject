@@ -12,14 +12,19 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./../../config/firebase-config";
-import axios from "axios";
 import { createUser } from "./../../utils/api/index";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import actions from "./../../actions";
 
 const provider = new GoogleAuthProvider();
 
 ReactModal.setAppElement("#root");
 
 function SignupLoginModal(props) {
+  const dispatch = useDispatch();
+  const isUserLoggedIn = useSelector((state) => state.login);
+
   const [whichModal, setWhichModal] = useState(props.modal);
   const [showModal, setShowModal] = useState(props.isOpen);
   const [registerEmail, setRegisterEmail] = useState("");
@@ -66,11 +71,19 @@ function SignupLoginModal(props) {
       console.log(user);
       if (user) {
         const addToDb = await createUser(
-          registerEmail.split("$")[0],
+          registerEmail.split("@")[0],
           registerEmail,
           registerCwid
         );
-        console.log(addToDb);
+        console.log(addToDb.admin);
+        dispatch(
+          actions.loginUser(
+            addToDb.admin,
+            registerEmail.split("@")[0],
+            registerEmail,
+            registerCwid
+          )
+        );
       }
     } catch (error) {
       console.log(error.message);
