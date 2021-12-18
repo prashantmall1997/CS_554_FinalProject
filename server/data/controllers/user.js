@@ -154,9 +154,13 @@ const remove = async (username) => {
 const update = async (username, email, CWID) => {
   try {
     console.log("update in data");
+    console.log(email);
+    console.log(username);
+    console.log(CWID);
+
     let updated = await User.updateOne(
-      { CWID: CWID },
-      { $set: { username: username, email: email } }
+      { email: email  },
+      { $set: { username: username, CWID: CWID} }
     ).exec();
     if (updated.modifiedCount == 1) {
       return true;

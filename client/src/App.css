@@ -328,3 +328,17 @@ input[type="radio"]:checked {
   padding: 1rem;
 }
 
+
+.navBar {
+	background-color: #bb0f17;
+	color: white;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: left;
+	position: fixed;
+	height: 50px;
+	top: 0;
+	width: 100%;
+	padding-left: 10px;
+	
+}

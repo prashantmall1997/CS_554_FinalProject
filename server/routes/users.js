@@ -148,19 +148,19 @@ router.post('/update', async (req, res) => {
         if (body.constructor === Object && Object.keys(body).length === 0) throw new Error("must provide a request body");
         
         let newUsername = body.username;
-        let newEmail = body.email;
-        let CWID = body.CWID;
+        let email = body.email;
+        let newCWID = body.CWID;
 
         if (!newUsername) throw new Error("must provide a username");
         if (typeof newUsername != "string" || newUsername.replace(/\s/g, '') == "") throw new Error("username must be a valid string");
 
-        if (!newEmail) throw new Error("must provide an email");
-        if (typeof newEmail != "string" || newEmail.replace(/\s/g, '') == "") throw new Error("email must be a valid string");
+        if (!email) throw new Error("must provide an email");
+        if (typeof email != "string" || email.replace(/\s/g, '') == "") throw new Error("email must be a valid string");
         
-        if (!CWID) throw new Error("must provide an CWID");
-        if (typeof CWID != "string" || CWID.replace(/\s/g, '') == "") throw new Error("CWID must be a valid string");
+        if (!newCWID) throw new Error("must provide an CWID");
+        if (typeof newCWID != "string" || newCWID.replace(/\s/g, '') == "") throw new Error("CWID must be a valid string");
 
-        let data = await UserData.update(newUsername, newEmail, CWID);
+        let data = await UserData.update(newUsername, email, newCWID);
         res.json(data);
     }
     catch (err) {

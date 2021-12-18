@@ -8,8 +8,7 @@ import Admin from "./Components/Admin";
 import Home from "./Components/Home";
 import { readAllClasses } from "./utils/api";
 import UserProfile from './Components/UserProfile';
-import { readAllClasses, readClassesBySchedule } from "./utils/api/apis/classApi";
-import React, { useEffect, useState } from "react";
+import { readClassesBySchedule } from "./utils/api/apis/classApi";
 //import FirebaseTest from "./components/FirebaseTest";
 
 
