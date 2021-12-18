@@ -8,7 +8,9 @@ import {
     readClassesBySchedule,
     createSchedule,
     removeSchedule,
-    removeClassFromSchedule
+    removeClassFromSchedule,
+    addScheduleToUser,
+    removeScheduleFromUser
 } from "../utils/api";
 import moment from "moment";
 
@@ -30,12 +32,12 @@ export function CreateSchedule() {
 
     useEffect(() => {
         readAllClasses().then((classes) => {
-        setAllClasses(classes);
+            setAllClasses(classes);
         });
     }, []);
-    useEffect(() => { //todo replace with id of logged in user
+    useEffect(() => {
         readSchedulesByUser(userId).then((schedules) => {
-        setSchedules(schedules);
+            setSchedules(schedules);
         });
     }, []);
     useEffect(() => {
@@ -345,15 +347,18 @@ export function CreateSchedule() {
     }
 
     const handleRemoveSchedule = (e) => {
-        setSoftRefresh(!softRefresh);
-        setActiveSchedule({
-            _id: "",
-            name: "",
-            time: "",
-            creator: "",
-            classes: []
+        const id = activeSchedule._id;
+        removeSchedule(id).then(() => {
+            removeScheduleFromUser("jperry20", id).then(() => {
+                setActiveSchedule({
+                    _id: "",
+                    name: "",
+                    time: "",
+                    creator: "",
+                    classes: []
+                });
+            })
         });
-        removeSchedule(activeSchedule._id);
     }
 
     const showSchedule = () => {
@@ -401,8 +406,9 @@ export function CreateSchedule() {
     const addToSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
-                setSoftRefresh(!softRefresh);
-                addClassToSchedule(schedules[i]._id, id);
+                addClassToSchedule(schedules[i]._id, id).then(() => {
+                    setSoftRefresh(!softRefresh)
+                });
             }
         }
     }
@@ -410,16 +416,20 @@ export function CreateSchedule() {
     const removeFromSchedule = (id) => {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
-                setSoftRefresh(!softRefresh);
-                removeClassFromSchedule(schedules[i]._id, id);
+                removeClassFromSchedule(schedules[i]._id, id).then(() => {
+                    setSoftRefresh(!softRefresh)
+                });
             }
         }
     }
 
+    // todo replace userId with actual user
     const handleAddSchedule = (e) => {
-        setSoftRefresh(!softRefresh)
-        createSchedule(e.target.form[0].value, e.target.form[1].value, userId); // todo replace userId with actual user
-        setSoftRefresh(!softRefresh)
+        createSchedule(e.target.form[0].value, e.target.form[1].value, userId).then((sched) => {
+            addScheduleToUser("jperry20", sched._id).then(() => { // todo get username of signed in user
+                setSoftRefresh(!softRefresh)
+            });
+        });
     }
 
     const courseForm = () => {
