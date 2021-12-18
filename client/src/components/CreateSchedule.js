@@ -39,7 +39,7 @@ export function CreateSchedule() {
         readSchedulesByUser(userId).then((schedules) => {
             setSchedules(schedules);
         });
-    }, []);
+    }, [activeSchedule]);
     useEffect(() => {
         if (activeSchedule._id !== "") {
             readClassesBySchedule(activeSchedule._id).then((classes) => {
@@ -427,7 +427,9 @@ export function CreateSchedule() {
     const handleAddSchedule = (e) => {
         createSchedule(e.target.form[0].value, e.target.form[1].value, userId).then((sched) => {
             addScheduleToUser("jperry20", sched._id).then(() => { // todo get username of signed in user
-                setSoftRefresh(!softRefresh)
+                readSchedulesByUser(userId).then((schedules) => {
+                    setSchedules(schedules);
+                });
             });
         });
     }
@@ -597,7 +599,7 @@ export function CreateSchedule() {
                 <a href="/admin" className="sidebar-button">Admin</a>
                 <a href="/createschedule" className="sidebar-button sidebar-button-active">Create Schedule</a>
                 <a href="/schedulespage" className="sidebar-button">Schedules</a>
-                <div className="sidebar-button" onClick={handleSignout()}>Sign out</div>
+                <div className="sidebar-button" onClick={() => handleSignout()}>Sign out</div>
             </div>
             <div className="main-content">
                 <div>
