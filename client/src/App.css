@@ -40,9 +40,7 @@
 	margin: 10px;
 }
 
-/* This Git Conflict has to be manually fixed */
 body {
-/* <<<<<<< createschedule */
   font-family: Geneva, Verdana, Tahoma, sans-serif;
 }
 
@@ -55,20 +53,6 @@ body {
   background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
   background-color: black;
   background-size: cover;
-/* ======= */
-	background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
-	background-color: black;
-	background-size: cover;
-	font-family: Geneva, Verdana, Tahoma, sans-serif;
-}
-
-.home {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	min-height: 100vh;
-/* >>>>>>> production */
 }
 
 .home-content {
