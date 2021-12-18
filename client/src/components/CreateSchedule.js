@@ -25,7 +25,6 @@ export function CreateSchedule() {
     const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [schedules, setSchedules] = useState([]);
-    const [softRefresh, setSoftRefresh] = useState(false);
 
     // todo replace with actual id of logged in user
     const userId = "61a7c026ebec6df893bd3b64";
@@ -39,7 +38,7 @@ export function CreateSchedule() {
         readSchedulesByUser(userId).then((schedules) => {
             setSchedules(schedules);
         });
-    }, []);
+    }, [activeSchedule]);
     useEffect(() => {
         if (activeSchedule._id !== "") {
             readClassesBySchedule(activeSchedule._id).then((classes) => {
@@ -407,7 +406,9 @@ export function CreateSchedule() {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
                 addClassToSchedule(schedules[i]._id, id).then(() => {
-                    setSoftRefresh(!softRefresh)
+                    readClassesBySchedule(activeSchedule._id).then((classes) => {
+                        setActiveClasses(classes);
+                    })
                 });
             }
         }
@@ -417,7 +418,9 @@ export function CreateSchedule() {
         for (let i in schedules) {
             if (schedules[i].name === activeSchedule.name) {
                 removeClassFromSchedule(schedules[i]._id, id).then(() => {
-                    setSoftRefresh(!softRefresh)
+                    readClassesBySchedule(activeSchedule._id).then((classes) => {
+                        setActiveClasses(classes);
+                    })
                 });
             }
         }
@@ -427,7 +430,9 @@ export function CreateSchedule() {
     const handleAddSchedule = (e) => {
         createSchedule(e.target.form[0].value, e.target.form[1].value, userId).then((sched) => {
             addScheduleToUser("jperry20", sched._id).then(() => { // todo get username of signed in user
-                setSoftRefresh(!softRefresh)
+                readSchedulesByUser(userId).then((schedules) => {
+                    setSchedules(schedules);
+                });
             });
         });
     }
@@ -597,7 +602,7 @@ export function CreateSchedule() {
                 <a href="/admin" className="sidebar-button">Admin</a>
                 <a href="/createschedule" className="sidebar-button sidebar-button-active">Create Schedule</a>
                 <a href="/schedulespage" className="sidebar-button">Schedules</a>
-                <div className="sidebar-button" onClick={handleSignout()}>Sign out</div>
+                <div className="sidebar-button" onClick={() => handleSignout()}>Sign out</div>
             </div>
             <div className="main-content">
                 <div>
