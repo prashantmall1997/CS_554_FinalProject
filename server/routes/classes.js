@@ -1,12 +1,44 @@
 const express = require("express");
 const router = express.Router();
 const ClassData = require("../data/controllers/classes");
+const lastUpdatedData = require("../data/controllers/lastUpdated");
+const redis = require("redis");
+const client = redis.createClient({ url: process.env.REDIS_URL });
+const bluebird = require('bluebird');
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 router.get("/", async (req, res) => {
     try {
         //returns a list of class objects, or null if there are none
-        let data = await ClassData.readAll();
-        res.json(data);
+        let storage = await client.getAsync('classes'); //storage = redis cache
+        if(!storage) { //the collection hasn't been initialized so now it initializes
+            let data = await ClassData.readAll();
+            await client.setAsync('classes', JSON.stringify(data));
+            let now = new Date();
+            await client.setAsync('lastUpdatedClasses', now);
+            await lastUpdatedData.updateClasses(now);
+            res.json(data);
+            return;
+        }
+        else { //the collection has been initialized and must be the most up to date
+            let lastUpdatedClasses = await lastUpdatedData.read();
+            lastUpdatedClasses = new Date(lastUpdatedClasses.classes);
+            let lastUpdatedRedis = await client.getAsync('lastUpdatedClasses');
+            if(lastUpdatedClasses.getTime() > lastUpdatedRedis) { 
+                //we've updated the classes but redis isn't updated, so update it
+                console.log("Updated cache");
+                let data = await ClassData.readAll();
+                await client.setAsync('classes', JSON.stringify(data));
+                let now = new Date().getTime();
+                await client.setAsync('lastUpdatedClasses', now);
+                await lastUpdatedData.updateClasses(now);
+                storage = JSON.stringify(data); //storage => database info which now equals redis info
+            }
+            //otherwise redis == database, so just return what's in redis
+            res.json(JSON.parse(storage)); 
+            return;
+        }
     }
     catch (err) {
         res.json({ error: `${err}` });
@@ -77,6 +109,7 @@ router.post("/create", async (req, res) => {
             deliveryMode,
             enrolledCapacity,
         )
+        await lastUpdatedData.updateClasses(new Date());
         res.json(data);
     }
     catch (err) {
@@ -202,6 +235,7 @@ router.post("/updateOrInsertByCourseTotal", async (req, res) => {
             deliveryMode,
             enrolledCapacity,
         )
+        await lastUpdatedData.updateClasses(new Date());
         res.json(data);
     }
     catch (err) {
@@ -219,7 +253,8 @@ router.post("/removeById", async (req, res) => {
         if (!id) throw new Error("must provide an id");
         if (typeof id != "string" || id.replace(/\s/g, '') == "") throw new Error("id must be a valid string");
 
-        let data = await ClassData.removeById(id)
+        let data = await ClassData.removeById(id);
+        await lastUpdatedData.updateClasses(new Date());
         res.json(data);
     }
     catch (err) {
@@ -232,6 +267,7 @@ router.get("/removeAll", async (req, res) => {
         //returns true if the classe are removed, false if not
 
         let data = await ClassData.removeAll();
+        await lastUpdatedData.updateClasses(new Date());
         res.json(data);
     }
     catch (err) {
