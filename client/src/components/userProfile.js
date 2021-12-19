@@ -30,7 +30,7 @@ function UserProfile() {
     
     const userDetailsArray = useSelector((state) => state.login);
     console.log("Logged In User1 " + JSON.stringify(userDetailsArray[0]));
-    let userDetails = userDetailsArray[0];
+    let userDetails = userDetailsArry[0];
     let email = document.getElementById('email');
     // let password = document.getElementById('password');
     let cwid = document.getElementById('cwid');
