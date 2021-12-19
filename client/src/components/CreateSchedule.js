@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+//CSS & API Funcitons
 import "../App.css";
-import { Button, Row, Col, Card } from "react-bootstrap";
 import {
   readAllClasses,
   readSchedulesByUser,
@@ -11,11 +10,21 @@ import {
   removeClassFromSchedule,
   addScheduleToUser,
   removeScheduleFromUser,
-  readUserByUsername
+  readUserByUsername,
 } from "../utils/api";
+
+//React and UI
+import React, { useState, useEffect } from "react";
+import { Button, Row, Col, Card } from "react-bootstrap";
 import moment from "moment";
+
+//Redux
 import { useDispatch, useSelector } from "react-redux";
 import actions from "./../actions";
+
+//Firebase
+import { getAuth } from "firebase/auth";
+const auth = getAuth();
 
 export function CreateSchedule() {
   const dispatch = useDispatch();
@@ -37,19 +46,22 @@ export function CreateSchedule() {
     readUserByUsername(user.username).then((info) => {
       setUserId(info._id);
     });
-  }, []);
+  }, [user.username]);
+
   useEffect(() => {
     readAllClasses().then((classes) => {
       setAllClasses(classes);
     });
   }, []);
+
   useEffect(() => {
     readUserByUsername(user.username).then((info) => {
       readSchedulesByUser(info._id).then((schedules) => {
         setSchedules(schedules);
       });
     });
-  }, [activeSchedule]);
+  }, [activeSchedule, user.username]);
+
   useEffect(() => {
     if (activeSchedule._id !== "") {
       readClassesBySchedule(activeSchedule._id).then((classes) => {
@@ -708,8 +720,9 @@ export function CreateSchedule() {
     );
   };
 
-  const handleSignout = () => {
+  const handleSignout = async () => {
     dispatch(actions.logoutUser());
+    await auth.signOut();
   };
 
   return (
@@ -718,9 +731,13 @@ export function CreateSchedule() {
       <div className="sidebar">
         <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
-        {user.isAdmin ? <a href="/admin" className="sidebar-button">
-          Admin
-        </a> : "" }
+        {user.isAdmin ? (
+          <a href="/admin" className="sidebar-button">
+            Admin
+          </a>
+        ) : (
+          ""
+        )}
         <a
           href="/createschedule"
           className="sidebar-button sidebar-button-active"
