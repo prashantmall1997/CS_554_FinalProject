@@ -56,3 +56,21 @@ export const removeUser = async(username) => {
     let data = await apiClient.post("/users/remove", payload);
     return data.data;
 }
+
+export const updateUser = async (username, email, CWID) => {
+    let payload = {
+        username: username,
+        email: email,
+        CWID: CWID
+    }
+    let data = await apiClient.post("/users/update", payload);
+    return data.data;
+}
+
+export const readUserByCWID = async(CWID) => {
+    let payload = {
+        CWID: CWID
+    }
+    let data = await apiClient.post("/users/readByCWID", payload);
+    return data.data;
+}

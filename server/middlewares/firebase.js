@@ -8,7 +8,7 @@ class Middleware {
         req.user = decodeValue;
         return next();
       }
-      return res.json({ message: "Un authorize" });
+      return res.json({ message: "Unauthorized" });
     } catch (e) {
       return res.json({ message: "Internal Error" });
     }
