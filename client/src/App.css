@@ -41,9 +41,6 @@
 }
 
 body {
-  background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
-  background-color: black;
-  background-size: cover;
   font-family: Geneva, Verdana, Tahoma, sans-serif;
 }
 
