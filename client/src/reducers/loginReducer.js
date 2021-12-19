@@ -1,6 +1,8 @@
-const initalState = {
-  isLoggedIn: false,
-};
+const initalState = [
+  {
+    isLoggedIn: "false",
+  },
+];
 
 const loginReducer = (state = initalState, action) => {
   const { type, payload } = action;

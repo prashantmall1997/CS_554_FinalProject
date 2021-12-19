@@ -11,9 +11,7 @@ import SchedulesPage from "./components/SchedulesPage";
 import UserProfile from "./components/UserProfile";
 
 function App() {
-  const loggedIn = useSelector((state) => state.login)[0].isLoggedIn;
-  console.log("FROM APP BEFORE ROUTE SWITCH: " + loggedIn);
-  console.log(useSelector((state) => state.login)[0].isLoggedIn);
+  console.log(useSelector((state) => state.login));
   return (
     <Router>
       <div className="App">
@@ -58,11 +56,6 @@ function App() {
                 <UserProfile />
               )}
             </Route>
-
-            {/* <Route exact path="/" component={Home} />
-            <Route exact path="/admin" component={Admin} />
-            <Route exact path="/createschedule" component={CreateSchedule} />
-            <Route exact path="/schedules" component={SchedulesPage} /> */}
           </Switch>
         </div>
       </div>
