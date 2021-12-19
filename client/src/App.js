@@ -10,15 +10,16 @@ import CreateSchedule from "./components/CreateSchedule";
 import SchedulesPage from "./components/SchedulesPage";
 
 function App() {
-  const loggedIn = useSelector((state) => state.login).isLoggedIn;
-  console.log(loggedIn);
+  const loggedIn = useSelector((state) => state.login)[0].isLoggedIn;
+  console.log("FROM APP BEFORE ROUTE SWITCH: " + loggedIn);
+  console.log(useSelector((state) => state.login)[0].isLoggedIn);
   return (
     <Router>
       <div className="App">
         <div className="App-body">
           <Switch>
             <Route exact path="/">
-              {useSelector((state) => state.login).isLoggedIn === true ? (
+              {useSelector((state) => state.login)[0].isLoggedIn === true ? (
                 <Redirect to="/schedules" />
               ) : (
                 <Home />
@@ -26,7 +27,7 @@ function App() {
             </Route>
 
             <Route exact path="/admin">
-              {useSelector((state) => state.login).isLoggedIn === false ? (
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
                 <Redirect to="/" />
               ) : (
                 <Admin />
@@ -34,7 +35,7 @@ function App() {
             </Route>
 
             <Route exact path="/createschedule">
-              {useSelector((state) => state.login).isLoggedIn === false ? (
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
                 <Redirect to="/" />
               ) : (
                 <CreateSchedule />
@@ -42,7 +43,7 @@ function App() {
             </Route>
 
             <Route exact path="/schedules">
-              {useSelector((state) => state.login).isLoggedIn === false ? (
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
                 <Redirect to="/" />
               ) : (
                 <SchedulesPage />
