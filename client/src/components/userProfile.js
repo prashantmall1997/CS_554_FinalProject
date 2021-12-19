@@ -7,7 +7,7 @@ import { readUserByEmail, updateUser } from '../utils/api/apis/userApi.js';
 import { useSelector, useDispatch } from 'react-redux';
 import actions from '../actions.js';
  
-function UserProfile(props) {
+function UserProfile() {
     //console.log("props " + props.match.params.username);
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(undefined);
@@ -15,11 +15,7 @@ function UserProfile(props) {
     const [isDisabled, setIsDisabled] = useState(true);
 
     const dispatch = useDispatch();
-    //const loggedInUser = useSelector((state) => state.login);
-    
-    
-    //console.log("Logged In User1 " + JSON.stringify(loggedInUser));
-
+   
     let userDetails = dispatch(
           actions.loginUser(
             false,
@@ -29,8 +25,11 @@ function UserProfile(props) {
           )
         );
     
-    // consolelet userDetails = dispatch(actions.loginUser);
-    console.log("UserDetails " + JSON.stringify(userDetails));
+    // userDetails = dispatch(actions.loginUser);
+    //console.log("UserDetails " + JSON.stringify(userDetails));
+    
+    //const userDetails = useSelector((state) => state.login);
+    //console.log("Logged In User1 " + JSON.stringify(userDetails));
 
     let email = document.getElementById('email');
     // let password = document.getElementById('password');
@@ -137,9 +136,22 @@ function UserProfile(props) {
         return (
             <>
                 
-                <div className="navBar">
+                {/* <div className="navBar">
                     SIT Scheduler 2.0
-                </div>
+                </div> */}
+                <Navbar className= "navBar" expand="lg" href="#home">
+                    <Navbar.Brand className="navBrand" href="/homepage">SIT Schedular 2.0</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse>
+                        {/* <Nav.Item>
+                            <Nav.Link href="/homepage">Schedules</Nav.Link>
+                        </Nav.Item> */}
+                        {/* <Nav.Item className="ms-auto">
+                            <Nav.Link href="">Sign Out</Nav.Link>
+                        </Nav.Item> */}
+                
+                    </Navbar.Collapse>
+                </Navbar>
                 <br></br>
                 <br></br>
               

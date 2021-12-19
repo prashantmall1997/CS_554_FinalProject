@@ -11,11 +11,11 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "./../../config/firebase-config";
-import { createUser } from "./../../utils/api/index";
+import { auth } from "../../config/firebase-config";
+import { createUser } from "../../utils/api/index";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import actions from "./../../actions";
+import actions from "../../actions";
 
 const provider = new GoogleAuthProvider();
 
@@ -24,7 +24,7 @@ ReactModal.setAppElement("#root");
 function SignupLoginModal(props) {
   const dispatch = useDispatch();
   const isUserLoggedIn = useSelector((state) => state.login);
-
+  console.log("1 "+JSON.stringify(isUserLoggedIn));
   const [whichModal, setWhichModal] = useState(props.modal);
   const [showModal, setShowModal] = useState(props.isOpen);
   const [registerEmail, setRegisterEmail] = useState("");
@@ -84,6 +84,7 @@ function SignupLoginModal(props) {
             registerCwid
           )
         );
+  console.log("2 "+JSON.stringify(isUserLoggedIn));
       }
     } catch (error) {
       console.log(error.message);
