@@ -1,27 +1,34 @@
 import React, { useState } from "react";
 import "../../App.css";
 import ReactModal from "react-modal";
-import { useEffect } from "react";
+import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
+//Firebase Functions
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut,
   sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./../../config/firebase-config";
-import { createUser } from "./../../utils/api/index";
+import { createUser, readUserByEmail } from "./../../utils/api/index";
+
+//Redux
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import actions from "./../../actions";
 
+//Firebase Google Signup/Login
 const provider = new GoogleAuthProvider();
 
 ReactModal.setAppElement("#root");
 
 function SignupLoginModal(props) {
+  const history = useHistory();
+
   const dispatch = useDispatch();
   const isUserLoggedIn = useSelector((state) => state.login);
 
@@ -34,7 +41,6 @@ function SignupLoginModal(props) {
   const [loginPassword, setLoginPassword] = useState("");
   const [userLoginToken, setUserLoginToken] = useState(null);
   const [user, setUser] = useState({});
-  const [data, setData] = useState("");
 
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
@@ -55,6 +61,20 @@ function SignupLoginModal(props) {
       );
       setUserLoginToken(user.user.accessToken);
       console.log("User Logged In? " + JSON.stringify(user));
+      if (user) {
+        const getUserFromDb = await readUserByEmail(loginEmail);
+        dispatch(
+          actions.loginUser(
+            user.user.accessToken,
+            getUserFromDb.admin,
+            getUserFromDb.username,
+            getUserFromDb.email,
+            getUserFromDb.CWID
+          )
+        );
+
+        history.push("/schedules");
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -78,12 +98,15 @@ function SignupLoginModal(props) {
         console.log(addToDb.admin);
         dispatch(
           actions.loginUser(
+            user.user.accessToken,
             addToDb.admin,
             registerEmail.split("@")[0],
             registerEmail,
             registerCwid
           )
         );
+
+        history.push("/schedules");
       }
     } catch (error) {
       console.log(error.message);

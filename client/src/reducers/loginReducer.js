@@ -1,9 +1,5 @@
 const initalState = {
   isLoggedIn: false,
-  isAdmin: false,
-  username: null,
-  email: null,
-  CWID: null,
 };
 
 const loginReducer = (state = initalState, action) => {
@@ -14,6 +10,7 @@ const loginReducer = (state = initalState, action) => {
       return [
         {
           isLoggedIn: true,
+          firebaseToken: payload.firebaseToken,
           isAdmin: payload.isAdmin,
           username: payload.username,
           email: payload.email,
@@ -25,9 +22,6 @@ const loginReducer = (state = initalState, action) => {
       return [
         {
           isLoggedIn: false,
-          username: null,
-          email: null,
-          CWID: null,
         },
       ];
 
