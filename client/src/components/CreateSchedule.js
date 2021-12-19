@@ -718,7 +718,7 @@ export function CreateSchedule() {
       <div className="sidebar">
         <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
-        {user.admin ? <a href="/admin" className="sidebar-button">
+        {user.isAdmin ? <a href="/admin" className="sidebar-button">
           Admin
         </a> : "" }
         <a
@@ -727,7 +727,7 @@ export function CreateSchedule() {
         >
           Create Schedule
         </a>
-        <a href="/schedulespage" className="sidebar-button">
+        <a href="/schedules" className="sidebar-button">
           Schedules
         </a>
         <div className="sidebar-button" onClick={() => handleSignout()}>

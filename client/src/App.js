@@ -25,11 +25,19 @@ function App() {
               )}
             </Route>
 
-            <Route exact path="/admin">
+            {/* <Route exact path="/admin">
               {useSelector((state) => state.login)[0].isLoggedIn === false ? (
                 <Redirect to="/" />
               ) : (
                 <Admin />
+              )}
+            </Route> */}
+
+            <Route exact path="/admin">
+              {useSelector((state) => state.login)[0].isAdmin === true ? (
+                <Admin />
+              ) : (
+                <Redirect to="/" />
               )}
             </Route>
 

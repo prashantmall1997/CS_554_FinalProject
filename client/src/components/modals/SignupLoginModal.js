@@ -61,6 +61,7 @@ function SignupLoginModal(props) {
         history.push("/schedules");
       }
     } catch (error) {
+      alert("Email and password combination not found.");
       console.log(error.message);
     }
   };
