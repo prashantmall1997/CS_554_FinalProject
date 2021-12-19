@@ -1,11 +1,11 @@
 import React,  { useEffect,useState} from 'react';
 import { Navbar, Nav, Button, Form, Row, Col, Card} from 'react-bootstrap';
-import userProfileImage from '../assets/images/userProfile.jpeg';
+//import userProfileImage from '../assets/images/userProfile.jpeg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import { readUserByEmail, updateUser } from '../utils/api/apis/userApi.js';
-import { useSelector, useDispatch } from 'react-redux';
-import actions from '../actions.js';
+import { useSelector } from 'react-redux';
+//import actions from '../actions.js';
  
 export function UserProfile() {
     //console.log("props " + props.match.params.username);
@@ -14,23 +14,21 @@ export function UserProfile() {
     const [error, setError] = useState(false);
     const [isDisabled, setIsDisabled] = useState(true);
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
    
-    let userDetails = dispatch(
-          actions.loginUser(
-            false,
-            "mrunalsalunke18",
-            "mrunalsalunke18@gmail.com",
-            "10467935"
-          )
-        );
+    // let userDetails = dispatch(
+    //       actions.loginUser(
+    //         false,
+    //         "mrunalsalunke18",
+    //         "mrunalsalunke18@gmail.com",
+    //         "10467935"
+    //       )
+    //     );
     
-    // userDetails = dispatch(actions.loginUser);
-    //console.log("UserDetails " + JSON.stringify(userDetails));
     
-    //const userDetails = useSelector((state) => state.login);
-    //console.log("Logged In User1 " + JSON.stringify(userDetails));
-
+    const userDetailsArray = useSelector((state) => state.login);
+    console.log("Logged In User1 " + JSON.stringify(userDetailsArray[0]));
+    let userDetails = userDetailsArray[0];
     let email = document.getElementById('email');
     // let password = document.getElementById('password');
     let cwid = document.getElementById('cwid');
@@ -74,7 +72,7 @@ export function UserProfile() {
     useEffect(() => {
         async function fetchData() {
             try { 
-                const userData = await readUserByEmail(userDetails.payload.email);
+                const userData = await readUserByEmail(userDetails.email);
             
                 if (userData ===  null || userData === undefined) {
                     setError(true);
@@ -88,7 +86,7 @@ export function UserProfile() {
             }
         }
         fetchData();
-    },[userDetails.payload.email]);
+    },[userDetails.email]);
 
     if (loading) {
         return (
