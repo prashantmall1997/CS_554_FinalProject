@@ -1,12 +1,12 @@
 import "./App.css";
 import { readAllClasses } from "./utils/api/apis/classApi";
 import React, { useEffect, useState } from "react";
-import FirebaseTest from "./components/FirebaseTest";
-import CreateSchedule from "./components/CreateSchedule";
-import Admin from "./components/Admin";
-import Home from "./components/Home";
+import FirebaseTest from "./Components/FirebaseTest";
+import CreateSchedule from "./Components/CreateSchedule";
+import Admin from "./Components/Admin";
+import Home from "./Components/Home";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import SchedulesPage from "./components/SchedulesPage";
+import SchedulesPage from "./Components/SchedulesPage";
 
 function App() {
 	const [allClasses, setAllClasses] = useState([]);
@@ -24,7 +24,7 @@ function App() {
 						<Route exact path="/" component={Home} />
 						<Route exact path="/admin" component={Admin} />
 						<Route exact path="/createschedule" component={CreateSchedule} />
-						<Route exact path="/schedules" component={SchedulesPage} />
+						<Route exact path="/schedules/:email" component={SchedulesPage} />
 					</Switch>
 				</div>
 			</div>
