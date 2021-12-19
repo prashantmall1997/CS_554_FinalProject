@@ -1,6 +1,12 @@
-const loginUser = (isAdmin, username, email, CWID) => ({
+const loginUser = (firebaseToken, isAdmin, username, email, CWID) => ({
   type: "LOG_IN_USER",
-  payload: { isAdmin: isAdmin, username: username, email: email, CWID: CWID },
+  payload: {
+    firebaseToken: firebaseToken,
+    isAdmin: isAdmin,
+    username: username,
+    email: email,
+    CWID: CWID,
+  },
 });
 
 const logoutUser = () => ({

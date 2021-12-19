@@ -7,7 +7,7 @@ import { readUserByEmail, updateUser } from '../utils/api/apis/userApi.js';
 import { useSelector } from 'react-redux';
 //import actions from '../actions.js';
  
-function UserProfile() {
+export function UserProfile() {
     //console.log("props " + props.match.params.username);
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(undefined);
