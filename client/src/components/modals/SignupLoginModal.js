@@ -16,15 +16,17 @@ import { createUser } from "../../utils/api/index";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import actions from "../../actions";
+import { useHistory } from "react-router-dom";
 
 const provider = new GoogleAuthProvider();
 
 ReactModal.setAppElement("#root");
 
 function SignupLoginModal(props) {
+  const history = useHistory();
   const dispatch = useDispatch();
   const isUserLoggedIn = useSelector((state) => state.login);
-  console.log("1 "+JSON.stringify(isUserLoggedIn));
+  //console.log("1 "+JSON.stringify(isUserLoggedIn));
   const [whichModal, setWhichModal] = useState(props.modal);
   const [showModal, setShowModal] = useState(props.isOpen);
   const [registerEmail, setRegisterEmail] = useState("");
@@ -55,6 +57,7 @@ function SignupLoginModal(props) {
       );
       setUserLoginToken(user.user.accessToken);
       console.log("User Logged In? " + JSON.stringify(user));
+      history.push("/userProfile");
     } catch (error) {
       console.log(error.message);
     }
@@ -84,7 +87,8 @@ function SignupLoginModal(props) {
             registerCwid
           )
         );
-  console.log("2 "+JSON.stringify(isUserLoggedIn));
+  //console.log("2 "+JSON.stringify(isUserLoggedIn));
+        history.push("/userProfile");
       }
     } catch (error) {
       console.log(error.message);
@@ -207,6 +211,7 @@ function SignupLoginModal(props) {
           <label htmlFor="CWID">
             <input
               name="CWID"
+              className="auth"
               id="CWID"
               type="number"
               placeholder="Enter CWID"
