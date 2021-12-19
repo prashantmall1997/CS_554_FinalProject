@@ -1,24 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
 import FileReader from "./FileReader";
+import { readAllUsers, readAllClasses, removeUser } from "../utils/api";
 
 export function Admin() {
     const [userToDelete, setUserToDelete] = useState("");
+    const [allUsers, setAllUsers] = useState([]);
+    const [allClasses, setAllClasses] = useState([]);
 
-    const deleteConfirmButton = (email, isAdmin) => {
+    useEffect(() => {
+        readAllUsers().then((users) => {
+            setAllUsers(users);
+        });
+    }, [userToDelete]);
+    useEffect(() => {
+        readAllClasses().then((classes) => {
+            setAllClasses(classes);
+        });
+    }, []);
+
+    const deleteUser = (username) => {
+        removeUser(username).then(() => {
+            setUserToDelete("");
+        })
+    }
+
+    const deleteConfirmButton = (username, isAdmin) => {
         if (isAdmin === true) {
             return "Admin cannot be deleted";
         }
 
-        if (email !== userToDelete) {
+        if (username !== userToDelete) {
             return (
-                <Button variant="danger" size="sm" onClick={() => {setUserToDelete(email)}}>Delete User</Button>
+                <Button variant="danger" size="sm" onClick={() => {setUserToDelete(username)}}>Delete User</Button>
             );
         } else {
             return (
                 <div>
-                    <Button variant="danger" size="sm" className="m-1" onClick={() => {deleteUser(email)}}>Confirm Delete</Button>
+                    <Button variant="danger" size="sm" className="m-1" onClick={() => {deleteUser(username)}}>Confirm Delete</Button>
                     <br />
                     <Button variant="secondary" size="sm" className="m-1" onClick={() => {setUserToDelete("")}}>Cancel</Button>
                 </div>
@@ -26,73 +46,25 @@ export function Admin() {
         }
     }
 
-    const deleteUser = (email) => {
-        // todo add delete user code
-        setUserToDelete("");
-    }
-
     const handleSignout = () => {
-        // signout code
+        // todo signout code
     };
 
-    let username = "admin";
-
-    // dummy user data
-    const userList = [
-        {
-            username: "jperalta",
-            email: "jperalta@stevens.edu",
-            schedules: [],
-            CWID: "04200420",
-            admin: false
-        },
-        {
-            username: "asantiago",
-            email: "asantiago@stevens.edu",
-            schedules: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"],
-            CWID: "12345678",
-            admin: true
-        },
-        {
-            username: "rholt",
-            email: "rholt@stevens.edu",
-            schedules: ["s1", "s2", "s3", "s4", "s5"],
-            CWID: "11111111",
-            admin: false
-        },
-        {
-            username: "rdiaz",
-            email: "rdiaz@stevens.edu",
-            schedules: ["s1"],
-            CWID: "00000000",
-            admin: false
-        },
-        {
-            username: "tjeffords",
-            email: "tjeffords@stevens.edu",
-            schedules: ["s1", "s2", "s3"],
-            CWID: "99999999",
-            admin: false
-        },
-        {
-            username: "cboyle",
-            email: "cboyle@stevens.edu",
-            schedules: ["s1", "s2", "s3", "s4"],
-            CWID: "10000000",
-            admin: false
-        },
-        {
-            username: "glinetti",
-            email: "glinetti@stevens.edu",
-            schedules: [],
-            CWID: "77777777",
-            admin: false
-        }
-    ];
+    let username = "admin"; //todo change when auth is added
 
     let totalSavedSchedules = 0;
-    for (let user of userList) {
+    for (let user of allUsers) {
         totalSavedSchedules += user.schedules.length;
+    }
+
+    let numberOfClasses = 0;
+    if (allClasses !== undefined) {
+        numberOfClasses = allClasses.length;
+    }
+
+    let numberOfUsers = 0;
+    if (allUsers !== undefined) {
+        numberOfUsers = allUsers.length;
     }
 
     return (
@@ -104,7 +76,8 @@ export function Admin() {
                 <div className="sidebar-text">Welcome, {username}</div>
                 <br />
                 <a href="/admin" className="sidebar-button sidebar-button-active">Admin</a>
-                <a href="/schedulespage" className="sidebar-button">Scheduler</a>
+                <a href="/createschedules" className="sidebar-button">Create Schedule</a>
+                <a href="/schedules" className="sidebar-button">Schedules</a>
                 <div className="sidebar-button" onClick={handleSignout}>Sign out</div>
             </div>
             <div className="main-content">
@@ -129,13 +102,13 @@ export function Admin() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {userList.map((user) =>
+                                {allUsers.map((user) =>
                                     <tr>
                                         <td>{user.username}</td>
                                         <td>{user.email}</td>
                                         <td>{user.CWID}</td>
                                         <td>{user.schedules.length}</td>
-                                        <td>{deleteConfirmButton(user.email, user.admin)}</td>
+                                        <td>{deleteConfirmButton(user.username, user.admin)}</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -151,7 +124,7 @@ export function Admin() {
                             <Card.Body>
                                 <Card.Title className="text-center">AVAILABLE COURSES</Card.Title>
                                 <Card.Text>
-                                    1234
+                                    {numberOfClasses}
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -169,11 +142,11 @@ export function Admin() {
                     </Col>
                     <Col>
                         <Card className="p-2">
-                            <Card.Img className="transparent-img" variant="top" src="/assets/view.png" alt="site views" />
+                            <Card.Img className="transparent-img" variant="top" src="/assets/view.png" alt="number of users" />
                             <Card.Body>
-                                <Card.Title className="text-center">SITE VIEWS</Card.Title>
+                                <Card.Title className="text-center">TOTAL USERS</Card.Title>
                                 <Card.Text>
-                                    201
+                                    {numberOfUsers}
                                 </Card.Text>
                             </Card.Body>
                         </Card>

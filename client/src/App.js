@@ -8,6 +8,7 @@ import Home from "./components/Home";
 import Admin from "./components/Admin";
 import CreateSchedule from "./components/CreateSchedule";
 import SchedulesPage from "./components/SchedulesPage";
+import UserProfile from "./components/UserProfile";
 
 function App() {
   const loggedIn = useSelector((state) => state.login)[0].isLoggedIn;
@@ -47,6 +48,14 @@ function App() {
                 <Redirect to="/" />
               ) : (
                 <SchedulesPage />
+              )}
+            </Route>
+
+            <Route exact path="/userprofile">
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
+                <Redirect to="/" />
+              ) : (
+                <UserProfile />
               )}
             </Route>
 
