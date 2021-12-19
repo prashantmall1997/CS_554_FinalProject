@@ -147,7 +147,6 @@ body {
 }
 
 input.auth {
-	background: #fff;
 	border: 1px solid #dbdbdb;
 	border-radius: 2px;
 	box-sizing: border-box;
@@ -156,7 +155,6 @@ input.auth {
 	width: 100%;
 	outline: none;
 	padding: 10px;
-
 	background-color: #ddd;
 	height: 100%;
 }
@@ -164,9 +162,9 @@ input.auth {
 .sidebar {
 	background-color: #333;
 	color: white;
-	width: 20%;
+	width: 15%;
 	text-align: left;
-	font-size: 1.5em;
+	font-size: 1em;
 	position: fixed;
 	float: left;
 	vertical-align: top;
@@ -215,15 +213,15 @@ input.auth {
 
 .main-content {
 	padding: 1.5rem;
-	margin-left: 20%;
+	margin-left: 15%;
 	margin-top: 50px;
-	width: 80%;
+	width: 85%;
+	background-color: #ddd;
 }
 
 .scroll-table {
 	overflow-y: scroll;
-	height: 200px;
-
+	height: 300px;
 	margin: 10px;
 	border-radius: 20px;
 }
@@ -311,8 +309,44 @@ input[type="radio"]:checked {
 }
 
 .add-remove-course {
-	border: none;
+  border: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  background: transparent;
+
+}
+
+/* .profileImage{
+  width: 0.5rem;
+  height: 5rem;
+} */
+
+.profileButtons {
+  padding: 1rem;
+}
+
+
+.navBar {
+	background-color: #bb0f17;
+	color: white;
+	font-size: 2em;
 	font-weight: bold;
-	font-size: 0.9rem;
-	background: transparent;
+	text-align: left;
+	position: fixed;
+	height: 50px;
+	top: 0;
+	width: 100%;
+	padding-left: 10px;
+	
+}
+
+.navBrand {
+	color: white;
+}
+
+.navLink {
+	color: white;
+	font-size: 1em;
+	text-align: left;
+	
 }

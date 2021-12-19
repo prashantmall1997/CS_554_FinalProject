@@ -1,34 +1,73 @@
 import "./App.css";
-import { readAllClasses, readClassesBySchedule } from "./utils/api/apis/classApi";
-import React, { useEffect, useState } from "react";
-import FirebaseTest from "./Components/FirebaseTest";
-import CreateSchedule from "./Components/CreateSchedule";
-import Admin from "./Components/Admin";
-import Home from "./Components/Home";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import SchedulesPage from "./Components/SchedulesPage";
+import { Redirect } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+//Import all components
+import Home from "./components/Home";
+import Admin from "./components/Admin";
+import CreateSchedule from "./components/CreateSchedule";
+import SchedulesPage from "./components/SchedulesPage";
+import UserProfile from "./components/UserProfile";
 
 function App() {
-	const [allClasses, setAllClasses] = useState([]);
-	useEffect(() => {
-		readAllClasses().then((classes) => {
-			setAllClasses(classes);
-		});
-	}, []);
-	//console.log(allClasses);
-	return (
-		<Router>
-			<div className="App">
-				<div className="App-body">
-					<Switch>
-						<Route exact path="/" component={Home} />
-						<Route exact path="/admin" component={Admin} />
-						<Route exact path="/createschedule" component={CreateSchedule} />
-						<Route exact path="/schedules" component={SchedulesPage} />
-					</Switch>
-				</div>
-			</div>
-		</Router>
-	);
+  console.log(useSelector((state) => state.login));
+  return (
+    <Router>
+      <div className="App">
+        <div className="App-body">
+          <Switch>
+            <Route exact path="/">
+              {useSelector((state) => state.login)[0].isLoggedIn === true ? (
+                <Redirect to="/schedules" />
+              ) : (
+                <Home />
+              )}
+            </Route>
+
+            {/* <Route exact path="/admin">
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
+                <Redirect to="/" />
+              ) : (
+                <Admin />
+              )}
+            </Route> */}
+
+            <Route exact path="/admin">
+              {useSelector((state) => state.login)[0].isAdmin === true ? (
+                <Admin />
+              ) : (
+                <Redirect to="/" />
+              )}
+            </Route>
+
+            <Route exact path="/createschedule">
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
+                <Redirect to="/" />
+              ) : (
+                <CreateSchedule />
+              )}
+            </Route>
+
+            <Route exact path="/schedules">
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
+                <Redirect to="/" />
+              ) : (
+                <SchedulesPage />
+              )}
+            </Route>
+
+            <Route exact path="/userprofile">
+              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
+                <Redirect to="/" />
+              ) : (
+                <UserProfile />
+              )}
+            </Route>
+          </Switch>
+        </div>
+      </div>
+    </Router>
+  );
 }
 export default App;
