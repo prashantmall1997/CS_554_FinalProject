@@ -11,7 +11,6 @@ const loginReducer = (state = initalState, action) => {
 
   switch (type) {
     case "LOG_IN_USER":
-      console.log("ISSSSSSSSSSSS" + JSON.stringify(payload));
       return [
         {
           isLoggedIn: true,
