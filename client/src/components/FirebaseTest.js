@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { auth } from "./../config/firebase-config";
+import { auth } from "../config/firebase-config";
 import axios from "axios";
 
 require("dotenv").config();
