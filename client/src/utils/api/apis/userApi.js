@@ -57,7 +57,7 @@ export const removeUser = async(username) => {
     return data.data;
 }
 
-export const updateUser = async(username, email, CWID) => {
+export const updateUser = async (username, email, CWID) => {
     let payload = {
         username: username,
         email: email,
