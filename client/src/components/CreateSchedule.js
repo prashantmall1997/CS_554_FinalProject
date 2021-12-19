@@ -428,7 +428,7 @@ export function CreateSchedule() {
   const handleRemoveSchedule = (e) => {
     const id = activeSchedule._id;
     removeSchedule(id).then(() => {
-      removeScheduleFromUser("jperry20", id).then(() => {
+      removeScheduleFromUser(user.username, id).then(() => {
         setActiveSchedule({
           _id: "",
           name: "",
@@ -738,6 +738,12 @@ export function CreateSchedule() {
         ) : (
           ""
         )}
+        <a
+          href="/userprofile"
+          className="sidebar-button"
+        >
+          User Profile
+        </a>
         <a
           href="/createschedule"
           className="sidebar-button sidebar-button-active"

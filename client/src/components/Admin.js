@@ -106,7 +106,10 @@ export function Admin() {
         <a href="/admin" className="sidebar-button sidebar-button-active">
           Admin
         </a>
-        <a href="/createschedules" className="sidebar-button">
+        <a href="/userprofile" className="sidebar-button">
+          User Profile
+        </a>
+        <a href="/createschedule" className="sidebar-button">
           Create Schedule
         </a>
         <a href="/schedules" className="sidebar-button">
