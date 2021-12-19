@@ -40,6 +40,7 @@ app.use("*", async (req, res, next) => {
     next();
   } else {
     firebase.decodeToken;
+    next()
   }
 });
 
