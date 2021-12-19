@@ -33,21 +33,17 @@ app.use(
 );
 
 app.use("*", async (req, res, next) => {
-  console.log(req.originalUrl);
   if (
     req.originalUrl === "/users/readByEmail" ||
     req.originalUrl === "/users/create"
   ) {
     next();
   } else {
-    firebase.decodeToken;
-    next()
+    firebase.decodeToken(req, res, next);
   }
 });
 
-
-app.use('*', async(req, res, next) => {
-
+app.use("*", async (req, res, next) => {
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;
