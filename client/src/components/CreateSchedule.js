@@ -11,14 +11,15 @@ import {
   removeClassFromSchedule,
   addScheduleToUser,
   removeScheduleFromUser,
+  readUserByUsername
 } from "../utils/api";
 import moment from "moment";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import actions from "./../actions";
 
 export function CreateSchedule() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.login[0]);
 
   const [activeSchedule, setActiveSchedule] = useState({
     _id: "",
@@ -30,18 +31,23 @@ export function CreateSchedule() {
   const [activeClasses, setActiveClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [userId, setUserId] = useState("");
 
-  // todo replace with actual id of logged in user
-  const userId = "61a7c026ebec6df893bd3b64";
-
+  useEffect(() => {
+    readUserByUsername(user.username).then((info) => {
+      setUserId(info._id);
+    });
+  }, []);
   useEffect(() => {
     readAllClasses().then((classes) => {
       setAllClasses(classes);
     });
   }, []);
   useEffect(() => {
-    readSchedulesByUser(userId).then((schedules) => {
-      setSchedules(schedules);
+    readUserByUsername(user.username).then((info) => {
+      readSchedulesByUser(info._id).then((schedules) => {
+        setSchedules(schedules);
+      });
     });
   }, [activeSchedule]);
   useEffect(() => {
@@ -511,12 +517,10 @@ export function CreateSchedule() {
     }
   };
 
-  // todo replace userId with actual user
   const handleAddSchedule = (e) => {
     createSchedule(e.target.form[0].value, e.target.form[1].value, userId).then(
       (sched) => {
-        addScheduleToUser("jperry20", sched._id).then(() => {
-          // todo get username of signed in user
+        addScheduleToUser(user.username, sched._id).then(() => {
           readSchedulesByUser(userId).then((schedules) => {
             setSchedules(schedules);
           });
@@ -705,23 +709,18 @@ export function CreateSchedule() {
   };
 
   const handleSignout = () => {
-    // todo signout code
-
     dispatch(actions.logoutUser());
   };
-
-  // todo replace with username
-  let username = "username";
 
   return (
     <div>
       <div className="topbar">SIT Scheduler 2.0</div>
       <div className="sidebar">
-        <div className="sidebar-text">Welcome, {username}</div>
+        <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
-        <a href="/admin" className="sidebar-button">
+        {user.admin ? <a href="/admin" className="sidebar-button">
           Admin
-        </a>
+        </a> : "" }
         <a
           href="/createschedule"
           className="sidebar-button sidebar-button-active"
