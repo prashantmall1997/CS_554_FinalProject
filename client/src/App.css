@@ -221,7 +221,7 @@ input.auth {
 
 .scroll-table {
 	overflow-y: scroll;
-	height: 200px;
+	height: 300px;
 	margin: 10px;
 	border-radius: 20px;
 }
@@ -309,8 +309,37 @@ input[type="radio"]:checked {
 }
 
 .add-remove-course {
-	border: none;
+  border: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  background: transparent;
+
+}
+
+/* .profileImage{
+  width: 0.5rem;
+  height: 5rem;
+} */
+
+.profileButtons {
+  padding: 1rem;
+}
+
+
+.navBar {
+	background-color: #bb0f17;
+	color: white;
+	font-size: 2em;
 	font-weight: bold;
-	font-size: 0.9rem;
-	background: transparent;
+	text-align: left;
+	position: fixed;
+	height: 50px;
+	top: 0;
+	width: 100%;
+	padding-left: 10px;
+	
+}
+
+.navBrand {
+	color: white;
 }
