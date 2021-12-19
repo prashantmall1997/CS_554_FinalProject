@@ -25,20 +25,23 @@ function SchedulesPage() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState("");
 	const [schedulesData, setSchedulesData] = useState();
+	const [schedulesArr, setSchedulesArr] = useState([]);
 
-	const dispatch = useDispatch();
+	// const dispatch = useDispatch();
 	// let userDetails = dispatch(
 	// 	actions.loginUser(false, "jperry20", "jperry1@stevens.edu", "10458321")
 	// );
 	// let activeUser = useSelector((state) => state.login);
 	// console.log(activeUser);
 	const userDetailsArray = useSelector((state) => state.login);
-	console.log("Logged In User1 " + JSON.stringify(userDetailsArray[0]));
+	//console.log("Logged In User1 " + JSON.stringify(userDetailsArray[0]));
 	let userDetails = userDetailsArray[0];
-	console.log(userDetails);
+	//console.log(userDetails);
 
 	const getTimes = (course) => {
 		// initialize course time
+		// console.log("course");
+		// console.log(course);
 		let times = {
 			days: [],
 			start: moment("12:00 AM", "h:mm A"),
@@ -62,284 +65,286 @@ function SchedulesPage() {
 
 		return times;
 	};
+	let appointments;
+	let schedules = [];
 
-	let schedules = [
-		// {
-		// 	title: "CS 510",
-		// 	startDate: new Date(2021, 5, 25, 9, 35),
-		// 	endDate: new Date(2021, 5, 25, 11, 30),
-		// },
-		// {
-		// 	title: "CS 511",
-		// 	startDate: new Date(2021, 5, 25, 12, 11),
-		// 	endDate: new Date(2021, 5, 25, 13, 0),
-		// 	id: 1,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 515",
-		// 	startDate: new Date(2021, 5, 25, 14, 30),
-		// 	endDate: new Date(2021, 5, 25, 15, 35),
-		// 	id: 2,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 520",
-		// 	startDate: new Date(2021, 5, 26, 10, 0),
-		// 	endDate: new Date(2021, 5, 26, 11, 0),
-		// 	id: 3,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 521",
-		// 	startDate: new Date(2021, 5, 26, 12, 0),
-		// 	endDate: new Date(2021, 5, 26, 13, 35),
-		// 	id: 4,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 522",
-		// 	startDate: new Date(2021, 5, 26, 14, 30),
-		// 	endDate: new Date(2021, 5, 26, 15, 45),
-		// 	id: 5,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 523",
-		// 	startDate: new Date(2021, 5, 27, 9, 45),
-		// 	endDate: new Date(2021, 5, 27, 11, 15),
-		// 	id: 6,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 524",
-		// 	startDate: new Date(2021, 5, 27, 12, 0),
-		// 	endDate: new Date(2021, 5, 27, 14, 0),
-		// 	id: 7,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 530",
-		// 	startDate: new Date(2021, 5, 27, 15, 15),
-		// 	endDate: new Date(2021, 5, 27, 16, 30),
-		// 	id: 8,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 534",
-		// 	startDate: new Date(2021, 5, 28, 11, 0),
-		// 	endDate: new Date(2021, 5, 28, 12, 0),
-		// 	id: 9,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 535",
-		// 	startDate: new Date(2021, 5, 28, 11, 0),
-		// 	endDate: new Date(2021, 5, 28, 13, 30),
-		// 	id: 10,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 540",
-		// 	startDate: new Date(2021, 5, 28, 14, 0),
-		// 	endDate: new Date(2021, 5, 28, 15, 30),
-		// 	id: 11,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 541",
-		// 	startDate: new Date(2021, 5, 29, 10, 0),
-		// 	endDate: new Date(2021, 5, 29, 11, 30),
-		// 	id: 12,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 542",
-		// 	startDate: new Date(2021, 5, 29, 14, 30),
-		// 	endDate: new Date(2021, 5, 29, 16, 0),
-		// 	id: 13,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 544",
-		// 	startDate: new Date(2021, 5, 29, 16, 30),
-		// 	endDate: new Date(2021, 5, 29, 18, 0),
-		// 	id: 14,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 545",
-		// 	startDate: new Date(2021, 5, 29, 12, 20),
-		// 	endDate: new Date(2021, 5, 29, 14, 0),
-		// 	id: 15,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 546",
-		// 	startDate: new Date(2021, 6, 2, 9, 30),
-		// 	endDate: new Date(2021, 6, 2, 15, 30),
-		// 	id: 16,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 550",
-		// 	startDate: new Date(2021, 6, 2, 12, 0),
-		// 	endDate: new Date(2021, 6, 2, 13, 0),
-		// 	id: 17,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 555",
-		// 	startDate: new Date(2021, 6, 2, 14, 30),
-		// 	endDate: new Date(2021, 6, 2, 17, 30),
-		// 	id: 18,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 554",
-		// 	startDate: new Date(2021, 6, 2, 16, 0),
-		// 	endDate: new Date(2021, 6, 3, 9, 0),
-		// 	id: 19,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 560",
-		// 	startDate: new Date(2021, 6, 3, 10, 15),
-		// 	endDate: new Date(2021, 6, 3, 13, 35),
-		// 	id: 20,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 561",
-		// 	startDate: new Date(2021, 6, 3, 14, 30),
-		// 	endDate: new Date(2021, 6, 3, 15, 45),
-		// 	id: 21,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 562",
-		// 	startDate: new Date(2021, 6, 3, 15, 45),
-		// 	endDate: new Date(2021, 6, 4, 12, 15),
-		// 	id: 22,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 563",
-		// 	startDate: new Date(2021, 6, 4, 12, 35),
-		// 	endDate: new Date(2021, 6, 4, 14, 15),
-		// 	id: 23,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 564",
-		// 	startDate: new Date(2021, 6, 4, 15, 15),
-		// 	endDate: new Date(2021, 6, 4, 20, 30),
-		// },
-		// {
-		// 	title: "CS 565",
-		// 	startDate: new Date(2021, 6, 5, 6, 0),
-		// 	endDate: new Date(2021, 6, 5, 14, 20),
-		// },
-		// {
-		// 	title: "CS 570",
-		// 	startDate: new Date(2021, 6, 5, 14, 35),
-		// 	endDate: new Date(2021, 6, 5, 16, 20),
-		// 	id: 26,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CC 571",
-		// 	startDate: new Date(2021, 6, 5, 10, 0),
-		// 	endDate: new Date(2021, 6, 5, 11, 20),
-		// 	id: 27,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 573",
-		// 	startDate: new Date(2021, 6, 5, 20, 0),
-		// 	endDate: new Date(2021, 6, 6, 13, 30),
-		// 	id: 28,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 580",
-		// 	startDate: new Date(2021, 6, 6, 14, 10),
-		// 	endDate: new Date(2021, 6, 6, 15, 30),
-		// 	id: 29,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 581",
-		// 	startDate: new Date(2021, 6, 6, 10, 0),
-		// 	endDate: new Date(2021, 6, 7, 14, 30),
-		// 	id: 30,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "UCS 585",
-		// 	startDate: new Date(2021, 6, 3, 9, 30),
-		// 	endDate: new Date(2021, 6, 3, 12, 25),
-		// 	id: 31,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 586",
-		// 	startDate: new Date(2021, 6, 3, 12, 30),
-		// 	endDate: new Date(2021, 6, 3, 18, 0),
-		// 	id: 32,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 587",
-		// 	startDate: new Date(2021, 6, 3, 12, 20),
-		// 	endDate: new Date(2021, 6, 3, 14, 10),
-		// 	id: 33,
-		// 	location: "Room 2",
-		// },
-		// {
-		// 	title: "CS 589",
-		// 	startDate: new Date(2021, 5, 26, 0, 0),
-		// 	endDate: new Date(2021, 5, 27, 0, 0),
-		// 	id: 34,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 592",
-		// 	startDate: new Date(2021, 5, 29, 10, 0),
-		// 	endDate: new Date(2021, 5, 30, 14, 30),
-		// 	id: 35,
-		// 	location: "Room 1",
-		// },
-		// {
-		// 	title: "CS 591",
-		// 	startDate: new Date(2021, 6, 3, 0, 0),
-		// 	endDate: new Date(2021, 6, 4, 10, 30),
-		// 	id: 36,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 590",
-		// 	startDate: new Date(2021, 6, 5, 10, 0),
-		// 	endDate: new Date(2021, 6, 9, 14, 30),
-		// 	id: 37,
-		// 	location: "Room 3",
-		// },
-		// {
-		// 	title: "CS 600",
-		// 	startDate: new Date(2021, 6, 1, 10, 0),
-		// 	endDate: new Date(2021, 6, 3, 14, 30),
-		// },
-		// {
-		// 	title: "CS 610",
-		// 	startDate: new Date(2021, 6, 1),
-		// 	endDate: new Date(2021, 6, 2),
-		// },
+	let sampleSchedules = [
+		{
+			title: "CS 510",
+			startDate: new Date(2021, 5, 25, 9, 35),
+			endDate: new Date(2021, 5, 25, 11, 30),
+		},
+		{
+			title: "CS 511",
+			startDate: new Date(2021, 5, 25, 12, 11),
+			endDate: new Date(2021, 5, 25, 13, 0),
+			id: 1,
+			location: "Room 1",
+		},
+		{
+			title: "CS 515",
+			startDate: new Date(2021, 5, 25, 14, 30),
+			endDate: new Date(2021, 5, 25, 15, 35),
+			id: 2,
+			location: "Room 2",
+		},
+		{
+			title: "CS 520",
+			startDate: new Date(2021, 5, 26, 10, 0),
+			endDate: new Date(2021, 5, 26, 11, 0),
+			id: 3,
+			location: "Room 2",
+		},
+		{
+			title: "CS 521",
+			startDate: new Date(2021, 5, 26, 12, 0),
+			endDate: new Date(2021, 5, 26, 13, 35),
+			id: 4,
+			location: "Room 2",
+		},
+		{
+			title: "CS 522",
+			startDate: new Date(2021, 5, 26, 14, 30),
+			endDate: new Date(2021, 5, 26, 15, 45),
+			id: 5,
+			location: "Room 2",
+		},
+		{
+			title: "CS 523",
+			startDate: new Date(2021, 5, 27, 9, 45),
+			endDate: new Date(2021, 5, 27, 11, 15),
+			id: 6,
+			location: "Room 1",
+		},
+		{
+			title: "CS 524",
+			startDate: new Date(2021, 5, 27, 12, 0),
+			endDate: new Date(2021, 5, 27, 14, 0),
+			id: 7,
+			location: "Room 3",
+		},
+		{
+			title: "CS 530",
+			startDate: new Date(2021, 5, 27, 15, 15),
+			endDate: new Date(2021, 5, 27, 16, 30),
+			id: 8,
+			location: "Room 3",
+		},
+		{
+			title: "CS 534",
+			startDate: new Date(2021, 5, 28, 11, 0),
+			endDate: new Date(2021, 5, 28, 12, 0),
+			id: 9,
+			location: "Room 3",
+		},
+		{
+			title: "CS 535",
+			startDate: new Date(2021, 5, 28, 11, 0),
+			endDate: new Date(2021, 5, 28, 13, 30),
+			id: 10,
+			location: "Room 1",
+		},
+		{
+			title: "CS 540",
+			startDate: new Date(2021, 5, 28, 14, 0),
+			endDate: new Date(2021, 5, 28, 15, 30),
+			id: 11,
+			location: "Room 2",
+		},
+		{
+			title: "CS 541",
+			startDate: new Date(2021, 5, 29, 10, 0),
+			endDate: new Date(2021, 5, 29, 11, 30),
+			id: 12,
+			location: "Room 2",
+		},
+		{
+			title: "CS 542",
+			startDate: new Date(2021, 5, 29, 14, 30),
+			endDate: new Date(2021, 5, 29, 16, 0),
+			id: 13,
+			location: "Room 3",
+		},
+		{
+			title: "CS 544",
+			startDate: new Date(2021, 5, 29, 16, 30),
+			endDate: new Date(2021, 5, 29, 18, 0),
+			id: 14,
+			location: "Room 3",
+		},
+		{
+			title: "CS 545",
+			startDate: new Date(2021, 5, 29, 12, 20),
+			endDate: new Date(2021, 5, 29, 14, 0),
+			id: 15,
+			location: "Room 2",
+		},
+		{
+			title: "CS 546",
+			startDate: new Date(2021, 6, 2, 9, 30),
+			endDate: new Date(2021, 6, 2, 15, 30),
+			id: 16,
+			location: "Room 1",
+		},
+		{
+			title: "CS 550",
+			startDate: new Date(2021, 6, 2, 12, 0),
+			endDate: new Date(2021, 6, 2, 13, 0),
+			id: 17,
+			location: "Room 3",
+		},
+		{
+			title: "CS 555",
+			startDate: new Date(2021, 6, 2, 14, 30),
+			endDate: new Date(2021, 6, 2, 17, 30),
+			id: 18,
+			location: "Room 2",
+		},
+		{
+			title: "CS 554",
+			startDate: new Date(2021, 6, 2, 16, 0),
+			endDate: new Date(2021, 6, 3, 9, 0),
+			id: 19,
+			location: "Room 2",
+		},
+		{
+			title: "CS 560",
+			startDate: new Date(2021, 6, 3, 10, 15),
+			endDate: new Date(2021, 6, 3, 13, 35),
+			id: 20,
+			location: "Room 1",
+		},
+		{
+			title: "CS 561",
+			startDate: new Date(2021, 6, 3, 14, 30),
+			endDate: new Date(2021, 6, 3, 15, 45),
+			id: 21,
+			location: "Room 3",
+		},
+		{
+			title: "CS 562",
+			startDate: new Date(2021, 6, 3, 15, 45),
+			endDate: new Date(2021, 6, 4, 12, 15),
+			id: 22,
+			location: "Room 3",
+		},
+		{
+			title: "CS 563",
+			startDate: new Date(2021, 6, 4, 12, 35),
+			endDate: new Date(2021, 6, 4, 14, 15),
+			id: 23,
+			location: "Room 3",
+		},
+		{
+			title: "CS 564",
+			startDate: new Date(2021, 6, 4, 15, 15),
+			endDate: new Date(2021, 6, 4, 20, 30),
+		},
+		{
+			title: "CS 565",
+			startDate: new Date(2021, 6, 5, 6, 0),
+			endDate: new Date(2021, 6, 5, 14, 20),
+		},
+		{
+			title: "CS 570",
+			startDate: new Date(2021, 6, 5, 14, 35),
+			endDate: new Date(2021, 6, 5, 16, 20),
+			id: 26,
+			location: "Room 1",
+		},
+		{
+			title: "CC 571",
+			startDate: new Date(2021, 6, 5, 10, 0),
+			endDate: new Date(2021, 6, 5, 11, 20),
+			id: 27,
+			location: "Room 2",
+		},
+		{
+			title: "CS 573",
+			startDate: new Date(2021, 6, 5, 20, 0),
+			endDate: new Date(2021, 6, 6, 13, 30),
+			id: 28,
+			location: "Room 3",
+		},
+		{
+			title: "CS 580",
+			startDate: new Date(2021, 6, 6, 14, 10),
+			endDate: new Date(2021, 6, 6, 15, 30),
+			id: 29,
+			location: "Room 3",
+		},
+		{
+			title: "CS 581",
+			startDate: new Date(2021, 6, 6, 10, 0),
+			endDate: new Date(2021, 6, 7, 14, 30),
+			id: 30,
+			location: "Room 1",
+		},
+		{
+			title: "UCS 585",
+			startDate: new Date(2021, 6, 3, 9, 30),
+			endDate: new Date(2021, 6, 3, 12, 25),
+			id: 31,
+			location: "Room 2",
+		},
+		{
+			title: "CS 586",
+			startDate: new Date(2021, 6, 3, 12, 30),
+			endDate: new Date(2021, 6, 3, 18, 0),
+			id: 32,
+			location: "Room 2",
+		},
+		{
+			title: "CS 587",
+			startDate: new Date(2021, 6, 3, 12, 20),
+			endDate: new Date(2021, 6, 3, 14, 10),
+			id: 33,
+			location: "Room 2",
+		},
+		{
+			title: "CS 589",
+			startDate: new Date(2021, 5, 26, 0, 0),
+			endDate: new Date(2021, 5, 27, 0, 0),
+			id: 34,
+			location: "Room 1",
+		},
+		{
+			title: "CS 592",
+			startDate: new Date(2021, 5, 29, 10, 0),
+			endDate: new Date(2021, 5, 30, 14, 30),
+			id: 35,
+			location: "Room 1",
+		},
+		{
+			title: "CS 591",
+			startDate: new Date(2021, 6, 3, 0, 0),
+			endDate: new Date(2021, 6, 4, 10, 30),
+			id: 36,
+			location: "Room 3",
+		},
+		{
+			title: "CS 590",
+			startDate: new Date(2021, 6, 5, 10, 0),
+			endDate: new Date(2021, 6, 9, 14, 30),
+			id: 37,
+			location: "Room 3",
+		},
+		{
+			title: "CS 600",
+			startDate: new Date(2021, 6, 1, 10, 0),
+			endDate: new Date(2021, 6, 3, 14, 30),
+		},
+		{
+			title: "CS 610",
+			startDate: new Date(2021, 6, 1),
+			endDate: new Date(2021, 6, 2),
+		},
 	];
 
 	const currentDate = moment();
 	let date = currentDate.date();
 
-	const makeTodayShcedule = (startDate, endDate) => {
+	const makeTodaySchedule = (startDate, endDate) => {
 		const days = moment(startDate).diff(endDate, "days");
 		const nextStartDate = moment(startDate)
 			.year(currentDate.year())
@@ -356,9 +361,12 @@ function SchedulesPage() {
 		};
 	};
 
-	const appointments = schedules.map(({ startDate, endDate, ...restArgs }) => {
+	// console.log("Before appointments");
+	// console.log(schedulesArr);
+	appointments = schedulesArr.map(({ startDate, endDate, ...restArgs }) => {
+
 		const result = {
-			...makeTodayShcedule(startDate, endDate),
+			...makeTodaySchedule(startDate, endDate),
 			...restArgs,
 		};
 		date += 1;
@@ -366,56 +374,81 @@ function SchedulesPage() {
 		return result;
 	});
 
+	// console.log("appointments");
+	// console.log(appointments);  
+
 	// use effect for getting all the users data specificily the schedule
 	let scheduleIdArr = [];
 	// let classesIdArr = [];
 	let indiClassData = [];
 	const [classesIdArr, setClassesIdArr] = useState("");
 	let dataObj = {};
+	let schedulesArray;
 	useEffect(() => {
 		async function fetchData() {
 			try {
 				const data = await readUserByEmail(userDetails.email);
-				console.log(data);
+				//console.log(data);
 				if (data.length === 0 || data === undefined) {
 					setError(true);
 				} else {
 					setSchedulesData(data);
-					console.log(schedulesData.schedules);
-					for (let i in schedulesData) {
-						scheduleIdArr.push(schedulesData[i].schedules);
+					//console.log("schedules")
+					//console.log(schedulesData);
+					//schedulesArray = schedulesData;
+					schedulesArray = data.schedules;
+					//console.log(schedulesArray);
+					for (let i in schedulesArray) {
+						scheduleIdArr.push(schedulesArray[i]);
 					}
+					// console.log("array");
+					// console.log(scheduleIdArr);
 					for (let j in scheduleIdArr) {
 						const data1 = await readScheduleById(scheduleIdArr[j]);
-						console.log(data1);
+						// console.log("data1");
+						// console.log(data1);
+
 						setClassesIdArr(data1.classes);
 					}
 					for (let k in classesIdArr) {
 						const data2 = await readClassById(classesIdArr[k]);
-						console.log(data2);
+						// console.log("data2");
+						// console.log(data2);
 						indiClassData.push(data2);
 					}
-					// for (let a in indiClassData) {
-					let coursestime = getTimes(indiClassData[0]);
-					let starttime = coursestime.start._d;
-					let endtime = coursestime.end._d;
-					dataObj = {
-						title: indiClassData[0].courseTitle,
-						startDate: starttime,
-						endDate: endtime,
-					};
-					//}
-					schedules.push(dataObj);
-					console.log(schedules);
+					for (let a in indiClassData) {
+						let coursestime = getTimes(indiClassData[a]);
+						let starttime = coursestime.start._d;
+						//console.log(typeof starttime);
+						let endtime = coursestime.end._d;
+						if (starttime != "Invalid Date" || endtime != "Invalid Date") { 
+							dataObj = {
+								title: indiClassData[a].courseTitle,
+								startDate: starttime,
+								endDate: endtime,
+							};
+							schedules.push(dataObj);
+						} else {
+							//its a WS course
+						}
+					}
+					//console.log("in effect schedules");
+					//console.log(schedules);
+					setSchedulesArr(schedules);
+					// console.log("schedules array state");
+					// console.log(schedulesArr);
 				}
 				setLoading(false);
+				
 			} catch (error) {
 				console.log(error);
 			}
 		}
 		fetchData();
+		
 	}, []);
-
+	// console.log("Final schedules");
+	// console.log(schedulesArr);
 	//use effect to store all the course title to display on the sidenav
 	useEffect(() => {
 		async function fetchData() {
