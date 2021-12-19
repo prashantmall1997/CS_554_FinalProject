@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const redis = require("redis");
 const client = redis.createClient({ url: process.env.REDIS_URL });
-const bluebird = require('bluebird');
+const bluebird = require("bluebird");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
@@ -25,14 +25,29 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   cors({
     allowedHeaders: "Content-Type,Authorization",
   })
 );
-app.use("/firebaseTest", firebase.decodeToken);
 
 app.use("*", async (req, res, next) => {
+  console.log(req.originalUrl);
+  if (
+    req.originalUrl === "/users/readByEmail" ||
+    req.originalUrl === "/users/create"
+  ) {
+    next();
+  } else {
+    firebase.decodeToken;
+    next()
+  }
+});
+
+
+app.use('*', async(req, res, next) => {
+
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;

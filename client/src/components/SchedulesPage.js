@@ -18,6 +18,7 @@ import { readUserByEmail } from "../utils/api/apis/userApi";
 import { readAllClasses, readClassById } from "../utils/api/apis/classApi";
 import { readScheduleById } from "../utils/api/apis/scheduleApi";
 import { useSelector, useDispatch } from "react-redux";
+import actions from "./../actions";
 
 function SchedulesPage() {
 	const [allClassesData, setAllClassesData] = useState();
@@ -27,6 +28,7 @@ function SchedulesPage() {
 	const [schedulesArr, setSchedulesArr] = useState([]);
 	const userDetailsArray = useSelector((state) => state.login);
 	let userDetails = userDetailsArray[0];
+	const dispatch = useDispatch();
 
 	const getTimes = (course) => {
 		// initialize course time
@@ -448,6 +450,15 @@ function SchedulesPage() {
 					<Link className="profilepagelink" to="/createschedule">
 						Create New Schedule
 					</Link>
+					{/* Temp button to logout */}
+					<button
+						className="modal-button"
+						onClick={() => {
+							dispatch(actions.logoutUser());
+						}}
+					>
+						Log Out
+					</button>
 					<div>
 						Username:{userDetails.username} CWID:{userDetails.CWID}{" "}
 					</div>
