@@ -10,11 +10,14 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithPopup,
+  deleteUser,
 } from "firebase/auth";
+import { auth } from "./../../config/firebase-config";
+
+//API Function
+import { createUser, readUserByEmail } from "./../../utils/api/index";
 
 //Redux
-import { auth } from "./../../config/firebase-config";
-import { createUser, readUserByEmail } from "./../../utils/api/index";
 import { useDispatch } from "react-redux";
 import actions from "../../actions";
 
@@ -58,7 +61,7 @@ function SignupLoginModal(props) {
             getUserFromDb.CWID
           )
         );
-        history.push("/schedules");
+        history.push("/createschedule");
       }
     } catch (error) {
       alert("Email and password combination not found.");
@@ -89,7 +92,7 @@ function SignupLoginModal(props) {
             registerCwid
           )
         );
-        history.push("/schedules");
+        history.push("/createschedule");
       }
     } catch (error) {
       console.log(error.message);
@@ -120,9 +123,11 @@ function SignupLoginModal(props) {
             getUserFromDb.CWID
           )
         );
-        history.push("/schedules");
+        history.push("/createschedule");
       }
     } catch (error) {
+      deleteUser(auth.currentUser);
+      alert("User must signup first!");
       console.log(error.message);
     }
   };
