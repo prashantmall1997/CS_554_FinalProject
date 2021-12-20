@@ -32,7 +32,11 @@ app.use(
   })
 );
 
-app.use("^/", async (req, res, next) => {
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+}
+
+app.use("*", async (req, res, next) => {
   if (
     req.originalUrl === "/users/readByEmail" ||
     req.originalUrl === "/users/create"
@@ -43,7 +47,7 @@ app.use("^/", async (req, res, next) => {
   }
 });
 
-app.use("^/", async (req, res, next) => {
+app.use("*", async (req, res, next) => {
   let date = new Date().toUTCString();
   let reqmethod = req.method;
   let reqroute = req.originalUrl;
