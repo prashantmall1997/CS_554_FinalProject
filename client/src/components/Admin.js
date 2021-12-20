@@ -4,11 +4,30 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
 import { readAllUsers, readAllClasses, removeUser } from "../utils/api";
 import { deleteUserByEmailFirebase } from "./../utils/api/index";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuth } from "firebase/auth";
+import actions from '../actions.js';
+const auth = getAuth();
+require("dotenv").config();
+
+const elasticsearch = require("elasticsearch");
+const connectionString = process.env.SEARCH_URL;
+const client = new elasticsearch.Client({
+    host: connectionString,
+    maxRetries: 5,
+    requestTimeout: 300000,
+    deadTimeout: 300000,
+    keepAlive: true
+});
 
 export function Admin() {
   const [userToDelete, setUserToDelete] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
+  const [classesIndexed, setClassesIndexed] = useState(0);
+
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.login[0]);
 
   useEffect(() => {
     readAllUsers().then((users) => {
@@ -76,11 +95,10 @@ export function Admin() {
     }
   };
 
-  const handleSignout = () => {
-    // todo signout code
+  const handleSignout = async () => {
+    dispatch(actions.logoutUser());
+    await auth.signOut();
   };
-
-  let username = "admin"; //todo change when auth is added
 
   let totalSavedSchedules = 0;
   for (let user of allUsers) {
@@ -97,11 +115,45 @@ export function Admin() {
     numberOfUsers = allUsers.length;
   }
 
+  const addDocumentToIndex = async(i, info) => {
+    await client.index({
+      index: "classes",
+      type: "document",
+      id: `${i}`,
+      body: {
+        id: `${info._id}`,
+        courseTime: `${info.courseTime}`,
+        courseLevel: `${info.courseLevel}`,
+        courseTotal: `${info.courseTotal}`,
+        coursePrefix: `${info.coursePrefix}`,
+        courseTitle: `${info.courseTitle}`,
+        sectionStatus: `${info.sectionStatus}`,
+        instructor: `${info.instructor}`,
+        sectionDetails: `${info.sectionDetails}`,
+        campus: `${info.campus}`,
+        format: `${info.format}`,
+        deliveryMode: `${info.deliveryMode}`,
+        enrolledCapacity: `${info.enrolledCapacity}`
+      }
+    }).then(() => {
+      setClassesIndexed(i);
+    });
+  }
+
+  const updateIndex = async() => {
+    let i = 0;
+    for (let cl of allClasses) {
+      i++;
+      await addDocumentToIndex(i, cl);
+    }
+    setClassesIndexed(i);
+  }
+
   return (
     <div>
       <div className="topbar">SIT Scheduler 2.0</div>
       <div className="sidebar">
-        <div className="sidebar-text">Welcome, {username}</div>
+        <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
         <a href="/admin" className="sidebar-button sidebar-button-active">
           Admin
@@ -125,6 +177,14 @@ export function Admin() {
           <h2>Upload Latest Schedules</h2>
           <br />
           <FileReader />
+          <br />
+          <Button onClick={() => {
+            updateIndex();
+          }}>
+            Update Search Index
+          </Button>
+          <br />
+          {classesIndexed <= 0 ? "" : `${classesIndexed}/${allClasses.length} classes indexed.`}
         </div>
         <br />
         <div>

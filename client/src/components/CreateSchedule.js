@@ -22,6 +22,31 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "./../actions";
 
+//Elasticsearch
+require("dotenv").config();
+const elasticsearch = require("elasticsearch");
+const connectionString = process.env.SEARCH_URL;
+const client = new elasticsearch.Client({
+    host: connectionString,
+    maxRetries: 5,
+    requestTimeout: 300000,
+    deadTimeout: 300000,
+    keepAlive: true
+});
+
+export function CreateSchedule() {
+    const [activeSchedule, setActiveSchedule] = useState({
+        _id: "",
+        name: "",
+        time: "",
+        creator: "",
+        classes: []
+    });
+    const [activeClasses, setActiveClasses] = useState([]);
+    const [allClasses, setAllClasses] = useState([]);
+    const [schedules, setSchedules] = useState([]);
+    const [textSearchResults, setTextSearchResults] = useState([]);
+
 //Firebase
 import { getAuth } from "firebase/auth";
 const auth = getAuth();
@@ -47,6 +72,57 @@ export function CreateSchedule() {
       setUserId(info._id);
     });
   }, [user.username]);
+    
+    // get distinct values to populate the search options
+    const academicLevels = [...new Set(allClasses.map(item => item.courseLevel))];
+    const semesters = [...new Set(allClasses.map(item => item.courseTime))];
+    const subjects = [...new Set(allClasses.map(item => item.coursePrefix))];
+    const formats = [...new Set(allClasses.map(item => item.format))];
+    const deliveryModes = [...new Set(allClasses.map(item => item.deliveryMode))];
+
+    const handleClassNameSearch = async(e) => {
+        const searchTerm = e.target.value;
+
+        const results = await client.search({
+            index: "classes",
+            body: {
+                query: { 
+                    match: {
+                        courseTitle: `*${searchTerm}*`
+                    }
+                }
+            }
+        });
+        let resultArr = [];
+        for (let result of results.hits.hits) {
+
+        }
+        console.log(results.hits.hits);
+    }
+
+    const handleTextSearch = (e) => {
+        setSearch({
+            name: e.target.value,
+            semester: search.semester,
+            subjects: search.subjects,
+            level: search.level,
+            status: search.status,
+            format: search.format,
+            deliveryMode: search.deliveryMode
+        });
+    };
+
+    const handleSemesterSearch = (e) => {
+        setSearch({
+            name: search.name,
+            semester: e.target.value,
+            subjects: search.subjects,
+            level: search.level,
+            status: search.status,
+            format: search.format,
+            deliveryMode: search.deliveryMode
+        });
+    };
 
   useEffect(() => {
     readAllClasses().then((classes) => {
@@ -526,6 +602,154 @@ export function CreateSchedule() {
           });
         });
       }
+    }
+  }
+
+  const courseForm = () => {
+    return (
+      <Row>
+        <Col xs={12} md={3}>
+          <form>
+            <h2>Search</h2>
+                <label htmlFor="courseName" />
+                <input 
+                    onChange={(e) => handleClassNameSearch(e)} 
+                    id="courseName" 
+                    name="courseName" 
+                    placeholder="Search class name..."
+                />
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Semester</Card.Title>
+                    {semesters.map((semester) =>
+                        <div key={`time-${semester}`}>
+                            <label htmlFor={semester} />
+                            <input 
+                                type="radio" 
+                                id={semester}
+                                name="semester"
+                                value={semester}
+                                onChange={(e) => handleSemesterSearch(e)} 
+                            />
+                            <label htmlFor="semester">{semester}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Course Level</Card.Title>
+                    {academicLevels.map((level) =>
+                        <div key={`level-${level}`}>
+                            <input 
+                                type="checkbox" 
+                                id={level.replace(" ", "").toLowerCase} 
+                                name={level.toLowerCase}
+                                value={level}
+                                onChange={(e) => handleLevelSearch(e)} 
+                            />
+                            <label htmlFor={level.toLowerCase}>{level}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Subjects</Card.Title>
+                    {subjects.map((subject) =>
+                        <div key={`subject-${subject}`}>
+                            <input 
+                                type="checkbox" 
+                                id={subject.replace(" ", "").toLowerCase} 
+                                name={subject.replace(" ", "").toLowerCase}
+                                value={subject}
+                                onChange={(e) => handleSubjectSearch(e)}
+                            />
+                            <label htmlFor={subject.replace(" ", "").toLowerCase}>{subject}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Status</Card.Title>
+                    <div key="openstatus">
+                        <input 
+                            type="checkbox" 
+                            id="open"
+                            name="open"
+                            value="Open"
+                            onChange={(e) => handleStatusSearch(e)} 
+                        />
+                        <label htmlFor="open">Open</label>
+                        <br />
+                    </div>
+                    <div key="closedstatus">
+                        <input 
+                            type="checkbox" 
+                            id="closed"
+                            name="closed"
+                            value="Closed"
+                            onChange={(e) => handleStatusSearch(e)} 
+                        />
+                        <label htmlFor="closed">Closed</label>
+                        <br />
+                    </div>
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Formats</Card.Title>
+                    {formats.map((format) =>
+                        <div key={`format-${format}`}>
+                            <input 
+                                type="checkbox" 
+                                id={format.replace(" ", "").toLowerCase} 
+                                name={format.replace(" ", "").toLowerCase}
+                                value={format}
+                                onChange={(e) => handleFormatSearch(e)} 
+                            />
+                            <label htmlFor={format.replace(" ", "").toLowerCase}>{format}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Delivery Format</Card.Title>
+                    {deliveryModes.map((deliveryMode) =>
+                        <div key={`delivery-${deliveryMode}`}>
+                            <input 
+                                type="checkbox" 
+                                id={deliveryMode.replace(" ", "").toLowerCase} 
+                                name={deliveryMode.replace(" ", "").toLowerCase}
+                                value={deliveryMode}
+                                onChange={(e) => handleDeliveryModeSearch(e)} 
+                            />
+                            <label htmlFor={deliveryMode.replace(" ", "").toLowerCase}>{deliveryMode}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+			        </form>
+            </Col>
+            <Col xs={12} md={9}>
+              <h2>Courses</h2>
+              {courses.map(course => 
+                <Col className="p-2 mt-2" key={`courselist-${course._id}`}>
+                  <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
+                    <Card.Title>{course.courseTotal}</Card.Title>
+                    <Card.Body>
+                      <Row xs={1} md={2}>
+                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                      </Row>
+                    </Card.Body>
+                    <Card.Footer>
+                      {addRemoveButton(course)}
+                    </Card.Footer>
+                </Card>
+            </Col>
+            )}
+          </Col>
+        </Row>
+      );
     }
   };
 
