@@ -11,7 +11,6 @@ import SchedulesPage from "./components/SchedulesPage";
 import UserProfile from "./components/UserProfile";
 
 function App() {
-  console.log(useSelector((state) => state.login));
   return (
     <Router>
       <div className="App">
@@ -19,19 +18,11 @@ function App() {
           <Switch>
             <Route exact path="/">
               {useSelector((state) => state.login)[0].isLoggedIn === true ? (
-                <Redirect to="/schedules" />
+                <Redirect to="/createschedule" />
               ) : (
                 <Home />
               )}
             </Route>
-
-            {/* <Route exact path="/admin">
-              {useSelector((state) => state.login)[0].isLoggedIn === false ? (
-                <Redirect to="/" />
-              ) : (
-                <Admin />
-              )}
-            </Route> */}
 
             <Route exact path="/admin">
               {useSelector((state) => state.login)[0].isAdmin === true ? (
