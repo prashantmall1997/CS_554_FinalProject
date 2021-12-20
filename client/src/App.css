@@ -1,319 +1,351 @@
 .App {
-  text-align: center;
+	text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.homebody {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(10px + 2vmin);
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+	font-family: sans;
+	color: #800000;
+}
+.schedules-page {
+	background-color: #800000;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(10px + 2vmin);
+	min-height: 100vh;
+	font-family: sans;
+	color: white;
+}
+.schedules-box {
+	width: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.schedules-view {
+	width: 70%;
+	float: left;
+	height: 200%;
+	margin: 10px;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.schedules-sidenav {
+	width: 25%;
+	float: right;
+	height: 100px;
+	margin: 10px;
 }
 
 body {
-
-/*<<<<<<< homepage*/
-  background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
-  background-color: black;
-  background-size: cover;
-  font-family: Geneva, Verdana, Tahoma, sans-serif;
+	font-family: Geneva, Verdana, Tahoma, sans-serif;
 }
 
 .home {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	min-height: 100vh;
+	background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
+	background-color: black;
+	background-size: cover;
 }
 
 .home-content {
-  align-self: center;
-  color: white;
-  text-shadow: 3px 3px black;
+	align-self: center;
+	color: white;
+	text-shadow: 3px 3px black;
 }
 
 .login-button {
-  background-color: #9D1535;
-  color: white;
+	background-color: #9d1535;
+	color: white;
 }
 
-.login-button, .signup-button {
-  border-radius: 15px;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 2em;
-  transition-duration: 1s;
-  cursor: pointer;
-  margin-right: 5px;
-  margin-left: 5px;
-  outline-style: none;
-  border: 1px solid black;
+.login-button,
+.signup-button {
+	border-radius: 15px;
+	padding: 10px 20px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 2em;
+	transition-duration: 1s;
+	cursor: pointer;
+	margin-right: 5px;
+	margin-left: 5px;
+	outline-style: none;
+	border: 1px solid black;
 }
 
 .login-button:hover {
-  background-color: #111;
-  color: white;
+	background-color: #111;
+	color: white;
 }
 
 .signup-button:hover {
-  background-color: #111;
-  color: white;
+	background-color: #111;
+	color: white;
 }
 
 .modal-button {
-  border-radius: 15px;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 1em;
-  transition-duration: 1s;
-  cursor: pointer;
-  margin-right: 5px;
-  margin-left: 5px;
-  outline-style: none;
-  border: 1px solid black;
+	border-radius: 15px;
+	padding: 10px 20px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 1em;
+	transition-duration: 1s;
+	cursor: pointer;
+	margin-right: 5px;
+	margin-left: 5px;
+	outline-style: none;
+	border: 1px solid black;
 }
 
 .modal-button:hover {
-  background-color: #111;
-  color: white;
+	background-color: #111;
+	color: white;
 }
 
 .modal-confirm-button {
-  background-color: #9D1535;
-  color: white;
+	background-color: #9d1535;
+	color: white;
 }
 
 .home-title {
-  font-size: 4em !important;
+	font-size: 4em !important;
 }
 
 .home-modal {
-  background: #fff;
-  top: 50%;
-  left: 50%;
-  width: 50%;
-  position: relative;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  padding: 10px;
-  border: none;
-  border-radius: 20px;
-  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+	background: #fff;
+	top: 50%;
+	left: 50%;
+	width: 50%;
+	position: relative;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	padding: 10px;
+	border: none;
+	border-radius: 20px;
+	box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .ReactModal__Overlay {
-  opacity: 0;
-  transition: opacity 500ms ease-in-out;
+	opacity: 0;
+	transition: opacity 500ms ease-in-out;
 }
 
-.ReactModal__Overlay--after-open{
-  opacity: 1;
+.ReactModal__Overlay--after-open {
+	opacity: 1;
 }
 
-.ReactModal__Overlay--before-close{
-  opacity: 0;
+.ReactModal__Overlay--before-close {
+	opacity: 0;
 }
 
-input {
-  background: #fff;
-  border: 1px solid #dbdbdb;
-  border-radius: 2px;
-  box-sizing: border-box;
-  font-size: 1.5em;
-  display: block;
-  width: 100%;
-  outline: none;
-  padding: 10px;
-
-  background-color: #ddd;
-  height: 100%;
+input.auth {
+	border: 1px solid #dbdbdb;
+	border-radius: 2px;
+	box-sizing: border-box;
+	font-size: 1.5em;
+	display: block;
+	width: 100%;
+	outline: none;
+	padding: 10px;
+	background-color: #ddd;
+	height: 100%;
 }
 
 .sidebar {
-  background-color: #333;
-  color: white;
-  width: 20%;
-  text-align: left;
-  font-size: 1.5em;
-  position: fixed;
-  float: left;
+	background-color: #333;
+	color: white;
+	width: 15%;
+	text-align: left;
+	font-size: 1em;
+	position: fixed;
+	float: left;
 	vertical-align: top;
 	height: 100vh;
 }
 
 .sidebar-text {
-  padding: 1.5rem;
-  overflow-x: clip;
-
+	padding: 1.5rem;
+	overflow-x: clip;
 }
 
 .sidebar-button {
-  display: block;
-  text-decoration: none;
-  padding: 1.5rem;
-  color: white;
-  transition-duration: 1s;
-  cursor: pointer;
+	display: block;
+	text-decoration: none;
+	padding: 1.5rem;
+	color: white;
+	transition-duration: 1s;
+	cursor: pointer;
 }
 
 .sidebar-button:hover {
-  color: lightgrey;
-  background-color: black;
-  font-weight: bold;
+	color: lightgrey;
+	background-color: black;
+	font-weight: bold;
 }
 
 .sidebar-button-active {
-  color: lightgrey;
-  background-color: black;
+	color: lightgrey;
+	background-color: black;
 }
 
 .topbar {
-  background-color: #BB0F17;
-  color: white;
-  font-size: 2em;
-  font-weight: bold;
-  text-align: left;
-  overflow: hidden;
-  position: fixed;
-  height: 50px;
-  top: 0; 
-  width: 100%;
-  padding-left: 10px;
-  z-index: 1;
+	background-color: #bb0f17;
+	color: white;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: left;
+	overflow: hidden;
+	position: fixed;
+	height: 50px;
+	top: 0;
+	width: 100%;
+	padding-left: 10px;
+	z-index: 1;
 }
 
 .main-content {
-  padding: 1.5rem;
-  margin-left: 20%;
-  margin-top: 50px;
-  width: 80%
+	padding: 1.5rem;
+	margin-left: 15%;
+	margin-top: 50px;
+	width: 85%;
+	background-color: #ddd;
 }
 
 .scroll-table {
-  overflow-y: scroll;
-  height: 200px;
-
-  margin: 10px;
-  border-radius: 20px;
+	overflow-y: scroll;
+	height: 300px;
+	margin: 10px;
+	border-radius: 20px;
 }
 
 .transparent-img {
-  background-color: #ddd;
+	background-color: #ddd;
 }
 
-input[type=checkbox] {
-  width: 1em;
-  height: 1em;
-  background-color: white;
-  border-radius: 20%;
-  border: 1px solid #999;
-  -webkit-appearance: none;
-  cursor: pointer;
-  transition: .5s;
-  margin-right: 0.2em;
+input[type="checkbox"] {
+	width: 1em;
+	height: 1em;
+	background-color: white;
+	border-radius: 20%;
+	border: 1px solid #999;
+	-webkit-appearance: none;
+	cursor: pointer;
+	transition: 0.5s;
+	margin-right: 0.2em;
 }
 
-input[type=radio] {
-  width: 1em;
-  height: 1em;
-  background-color: white;
-  border-radius: 50%;
-  border: 1px solid #999;
-  -webkit-appearance: none;
-  cursor: pointer;
-  transition: .5s;
-  margin-right: 0.2em;
+input[type="radio"] {
+	width: 1em;
+	height: 1em;
+	background-color: white;
+	border-radius: 50%;
+	border: 1px solid #999;
+	-webkit-appearance: none;
+	cursor: pointer;
+	transition: 0.5s;
+	margin-right: 0.2em;
 }
 
-input[type=checkbox]:checked,
-input[type=radio]:checked {
-  background-color: #BB0F17;
-  box-shadow: 0 0 0 0.1em rgba(0, 0, 0, 0.25);
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+	background-color: #bb0f17;
+	box-shadow: 0 0 0 0.1em rgba(0, 0, 0, 0.25);
 }
 
 .schedule-form-card {
-  text-align: left;
-  border: #999 1px solid;
-  border-radius: 1rem;
-  background-color: #ddd;
-  overflow-y: auto;
-  max-height: 200px;
+	text-align: left;
+	border: #999 1px solid;
+	border-radius: 1rem;
+	background-color: #ddd;
+	overflow-y: auto;
+	max-height: 200px;
 }
 
 .class-results-card {
-  border-radius: 1rem;
-  padding: 4px;
+	border-radius: 1rem;
+	padding: 4px;
 }
 
 .result-conflict {
-  background-color: #ffbdc0 !important;
+	background-color: #ffbdc0 !important;
 }
 
 .btn-secondary:disabled {
-  background-color: #313538 !important;
+	background-color: #313538 !important;
 }
 
-
 ::-webkit-scrollbar {
-  width: 10px;
+	width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #bbb; 
+	background: #bbb;
 }
- 
+
 ::-webkit-scrollbar-thumb {
-  background: #BB0F17; 
-  border-radius: 1rem;
+	background: #bb0f17;
+	border-radius: 1rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: gray; 
+	background: gray;
 }
 
 .schedule-select {
-  display: inline;
+	display: inline;
 }
 
 .course-details {
-  line-height: 1em;
-  font-size: 0.9rem;
+	line-height: 1em;
+	font-size: 0.9rem;
 }
 
 .add-remove-course {
-  border: none;
-  font-weight: bold;
-  font-size: 0.9rem;
-  background: transparent;
+	border: none;
+	font-weight: bold;
+	font-size: 0.9rem;
+	background: transparent;
+}
 
+/* .profileImage{
+  width: 0.5rem;
+  height: 5rem;
+} */
+
+.profileButtons {
+	padding: 1rem;
+}
+
+.navBar {
+	background-color: #bb0f17;
+	color: white;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: left;
+	position: fixed;
+	height: 50px;
+	top: 0;
+	width: 100%;
+	padding-left: 10px;
+}
+
+.navBrand {
+	color: white;
+}
+
+.navLink {
+	color: white;
+	font-size: 1em;
+	text-align: left;
+}
+.profilepagelink {
+	color: white;
 }

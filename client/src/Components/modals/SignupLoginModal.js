@@ -1,46 +1,41 @@
-import React, { useState } from "react";
 import "../../App.css";
+import React, { useState } from "react";
 import ReactModal from "react-modal";
-import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+
+//Firebase Functions
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup,
+  deleteUser,
 } from "firebase/auth";
 import { auth } from "./../../config/firebase-config";
-import axios from "axios";
+
+//API Function
+import { createUser, readUserByEmail } from "./../../utils/api/index";
+
+//Redux
+import { useDispatch } from "react-redux";
+import actions from "../../actions";
+
+//Firebase Google Signup/Login
+const provider = new GoogleAuthProvider();
 
 ReactModal.setAppElement("#root");
 
 function SignupLoginModal(props) {
+  const history = useHistory();
+
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(props.isOpen);
   const [registerEmail, setRegisterEmail] = useState("");
+  const [registerCwid, setRegisterCwid] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [userLoginToken, setUserLoginToken] = useState(null);
-  const [user, setUser] = useState({});
-  const [data, setData] = useState("");
-
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
-
-  useEffect(() => {
-    if (userLoginToken) {
-      fetchData(userLoginToken);
-    }
-  }, [userLoginToken]);
-
-  const fetchData = async (userToken) => {
-    const res = await axios.get("http://localhost:4000/firebaseTest", {
-      headers: {
-        Authorization: "Bearer " + userToken,
-      },
-    });
-    setData(res.data.data);
-  };
 
   const handleCloseModal = () => {
     setShowModal(true);
@@ -49,31 +44,129 @@ function SignupLoginModal(props) {
 
   const loginForm = async (event) => {
     event.preventDefault();
-    // fill with login stuff
+    let email = document.getElementById('email');
+    let password = document.getElementById('password');
     try {
       const user = await signInWithEmailAndPassword(
         auth,
         loginEmail,
         loginPassword
       );
-      setUserLoginToken(user.user.accessToken);
-      console.log("User Logged In? " + JSON.stringify(user));
+      if (user) {
+        const getUserFromDb = await readUserByEmail(loginEmail);
+        dispatch(
+          actions.loginUser(
+            user.user.accessToken,
+            getUserFromDb.admin,
+            getUserFromDb.username,
+            getUserFromDb.email,
+            getUserFromDb.CWID
+          )
+        );
+        alert("Log in successful");
+        history.push("/createschedule");
+      }
     } catch (error) {
+      alert("Email and password combination not found.Please enter your email and password again.");
       console.log(error.message);
+      email.value = "";
+      password.value = "";
     }
   };
 
   const signupForm = async (event) => {
     event.preventDefault();
-    // fill with signup stuff
+    let email = document.getElementById('email');
+    let cwid = document.getElementById('CWID');
+    let password1 = document.getElementById('password');
+    let password2 = document.getElementById('password2');
+    console.log(password1.value);
+    console.log(password2.value);
+    if (cwid.value.length !== 8) {
+      cwid.focus();
+      cwid.value = "";
+      alert("CWID must be of length 8. Please enter again.");
+      return;
+    }
+
+    if (password1.value.length < 6) {
+      password1.focus();
+      alert("Password should be at least 6 characters");
+      return;
+    }
+
+    if (password1.value !== password2.value) {
+      password1.focus();
+      password1.value = "";
+      password2.value = "";
+      alert("Passwords do not match. Please re-enter the passwords");
+      return;
+    }
+
     try {
       const user = await createUserWithEmailAndPassword(
         auth,
         registerEmail,
         registerPassword
       );
-      console.log(user);
+      if (user) {
+        const addToDb = await createUser(
+          registerEmail.split("@")[0],
+          registerEmail,
+          registerCwid
+        );
+        dispatch(
+          actions.loginUser(
+            user.user.accessToken,
+            addToDb.admin,
+            registerEmail.split("@")[0],
+            registerEmail,
+            registerCwid
+          )
+        );
+        alert("Sign in successful");
+        history.push("/createschedule");
+      }
     } catch (error) {
+      console.log(error);
+      alert(error.message+ " Please re-enter your details.");
+      email.value = "";
+      cwid.value = "";
+      password1.value = "";
+      password2.value = "";
+    }
+  };
+
+  const forgotPassword = async (event) => {
+    event.preventDefault();
+    alert("Please check your email to complete resetting your password.")
+    try {
+      await sendPasswordResetEmail(auth, loginEmail);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const googleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const user = await signInWithPopup(auth, provider);
+      if (user) {
+        const getUserFromDb = await readUserByEmail(user.user.email);
+        dispatch(
+          actions.loginUser(
+            user.user.accessToken,
+            getUserFromDb.admin,
+            getUserFromDb.username,
+            getUserFromDb.email,
+            getUserFromDb.CWID
+          )
+        );
+        history.push("/createschedule");
+      }
+    } catch (error) {
+      deleteUser(auth.currentUser);
+      alert("User must signup first!");
       console.log(error.message);
     }
   };
@@ -88,12 +181,13 @@ function SignupLoginModal(props) {
           <label htmlFor="email">
             <input
               name="email"
+              className="auth"
               id="email"
               type="email"
               placeholder="Enter email"
               required
               onChange={(event) => {
-                setLoginEmail(event.target.value);
+                setLoginEmail(event.target.value.toLowerCase());
               }}
             />
           </label>
@@ -103,6 +197,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password">
             <input
               name="password"
+              className="auth"
               id="password"
               type="password"
               placeholder="Enter password"
@@ -118,6 +213,17 @@ function SignupLoginModal(props) {
         <button className="modal-button modal-confirm-button" type="submit">
           Log in
         </button>
+        <button
+          className="modal-button modal-confirm-button"
+          onClick={googleLogin}
+        >
+          Log in with Google
+        </button>
+        <br />
+        <br />
+        <button className="modal-button" onClick={forgotPassword}>
+          Forgot Password
+        </button>
         <button className="modal-button" onClick={handleCloseModal}>
           Cancel
         </button>
@@ -131,12 +237,29 @@ function SignupLoginModal(props) {
           <label htmlFor="email">
             <input
               name="email"
+              className="auth"
               id="email"
               type="email"
               placeholder="Enter email"
               required
               onChange={(event) => {
-                setRegisterEmail(event.target.value);
+                setRegisterEmail(event.target.value.toLowerCase());
+              }}
+            />
+          </label>
+        </div>
+        <br />
+        <div>
+          <label htmlFor="CWID">
+            <input
+              name="CWID"
+              className="auth"
+              id="CWID"
+              type="number"
+              placeholder="Enter CWID"
+              required
+              onChange={(event) => {
+                setRegisterCwid(event.target.value);
               }}
             />
           </label>
@@ -146,6 +269,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password">
             <input
               name="password"
+              className="auth"
               id="password"
               type="password"
               placeholder="Enter password"
@@ -158,6 +282,7 @@ function SignupLoginModal(props) {
           <label htmlFor="password2">
             <input
               name="password2"
+              className="auth"
               id="password2"
               type="password"
               placeholder="Confirm password"
