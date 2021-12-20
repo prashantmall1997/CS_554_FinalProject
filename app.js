@@ -32,26 +32,26 @@ app.use(
   })
 );
 
-// app.use("*", async (req, res, next) => {
-//   if (
-//     req.originalUrl === "/users/readByEmail" ||
-//     req.originalUrl === "/users/create"
-//   ) {
-//     next();
-//   } else {
-//     firebase.decodeToken(req, res, next);
-//   }
-// });
+app.use("*", async (req, res, next) => {
+  if (
+    req.originalUrl === "/users/readByEmail" ||
+    req.originalUrl === "/users/create"
+  ) {
+    next();
+  } else {
+    firebase.decodeToken(req, res, next);
+  }
+});
 
-// app.use("*", async (req, res, next) => {
-//   let date = new Date().toUTCString();
-//   let reqmethod = req.method;
-//   let reqroute = req.originalUrl;
-//   let message = `[${date}]: ${reqmethod} ${reqroute}`;
-//   console.log(message);
-//   res.header("Access-Control-Allow-Origin", "*");
-//   next();
-// });
+app.use("*", async (req, res, next) => {
+  let date = new Date().toUTCString();
+  let reqmethod = req.method;
+  let reqroute = req.originalUrl;
+  let message = `[${date}]: ${reqmethod} ${reqroute}`;
+  console.log(message);
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 configRoutes(app);
 
