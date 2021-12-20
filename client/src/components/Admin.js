@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
 import { readAllUsers, readAllClasses, removeUser, readUserByEmail } from "../utils/api";
 import { deleteUserByEmailFirebase } from "./../utils/api/index";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 import actions from '../actions.js';
@@ -21,6 +22,7 @@ const client = new elasticsearch.Client({
 });
 
 export function Admin() {
+   const dispatch = useDispatch();
   const [userToDelete, setUserToDelete] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
@@ -41,10 +43,12 @@ export function Admin() {
     });
   }, []);
 
-  const deleteAppUser = async (email) => {	
-    const userDetails = await readUserByEmail(email);	
-    removeUser(userDetails.username).then(async () => {	
-      setUserToDelete("");	
+
+  const deleteAppUser = async (email) => {
+    const userDetails = await readUserByEmail(email);
+
+    removeUser(userDetails.username).then(async () => {
+      setUserToDelete("");
       const userToDeleteFirebase = await deleteUserByEmailFirebase(email);
       console.log(userToDeleteFirebase);	
     });	
@@ -99,7 +103,6 @@ export function Admin() {
   const handleSignout = async () => {
     dispatch(actions.logoutUser());
     await auth.signOut();
-  };
 
   let totalSavedSchedules = 0;
   for (let user of allUsers) {
