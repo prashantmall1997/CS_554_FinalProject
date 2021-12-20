@@ -22,7 +22,6 @@ const client = new elasticsearch.Client({
 });
 
 export function Admin() {
-   const dispatch = useDispatch();
   const [userToDelete, setUserToDelete] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
@@ -103,6 +102,7 @@ export function Admin() {
   const handleSignout = async () => {
     dispatch(actions.logoutUser());
     await auth.signOut();
+  }
 
   let totalSavedSchedules = 0;
   for (let user of allUsers) {
