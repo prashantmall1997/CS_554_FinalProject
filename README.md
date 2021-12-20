@@ -5,12 +5,6 @@ git clone repo to system
 
 Configure mongoConnection.js file
 
-run below commands in client folder:
-
-run npm install 
-
-run npm start
-
 run below commands in server folder:
 
 run npm install 
@@ -18,6 +12,12 @@ run npm install
 run redis-server 
 
 run redis-cli
+
+run npm start
+
+run below commands in client folder:
+
+run npm install 
 
 run npm start
 
