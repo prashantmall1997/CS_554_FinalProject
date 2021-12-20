@@ -215,6 +215,13 @@ export function UserProfile() {
                 <div className="sidebar">
                     <div className="sidebar-text">Welcome, {userData.username}</div>
                     <br />
+                    {userData.isAdmin ? (
+                    <a href="/admin" className="sidebar-button">
+                        Admin
+                    </a>
+                    ) : (
+                    ""
+                    )}
                     <a
                     href="/userProfile"
                     className="sidebar-button sidebar-button-active"
