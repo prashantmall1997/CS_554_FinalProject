@@ -99,7 +99,7 @@ function SchedulesPage() {
 					}
 					for (let j in scheduleIdArr) {
 						const data1 = await readScheduleById(scheduleIdArr[j]);
-						for(let theClass of data1.classes) {
+						for (let theClass of data1.classes) {
 							classesIdArr.push(theClass);
 						}
 					}
@@ -122,18 +122,20 @@ function SchedulesPage() {
 							//its a WS course
 						}
 					}
-					for(let schedule of schedulesfin) {
+					for (let schedule of schedulesfin) {
 						schedulesArr.push(schedule);
 					}
-					appointments = schedulesArr.map(({ startDate, endDate, ...restArgs }) => {
-						const result = {
-							...makeTodaySchedule(startDate, endDate),
-							...restArgs,
-						};
-						date += 1;
-						if (date > 31) date = 1;
-						return result;
-					});
+					appointments = schedulesArr.map(
+						({ startDate, endDate, ...restArgs }) => {
+							const result = {
+								...makeTodaySchedule(startDate, endDate),
+								...restArgs,
+							};
+							date += 1;
+							if (date > 31) date = 1;
+							return result;
+						}
+					);
 				}
 				setLoading(false);
 			} catch (error) {
@@ -164,11 +166,9 @@ function SchedulesPage() {
 		}
 		fetchData();
 	}, []);
-	
-	useEffect(() => {
 
-	}, [appointments])
-	
+	useEffect(() => {}, [appointments]);
+
 	if (loading) {
 		return (
 			<div>
@@ -228,7 +228,7 @@ function SchedulesPage() {
 										<Dropdown.Item>Spring 2022</Dropdown.Item>
 									</Dropdown.Menu>
 								</Dropdown>
-								<Dropdown.Toggle variant="success">Courses</Dropdown.Toggle>
+								{/* <Dropdown.Toggle variant="success">Courses</Dropdown.Toggle>
 								<Dropdown>
 									{allClassesData &&
 										allClassesData.map((x) => {
@@ -239,7 +239,7 @@ function SchedulesPage() {
 												</Dropdown.Menu>
 											);
 										})}
-								</Dropdown>
+								</Dropdown> */}
 								<br />
 								<p>Version 2.0 Copyright ©2021 Fantastic Five</p>
 							</CardContent>
