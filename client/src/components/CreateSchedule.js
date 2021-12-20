@@ -54,6 +54,7 @@ export function CreateSchedule() {
   const [schedules, setSchedules] = useState([]);
   const [userId, setUserId] = useState("");
   const [textSearchResults, setTextSearchResults] = useState([]);
+  const [isUsingText, setIsUsingText] = useState(false);
 
   useEffect(() => {
     readUserByUsername(user.username).then((info) => {
@@ -83,6 +84,11 @@ export function CreateSchedule() {
   }, [activeSchedule._id]);
 
     const handleClassNameSearch = async(e) => {
+        if (e.target.value !== "") {
+          setIsUsingText(true);
+        } else {
+          setIsUsingText(false)
+        }
         const searchTerm = e.target.value;
 
         const results = await client.search({
@@ -97,9 +103,11 @@ export function CreateSchedule() {
         });
         let resultArr = [];
         for (let result of results.hits.hits) {
-
+          let obj = result._source;
+          obj._id = result._source.id;
+          resultArr.push(obj);
         }
-        console.log(results.hits.hits);
+        setTextSearchResults(resultArr);
     }
 
   const [search, setSearch] = useState({
@@ -223,17 +231,20 @@ export function CreateSchedule() {
     });
   };
 
-  //let courses = courseData; //dev
   let courses = allClasses;
-  let courseSearch = search.name.trim().toLowerCase();
+  //let courseSearch = search.name.trim().toLowerCase();
 
-  if (courseSearch.length > 0) {
-    courses = courses.filter((val) =>
-      val.courseTitle.toLowerCase().includes(courseSearch)
-    );
+  // if (courseSearch.length > 0) {
+  //   courses = courses.filter((val) =>
+  //     val.courseTitle.toLowerCase().includes(courseSearch)
+  //   );
+  // }
+
+  if (isUsingText) {
+    courses = textSearchResults;
   }
 
-  courseSearch = search.semester;
+  let courseSearch = search.semester;
   if (courseSearch.length > 0) {
     courses = courses.filter((val) => val.courseTime.match(courseSearch));
   }
@@ -265,7 +276,7 @@ export function CreateSchedule() {
 
   // if there are no filters selected, don't show any classes -- that list will be looong
   if (
-    search.name === "" &&
+    textSearchResults.length === 0 &&
     search.semester === "" &&
     search.subjects.length === 0 &&
     search.level.length === 0 &&
@@ -275,6 +286,7 @@ export function CreateSchedule() {
   ) {
     courses = [];
   }
+
 
   // filter out classes already in the selected schedule
   if (activeSchedule._id !== "") {
@@ -566,15 +578,14 @@ export function CreateSchedule() {
                     <Card.Title className="text-center">Semester</Card.Title>
                     {semesters.map((semester) =>
                         <div key={`time-${semester}`}>
-                            <label htmlFor={semester} />
                             <input 
                                 type="radio" 
-                                id={semester}
+                                id={semester.replaceAll(" ", "")}
                                 name="semester"
                                 value={semester}
                                 onChange={(e) => handleSemesterSearch(e)} 
                             />
-                            <label htmlFor="semester">{semester}</label>
+                            <label htmlFor={semester.replaceAll(" ", "")}>{semester}</label>
                             <br />
                         </div>
                     )}
@@ -585,12 +596,12 @@ export function CreateSchedule() {
                         <div key={`level-${level}`}>
                             <input 
                                 type="checkbox" 
-                                id={level.replace(" ", "").toLowerCase} 
+                                id={level.replaceAll(" ", "").toLowerCase} 
                                 name={level.toLowerCase}
                                 value={level}
                                 onChange={(e) => handleLevelSearch(e)} 
                             />
-                            <label htmlFor={level.toLowerCase}>{level}</label>
+                            <label htmlFor={level.replaceAll(" ", "").toLowerCase}>{level}</label>
                             <br />
                         </div>
                     )}
@@ -601,12 +612,12 @@ export function CreateSchedule() {
                         <div key={`subject-${subject}`}>
                             <input 
                                 type="checkbox" 
-                                id={subject.replace(" ", "").toLowerCase} 
-                                name={subject.replace(" ", "").toLowerCase}
+                                id={subject.replaceAll(" ", "").toLowerCase} 
+                                name={subject.replaceAll(" ", "").toLowerCase}
                                 value={subject}
                                 onChange={(e) => handleSubjectSearch(e)}
                             />
-                            <label htmlFor={subject.replace(" ", "").toLowerCase}>{subject}</label>
+                            <label htmlFor={subject.replaceAll(" ", "").toLowerCase}>{subject}</label>
                             <br />
                         </div>
                     )}
@@ -642,12 +653,12 @@ export function CreateSchedule() {
                         <div key={`format-${format}`}>
                             <input 
                                 type="checkbox" 
-                                id={format.replace(" ", "").toLowerCase} 
-                                name={format.replace(" ", "").toLowerCase}
+                                id={format.replaceAll(" ", "").toLowerCase} 
+                                name={format.replaceAll(" ", "").toLowerCase}
                                 value={format}
                                 onChange={(e) => handleFormatSearch(e)} 
                             />
-                            <label htmlFor={format.replace(" ", "").toLowerCase}>{format}</label>
+                            <label htmlFor={format.replaceAll(" ", "").toLowerCase}>{format}</label>
                             <br />
                         </div>
                     )}
@@ -658,12 +669,12 @@ export function CreateSchedule() {
                         <div key={`delivery-${deliveryMode}`}>
                             <input 
                                 type="checkbox" 
-                                id={deliveryMode.replace(" ", "").toLowerCase} 
-                                name={deliveryMode.replace(" ", "").toLowerCase}
+                                id={deliveryMode.replaceAll(" ", "").toLowerCase} 
+                                name={deliveryMode.replaceAll(" ", "").toLowerCase}
                                 value={deliveryMode}
                                 onChange={(e) => handleDeliveryModeSearch(e)} 
                             />
-                            <label htmlFor={deliveryMode.replace(" ", "").toLowerCase}>{deliveryMode}</label>
+                            <label htmlFor={deliveryMode.replaceAll(" ", "").toLowerCase}>{deliveryMode}</label>
                             <br />
                         </div>
                     )}
