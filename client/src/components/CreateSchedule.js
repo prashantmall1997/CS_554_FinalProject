@@ -14,6 +14,18 @@ import {
 } from "../utils/api";
 import moment from "moment";
 
+require("dotenv").config();
+
+const elasticsearch = require("elasticsearch");
+const connectionString = process.env.SEARCH_URL;
+const client = new elasticsearch.Client({
+    host: connectionString,
+    maxRetries: 5,
+    requestTimeout: 300000,
+    deadTimeout: 300000,
+    keepAlive: true
+});
+
 export function CreateSchedule() {
     const [activeSchedule, setActiveSchedule] = useState({
         _id: "",
@@ -25,6 +37,7 @@ export function CreateSchedule() {
     const [activeClasses, setActiveClasses] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [schedules, setSchedules] = useState([]);
+    const [textSearchResults, setTextSearchResults] = useState([]);
 
     // todo replace with actual id of logged in user
     const userId = "61a7c026ebec6df893bd3b64";
@@ -63,6 +76,26 @@ export function CreateSchedule() {
     const subjects = [...new Set(allClasses.map(item => item.coursePrefix))];
     const formats = [...new Set(allClasses.map(item => item.format))];
     const deliveryModes = [...new Set(allClasses.map(item => item.deliveryMode))];
+
+    const handleClassNameSearch = async(e) => {
+        const searchTerm = e.target.value;
+
+        const results = await client.search({
+            index: "classes",
+            body: {
+                query: { 
+                    match: {
+                        courseTitle: `*${searchTerm}*`
+                    }
+                }
+            }
+        });
+        let resultArr = [];
+        for (let result of results.hits.hits) {
+
+        }
+        console.log(results.hits.hits);
+    }
 
     const handleTextSearch = (e) => {
         setSearch({
@@ -443,11 +476,11 @@ export function CreateSchedule() {
                 <Col xs={12} md={3}>
                     <form>
                         <h2>Search</h2>
-                        <label htmlFor="courseKeywords" />
+                        <label htmlFor="courseName" />
                         <input 
-                            onChange={(e) => handleTextSearch(e)} 
-                            id="courseKeywords" 
-                            name="courseKeywords" 
+                            onChange={(e) => handleClassNameSearch(e)} 
+                            id="courseName" 
+                            name="courseName" 
                             placeholder="Search class name..."
                         />
                         <Card className="p-3 mt-3 schedule-form-card">

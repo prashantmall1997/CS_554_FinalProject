@@ -3,13 +3,15 @@ import FileReader from "./FileReader";
 import React, { useState, useEffect } from "react";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
 import { readAllUsers, readAllClasses, removeUser } from "../utils/api";
-//import { deleteUserByEmailFirebase } from "./../utils/api/index";
+import { deleteUserByEmailFirebase } from "./../utils/api/index";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
+import actions from '../actions.js';
 const auth = getAuth();
+require("dotenv").config();
 
 const elasticsearch = require("elasticsearch");
-const connectionString = "https://paas:2e9670d4fa190cb62677776113a97e4f@oin-us-east-1.searchly.com";
+const connectionString = process.env.SEARCH_URL;
 const client = new elasticsearch.Client({
     host: connectionString,
     maxRetries: 5,
@@ -39,13 +41,13 @@ export function Admin() {
     });
   }, []);
 
-   const deleteAppUser = async (email) => {
-  //   removeUser(email.split("@")[0]).then(async () => {
-  //     setUserToDelete("");
-  //     const userToDeleteFirebase = await deleteUserByEmailFirebase(email);
-  //     console.log(userToDeleteFirebase);
-  //   });
-   };
+  const deleteAppUser = async (email) => {
+    removeUser(email.split("@")[0]).then(async () => {
+      setUserToDelete("");
+      const userToDeleteFirebase = await deleteUserByEmailFirebase(email);
+      console.log(userToDeleteFirebase);
+    });
+  };
 
   const deleteConfirmButton = (email, isAdmin) => {
     if (isAdmin === true) {
@@ -94,8 +96,8 @@ export function Admin() {
   };
 
   const handleSignout = async () => {
-    // dispatch(actions.logoutUser());
-    // await auth.signOut();
+    dispatch(actions.logoutUser());
+    await auth.signOut();
   };
 
   let totalSavedSchedules = 0;
@@ -119,25 +121,24 @@ export function Admin() {
       type: "document",
       id: `${i}`,
       body: {
+        id: `${info._id}`,
         courseTime: `${info.courseTime}`,
         courseLevel: `${info.courseLevel}`,
+        courseTotal: `${info.courseTotal}`,
         coursePrefix: `${info.coursePrefix}`,
         courseTitle: `${info.courseTitle}`,
         sectionStatus: `${info.sectionStatus}`,
+        instructor: `${info.instructor}`,
+        sectionDetails: `${info.sectionDetails}`,
+        campus: `${info.campus}`,
         format: `${info.format}`,
-        deliveryMode: `${info.deliveryMode}`
+        deliveryMode: `${info.deliveryMode}`,
+        enrolledCapacity: `${info.enrolledCapacity}`
       }
     }).then(() => {
       setClassesIndexed(i);
     });
   }
-
-  // let arrayOfArrays = [];
-  // let allClassesTemp = allClasses;
-  // while (allClasses.length > 250) {
-  //     arrayOfArrays.push(allClassesTemp.splice(0,250));
-  // }
-  // arrayOfArrays.push(allClassesTemp);
 
   const updateIndex = async() => {
     let i = 0;
@@ -146,14 +147,13 @@ export function Admin() {
       await addDocumentToIndex(i, cl);
     }
     setClassesIndexed(i);
-    //alert("Search index has been updated!")
   }
 
   return (
     <div>
       <div className="topbar">SIT Scheduler 2.0</div>
       <div className="sidebar">
-        <div className="sidebar-text">Welcome, user.username</div>
+        <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
         <a href="/admin" className="sidebar-button sidebar-button-active">
           Admin
