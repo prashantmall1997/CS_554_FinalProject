@@ -55,6 +55,10 @@ app.use(
 
 configRoutes(app);
 
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+}
+
 app.listen(process.env.PORT, () => {
   console.log("We've now got a server!");
   console.log(`Your routes will be running on PORT ${process.env.PORT}`);
