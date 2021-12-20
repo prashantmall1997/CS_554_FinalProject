@@ -32,17 +32,16 @@ app.use(
   })
 );
 
-app.use("*", async (req, res, next) => {
-  if (
-    req.originalUrl === "/users/readByEmail" ||
-    req.originalUrl === "/users/create"
-  ) {
-    next();
-  } else {
-    firebase.decodeToken(req, res, next);
-    next();
-  }
-});
+// app.use("*", async (req, res, next) => {
+//   if (
+//     req.originalUrl === "/users/readByEmail" ||
+//     req.originalUrl === "/users/create"
+//   ) {
+//     next();
+//   } else {
+//     //firebase.decodeToken(req, res, next);
+//   }
+// });
 
 app.use("*", async (req, res, next) => {
   let date = new Date().toUTCString();
