@@ -8,7 +8,7 @@ import { store, persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 
 // Run this manually to flush all redux-persist states in case of different instances of states stored during development
-// persistor.purge();
+persistor.purge();
 
 ReactDOM.render(
   <React.StrictMode>
