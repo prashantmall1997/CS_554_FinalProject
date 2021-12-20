@@ -578,6 +578,7 @@ export function CreateSchedule() {
                     <Card.Title className="text-center">Semester</Card.Title>
                     {semesters.map((semester) =>
                         <div key={`time-${semester}`}>
+                            <label htmlFor={semester.replaceAll(" ", "")}>{semester}</label>
                             <input 
                                 type="radio" 
                                 id={semester.replaceAll(" ", "")}
@@ -585,7 +586,6 @@ export function CreateSchedule() {
                                 value={semester}
                                 onChange={(e) => handleSemesterSearch(e)} 
                             />
-                            <label htmlFor={semester.replaceAll(" ", "")}>{semester}</label>
                             <br />
                         </div>
                     )}
@@ -594,14 +594,14 @@ export function CreateSchedule() {
                     <Card.Title className="text-center">Course Level</Card.Title>
                     {academicLevels.map((level) =>
                         <div key={`level-${level}`}>
+                            <label htmlFor={level.replaceAll(" ", "")}>{level}</label>
                             <input 
                                 type="checkbox" 
-                                id={level.replaceAll(" ", "").toLowerCase} 
-                                name={level.toLowerCase}
+                                id={level.replaceAll(" ", "")} 
+                                name={level.toLowerCase()}
                                 value={level}
                                 onChange={(e) => handleLevelSearch(e)} 
                             />
-                            <label htmlFor={level.replaceAll(" ", "").toLowerCase}>{level}</label>
                             <br />
                         </div>
                     )}
@@ -612,12 +612,12 @@ export function CreateSchedule() {
                         <div key={`subject-${subject}`}>
                             <input 
                                 type="checkbox" 
-                                id={subject.replaceAll(" ", "").toLowerCase} 
-                                name={subject.replaceAll(" ", "").toLowerCase}
+                                id={subject.replaceAll(" ", "").toLowerCase()}
+                                name={subject.replaceAll(" ", "").toLowerCase()}
                                 value={subject}
                                 onChange={(e) => handleSubjectSearch(e)}
                             />
-                            <label htmlFor={subject.replaceAll(" ", "").toLowerCase}>{subject}</label>
+                            <label htmlFor={subject.replaceAll(" ", "").toLowerCase()}>{subject}</label>
                             <br />
                         </div>
                     )}
@@ -653,12 +653,12 @@ export function CreateSchedule() {
                         <div key={`format-${format}`}>
                             <input 
                                 type="checkbox" 
-                                id={format.replaceAll(" ", "").toLowerCase} 
-                                name={format.replaceAll(" ", "").toLowerCase}
+                                id={format.replaceAll(" ", "").toLowerCase()}
+                                name={format.replaceAll(" ", "").toLowerCase()}
                                 value={format}
                                 onChange={(e) => handleFormatSearch(e)} 
                             />
-                            <label htmlFor={format.replaceAll(" ", "").toLowerCase}>{format}</label>
+                            <label htmlFor={format.replaceAll(" ", "").toLowerCase()}>{format}</label>
                             <br />
                         </div>
                     )}
@@ -669,12 +669,12 @@ export function CreateSchedule() {
                         <div key={`delivery-${deliveryMode}`}>
                             <input 
                                 type="checkbox" 
-                                id={deliveryMode.replaceAll(" ", "").toLowerCase} 
-                                name={deliveryMode.replaceAll(" ", "").toLowerCase}
+                                id={deliveryMode.replaceAll(" ", "").toLowerCase()}
+                                name={deliveryMode.replaceAll(" ", "").toLowerCase()}
                                 value={deliveryMode}
                                 onChange={(e) => handleDeliveryModeSearch(e)} 
                             />
-                            <label htmlFor={deliveryMode.replaceAll(" ", "").toLowerCase}>{deliveryMode}</label>
+                            <label htmlFor={deliveryMode.replaceAll(" ", "").toLowerCase()}>{deliveryMode}</label>
                             <br />
                         </div>
                     )}
@@ -771,11 +771,11 @@ export function CreateSchedule() {
               <div key={`schedulesemester-${semester}`}>
                 <input
                   type="radio"
-                  id={semester}
+                  id={semester.replaceAll(" ", "") + "2"}
                   name="time"
                   value={semester}
                 />
-                <label htmlFor={semester}>{semester}</label>
+                <label htmlFor={semester.replaceAll(" ", "") + "2"}>{semester}</label>
                 <br />
               </div>
             ))}
