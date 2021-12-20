@@ -1,5 +1,5 @@
 const elasticsearch = require("elasticsearch");
-const connectionString = "https://paas:2e9670d4fa190cb62677776113a97e4f@oin-us-east-1.searchly.com";
+const connectionString = "url here";
 const client = new elasticsearch.Client({
     host: connectionString
 });
