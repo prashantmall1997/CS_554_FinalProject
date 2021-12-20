@@ -187,7 +187,7 @@ function SignupLoginModal(props) {
               placeholder="Enter email"
               required
               onChange={(event) => {
-                setLoginEmail(event.target.value);
+                setLoginEmail(event.target.value.toLowerCase());
               }}
             />
           </label>
