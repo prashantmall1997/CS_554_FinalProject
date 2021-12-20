@@ -44,6 +44,8 @@ function SignupLoginModal(props) {
 
   const loginForm = async (event) => {
     event.preventDefault();
+    let email = document.getElementById('email');
+    let password = document.getElementById('password');
     try {
       const user = await signInWithEmailAndPassword(
         auth,
@@ -61,16 +63,46 @@ function SignupLoginModal(props) {
             getUserFromDb.CWID
           )
         );
+        alert("Log in successful");
         history.push("/createschedule");
       }
     } catch (error) {
-      alert("Email and password combination not found.");
+      alert("Email and password combination not found.Please enter your email and password again.");
       console.log(error.message);
+      email.value = "";
+      password.value = "";
     }
   };
 
   const signupForm = async (event) => {
     event.preventDefault();
+    let email = document.getElementById('email');
+    let cwid = document.getElementById('CWID');
+    let password1 = document.getElementById('password');
+    let password2 = document.getElementById('password2');
+    console.log(password1.value);
+    console.log(password2.value);
+    if (cwid.value.length !== 8) {
+      cwid.focus();
+      cwid.value = "";
+      alert("CWID must be of length 8. Please enter again.");
+      return;
+    }
+
+    if (password1.value.length < 6) {
+      password1.focus();
+      alert("Password should be at least 6 characters");
+      return;
+    }
+
+    if (password1.value !== password2.value) {
+      password1.focus();
+      password1.value = "";
+      password2.value = "";
+      alert("Passwords do not match. Please re-enter the passwords");
+      return;
+    }
+
     try {
       const user = await createUserWithEmailAndPassword(
         auth,
@@ -92,15 +124,22 @@ function SignupLoginModal(props) {
             registerCwid
           )
         );
+        alert("Sign in successful");
         history.push("/createschedule");
       }
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
+      alert(error.message+ " Please re-enter your details.");
+      email.value = "";
+      cwid.value = "";
+      password1.value = "";
+      password2.value = "";
     }
   };
 
   const forgotPassword = async (event) => {
     event.preventDefault();
+    alert("Please check your email to complete resetting your password.")
     try {
       await sendPasswordResetEmail(auth, loginEmail);
     } catch (error) {
@@ -148,7 +187,7 @@ function SignupLoginModal(props) {
               placeholder="Enter email"
               required
               onChange={(event) => {
-                setLoginEmail(event.target.value);
+                setLoginEmail(event.target.value.toLowerCase());
               }}
             />
           </label>
@@ -204,7 +243,7 @@ function SignupLoginModal(props) {
               placeholder="Enter email"
               required
               onChange={(event) => {
-                setRegisterEmail(event.target.value);
+                setRegisterEmail(event.target.value.toLowerCase());
               }}
             />
           </label>

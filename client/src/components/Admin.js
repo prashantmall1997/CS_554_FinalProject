@@ -2,10 +2,13 @@ import "../App.css";
 import FileReader from "./FileReader";
 import React, { useState, useEffect } from "react";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
-import { readAllUsers, readAllClasses, removeUser } from "../utils/api";
+import { readAllUsers, readAllClasses, removeUser, readUserByEmail } from "../utils/api";
 import { deleteUserByEmailFirebase } from "./../utils/api/index";
+import { useDispatch } from 'react-redux';
+import actions from '../actions.js';
 
 export function Admin() {
+   const dispatch = useDispatch();
   const [userToDelete, setUserToDelete] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
@@ -23,7 +26,9 @@ export function Admin() {
   }, []);
 
   const deleteAppUser = async (email) => {
-    removeUser(email.split("@")[0]).then(async () => {
+    const userDetails = await readUserByEmail(email);
+
+    removeUser(userDetails.username).then(async () => {
       setUserToDelete("");
       const userToDeleteFirebase = await deleteUserByEmailFirebase(email);
       console.log(userToDeleteFirebase);
@@ -78,6 +83,7 @@ export function Admin() {
 
   const handleSignout = () => {
     // todo signout code
+     dispatch(actions.logoutUser());
   };
 
   let username = "admin"; //todo change when auth is added
