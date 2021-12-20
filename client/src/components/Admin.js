@@ -2,7 +2,7 @@ import "../App.css";
 import FileReader from "./FileReader";
 import React, { useState, useEffect } from "react";
 import { Table, Button, Row, Col, Card } from "react-bootstrap";
-import { readAllUsers, readAllClasses, removeUser } from "../utils/api";
+import { readAllUsers, readAllClasses, removeUser, readUserByEmail } from "../utils/api";
 import { deleteUserByEmailFirebase } from "./../utils/api/index";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
@@ -41,12 +41,13 @@ export function Admin() {
     });
   }, []);
 
-  const deleteAppUser = async (email) => {
-    removeUser(email.split("@")[0]).then(async () => {
-      setUserToDelete("");
+  const deleteAppUser = async (email) => {	
+    const userDetails = await readUserByEmail(email);	
+    removeUser(userDetails.username).then(async () => {	
+      setUserToDelete("");	
       const userToDeleteFirebase = await deleteUserByEmailFirebase(email);
-      console.log(userToDeleteFirebase);
-    });
+      console.log(userToDeleteFirebase);	
+    });	
   };
 
   const deleteConfirmButton = (email, isAdmin) => {
