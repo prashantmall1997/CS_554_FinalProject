@@ -205,7 +205,7 @@ export function UserProfile() {
                     <br />
                     <a
                     href="/createschedule"
-                    className="sidebar-button sidebar-button-active"
+                    className="sidebar-button"
                     >
                     Create Schedule
                     </a>
