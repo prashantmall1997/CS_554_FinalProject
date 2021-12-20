@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+//CSS & API Funcitons
 import "../App.css";
-import { Button, Row, Col, Card } from "react-bootstrap";
 import {
   readAllClasses,
   readSchedulesByUser,
@@ -11,11 +10,33 @@ import {
   removeClassFromSchedule,
   addScheduleToUser,
   removeScheduleFromUser,
-  readUserByUsername
+  readUserByUsername,
 } from "../utils/api";
+
+//React and UI
+import React, { useState, useEffect } from "react";
+import { Button, Row, Col, Card } from "react-bootstrap";
 import moment from "moment";
+
+//Redux
 import { useDispatch, useSelector } from "react-redux";
 import actions from "./../actions";
+
+//Firebase
+import { getAuth } from "firebase/auth";
+const auth = getAuth();
+
+//Elasticsearch
+require("dotenv").config();
+const elasticsearch = require("elasticsearch");
+const connectionString = process.env.SEARCH_URL;
+const client = new elasticsearch.Client({
+    host: connectionString,
+    maxRetries: 5,
+    requestTimeout: 300000,
+    deadTimeout: 300000,
+    keepAlive: true
+});
 
 export function CreateSchedule() {
   const dispatch = useDispatch();
@@ -32,24 +53,28 @@ export function CreateSchedule() {
   const [allClasses, setAllClasses] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [userId, setUserId] = useState("");
+  const [textSearchResults, setTextSearchResults] = useState([]);
+  const [isUsingText, setIsUsingText] = useState(false);
 
   useEffect(() => {
     readUserByUsername(user.username).then((info) => {
       setUserId(info._id);
     });
-  }, []);
+  }, [user.username]);
   useEffect(() => {
     readAllClasses().then((classes) => {
       setAllClasses(classes);
     });
   }, []);
+
   useEffect(() => {
     readUserByUsername(user.username).then((info) => {
       readSchedulesByUser(info._id).then((schedules) => {
         setSchedules(schedules);
       });
     });
-  }, [activeSchedule]);
+  }, [activeSchedule, user.username]);
+
   useEffect(() => {
     if (activeSchedule._id !== "") {
       readClassesBySchedule(activeSchedule._id).then((classes) => {
@@ -57,6 +82,33 @@ export function CreateSchedule() {
       });
     }
   }, [activeSchedule._id]);
+
+    const handleClassNameSearch = async(e) => {
+        if (e.target.value !== "") {
+          setIsUsingText(true);
+        } else {
+          setIsUsingText(false)
+        }
+        const searchTerm = e.target.value;
+
+        const results = await client.search({
+            index: "classes",
+            body: {
+                query: { 
+                    match: {
+                        courseTitle: `*${searchTerm}*`
+                    }
+                }
+            }
+        });
+        let resultArr = [];
+        for (let result of results.hits.hits) {
+          let obj = result._source;
+          obj._id = result._source.id;
+          resultArr.push(obj);
+        }
+        setTextSearchResults(resultArr);
+    }
 
   const [search, setSearch] = useState({
     name: "",
@@ -81,18 +133,6 @@ export function CreateSchedule() {
     formats = [...new Set(allClasses.map((item) => item.format))];
     deliveryModes = [...new Set(allClasses.map((item) => item.deliveryMode))];
   }
-
-  const handleTextSearch = (e) => {
-    setSearch({
-      name: e.target.value,
-      semester: search.semester,
-      subjects: search.subjects,
-      level: search.level,
-      status: search.status,
-      format: search.format,
-      deliveryMode: search.deliveryMode,
-    });
-  };
 
   const handleSemesterSearch = (e) => {
     setSearch({
@@ -191,17 +231,20 @@ export function CreateSchedule() {
     });
   };
 
-  //let courses = courseData; //dev
   let courses = allClasses;
-  let courseSearch = search.name.trim().toLowerCase();
+  //let courseSearch = search.name.trim().toLowerCase();
 
-  if (courseSearch.length > 0) {
-    courses = courses.filter((val) =>
-      val.courseTitle.toLowerCase().includes(courseSearch)
-    );
+  // if (courseSearch.length > 0) {
+  //   courses = courses.filter((val) =>
+  //     val.courseTitle.toLowerCase().includes(courseSearch)
+  //   );
+  // }
+
+  if (isUsingText) {
+    courses = textSearchResults;
   }
 
-  courseSearch = search.semester;
+  let courseSearch = search.semester;
   if (courseSearch.length > 0) {
     courses = courses.filter((val) => val.courseTime.match(courseSearch));
   }
@@ -233,7 +276,7 @@ export function CreateSchedule() {
 
   // if there are no filters selected, don't show any classes -- that list will be looong
   if (
-    search.name === "" &&
+    textSearchResults.length === 0 &&
     search.semester === "" &&
     search.subjects.length === 0 &&
     search.level.length === 0 &&
@@ -243,6 +286,7 @@ export function CreateSchedule() {
   ) {
     courses = [];
   }
+
 
   // filter out classes already in the selected schedule
   if (activeSchedule._id !== "") {
@@ -416,7 +460,7 @@ export function CreateSchedule() {
   const handleRemoveSchedule = (e) => {
     const id = activeSchedule._id;
     removeSchedule(id).then(() => {
-      removeScheduleFromUser("jperry20", id).then(() => {
+      removeScheduleFromUser(user.username, id).then(() => {
         setActiveSchedule({
           _id: "",
           name: "",
@@ -515,7 +559,153 @@ export function CreateSchedule() {
         });
       }
     }
-  };
+  }
+
+  const courseForm = () => {
+    return (
+      <Row>
+        <Col xs={12} md={3}>
+          <form>
+            <h2>Search</h2>
+                <label htmlFor="courseName" />
+                <input 
+                    onChange={(e) => handleClassNameSearch(e)} 
+                    id="courseName" 
+                    name="courseName" 
+                    placeholder="Search class name..."
+                />
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Semester</Card.Title>
+                    {semesters.map((semester) =>
+                        <div key={`time-${semester}`}>
+                            <label htmlFor={semester.replaceAll(" ", "")}>{semester}</label>
+                            <input 
+                                type="radio" 
+                                id={semester.replaceAll(" ", "")}
+                                name="semester"
+                                value={semester}
+                                onChange={(e) => handleSemesterSearch(e)} 
+                            />
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Course Level</Card.Title>
+                    {academicLevels.map((level) =>
+                        <div key={`level-${level}`}>
+                            <label htmlFor={level.replaceAll(" ", "")}>{level}</label>
+                            <input 
+                                type="checkbox" 
+                                id={level.replaceAll(" ", "")} 
+                                name={level.toLowerCase()}
+                                value={level}
+                                onChange={(e) => handleLevelSearch(e)} 
+                            />
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Subjects</Card.Title>
+                    {subjects.map((subject) =>
+                        <div key={`subject-${subject}`}>
+                            <input 
+                                type="checkbox" 
+                                id={subject.replaceAll(" ", "").toLowerCase()}
+                                name={subject.replaceAll(" ", "").toLowerCase()}
+                                value={subject}
+                                onChange={(e) => handleSubjectSearch(e)}
+                            />
+                            <label htmlFor={subject.replaceAll(" ", "").toLowerCase()}>{subject}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Status</Card.Title>
+                    <div key="openstatus">
+                        <input 
+                            type="checkbox" 
+                            id="open"
+                            name="open"
+                            value="Open"
+                            onChange={(e) => handleStatusSearch(e)} 
+                        />
+                        <label htmlFor="open">Open</label>
+                        <br />
+                    </div>
+                    <div key="closedstatus">
+                        <input 
+                            type="checkbox" 
+                            id="closed"
+                            name="closed"
+                            value="Closed"
+                            onChange={(e) => handleStatusSearch(e)} 
+                        />
+                        <label htmlFor="closed">Closed</label>
+                        <br />
+                    </div>
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Formats</Card.Title>
+                    {formats.map((format) =>
+                        <div key={`format-${format}`}>
+                            <input 
+                                type="checkbox" 
+                                id={format.replaceAll(" ", "").toLowerCase()}
+                                name={format.replaceAll(" ", "").toLowerCase()}
+                                value={format}
+                                onChange={(e) => handleFormatSearch(e)} 
+                            />
+                            <label htmlFor={format.replaceAll(" ", "").toLowerCase()}>{format}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+                <Card className="p-3 mt-3 schedule-form-card">
+                    <Card.Title className="text-center">Delivery Format</Card.Title>
+                    {deliveryModes.map((deliveryMode) =>
+                        <div key={`delivery-${deliveryMode}`}>
+                            <input 
+                                type="checkbox" 
+                                id={deliveryMode.replaceAll(" ", "").toLowerCase()}
+                                name={deliveryMode.replaceAll(" ", "").toLowerCase()}
+                                value={deliveryMode}
+                                onChange={(e) => handleDeliveryModeSearch(e)} 
+                            />
+                            <label htmlFor={deliveryMode.replaceAll(" ", "").toLowerCase()}>{deliveryMode}</label>
+                            <br />
+                        </div>
+                    )}
+                </Card>
+			        </form>
+            </Col>
+            <Col xs={12} md={9}>
+              <h2>Courses</h2>
+              {courses.map(course => 
+                <Col className="p-2 mt-2" key={`courselist-${course._id}`}>
+                  <Card className={`class-results-card ${compareTimesWithActiveSchedule(course)}`}>
+                    <Card.Title>{course.courseTotal}</Card.Title>
+                    <Card.Body>
+                      <Row xs={1} md={2}>
+                        <Col><p className="course-details"><span className="fw-bold">Section Details:</span> {course.sectionDetails}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Instructor:</span> {course.instructor}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Format:</span> {course.format}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Delivery Mode:</span> {course.deliveryMode}</p></Col>
+                        <Col><p className="course-details"><span className="fw-bold">Enrolled/Capacity:</span> {course.enrolledCapacity}</p></Col>
+                      </Row>
+                    </Card.Body>
+                    <Card.Footer>
+                      {addRemoveButton(course)}
+                    </Card.Footer>
+                </Card>
+            </Col>
+            )}
+          </Col>
+        </Row>
+      );
+    };
 
   const handleAddSchedule = (e) => {
     createSchedule(e.target.form[0].value, e.target.form[1].value, userId).then(
@@ -529,187 +719,9 @@ export function CreateSchedule() {
     );
   };
 
-  const courseForm = () => {
-    return (
-      <Row>
-        <Col xs={12} md={3}>
-          <form>
-            <h2>Search</h2>
-            <label htmlFor="courseKeywords" />
-            <input
-              onChange={(e) => handleTextSearch(e)}
-              id="courseKeywords"
-              name="courseKeywords"
-              placeholder="Search class name..."
-            />
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Semester</Card.Title>
-              {semesters.map((semester) => (
-                <div key={`time-${semester}`}>
-                  <label htmlFor={semester} />
-                  <input
-                    type="radio"
-                    id={semester}
-                    name="semester"
-                    value={semester}
-                    onChange={(e) => handleSemesterSearch(e)}
-                  />
-                  <label htmlFor="semester">{semester}</label>
-                  <br />
-                </div>
-              ))}
-            </Card>
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Course Level</Card.Title>
-              {academicLevels.map((level) => (
-                <div key={`level-${level}`}>
-                  <input
-                    type="checkbox"
-                    id={level.replace(" ", "").toLowerCase}
-                    name={level.toLowerCase}
-                    value={level}
-                    onChange={(e) => handleLevelSearch(e)}
-                  />
-                  <label htmlFor={level.toLowerCase}>{level}</label>
-                  <br />
-                </div>
-              ))}
-            </Card>
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Subjects</Card.Title>
-              {subjects.map((subject) => (
-                <div key={`subject-${subject}`}>
-                  <input
-                    type="checkbox"
-                    id={subject.replace(" ", "").toLowerCase}
-                    name={subject.replace(" ", "").toLowerCase}
-                    value={subject}
-                    onChange={(e) => handleSubjectSearch(e)}
-                  />
-                  <label htmlFor={subject.replace(" ", "").toLowerCase}>
-                    {subject}
-                  </label>
-                  <br />
-                </div>
-              ))}
-            </Card>
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Status</Card.Title>
-              <div key="openstatus">
-                <input
-                  type="checkbox"
-                  id="open"
-                  name="open"
-                  value="Open"
-                  onChange={(e) => handleStatusSearch(e)}
-                />
-                <label htmlFor="open">Open</label>
-                <br />
-              </div>
-              <div key="closedstatus">
-                <input
-                  type="checkbox"
-                  id="closed"
-                  name="closed"
-                  value="Closed"
-                  onChange={(e) => handleStatusSearch(e)}
-                />
-                <label htmlFor="closed">Closed</label>
-                <br />
-              </div>
-            </Card>
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Formats</Card.Title>
-              {formats.map((format) => (
-                <div key={`format-${format}`}>
-                  <input
-                    type="checkbox"
-                    id={format.replace(" ", "").toLowerCase}
-                    name={format.replace(" ", "").toLowerCase}
-                    value={format}
-                    onChange={(e) => handleFormatSearch(e)}
-                  />
-                  <label htmlFor={format.replace(" ", "").toLowerCase}>
-                    {format}
-                  </label>
-                  <br />
-                </div>
-              ))}
-            </Card>
-            <Card className="p-3 mt-3 schedule-form-card">
-              <Card.Title className="text-center">Delivery Format</Card.Title>
-              {deliveryModes.map((deliveryMode) => (
-                <div key={`delivery-${deliveryMode}`}>
-                  <input
-                    type="checkbox"
-                    id={deliveryMode.replace(" ", "").toLowerCase}
-                    name={deliveryMode.replace(" ", "").toLowerCase}
-                    value={deliveryMode}
-                    onChange={(e) => handleDeliveryModeSearch(e)}
-                  />
-                  <label htmlFor={deliveryMode.replace(" ", "").toLowerCase}>
-                    {deliveryMode}
-                  </label>
-                  <br />
-                </div>
-              ))}
-            </Card>
-          </form>
-        </Col>
-        <Col xs={12} md={9}>
-          <h2>Courses</h2>
-          {courses.map((course) => (
-            <Col className="p-2 mt-2" key={`courselist-${course._id}`}>
-              <Card
-                className={`class-results-card ${compareTimesWithActiveSchedule(
-                  course
-                )}`}
-              >
-                <Card.Title>{course.courseTotal}</Card.Title>
-                <Card.Body>
-                  <Row xs={1} md={2}>
-                    <Col>
-                      <p className="course-details">
-                        <span className="fw-bold">Section Details:</span>{" "}
-                        {course.sectionDetails}
-                      </p>
-                    </Col>
-                    <Col>
-                      <p className="course-details">
-                        <span className="fw-bold">Instructor:</span>{" "}
-                        {course.instructor}
-                      </p>
-                    </Col>
-                    <Col>
-                      <p className="course-details">
-                        <span className="fw-bold">Format:</span> {course.format}
-                      </p>
-                    </Col>
-                    <Col>
-                      <p className="course-details">
-                        <span className="fw-bold">Delivery Mode:</span>{" "}
-                        {course.deliveryMode}
-                      </p>
-                    </Col>
-                    <Col>
-                      <p className="course-details">
-                        <span className="fw-bold">Enrolled/Capacity:</span>{" "}
-                        {course.enrolledCapacity}
-                      </p>
-                    </Col>
-                  </Row>
-                </Card.Body>
-                <Card.Footer>{addRemoveButton(course)}</Card.Footer>
-              </Card>
-            </Col>
-          ))}
-        </Col>
-      </Row>
-    );
-  };
-
-  const handleSignout = () => {
+  const handleSignout = async () => {
     dispatch(actions.logoutUser());
+    await auth.signOut();
   };
 
   return (
@@ -718,9 +730,19 @@ export function CreateSchedule() {
       <div className="sidebar">
         <div className="sidebar-text">Welcome, {user.username}</div>
         <br />
-        {user.isAdmin ? <a href="/admin" className="sidebar-button">
-          Admin
-        </a> : "" }
+        {user.isAdmin ? (
+          <a href="/admin" className="sidebar-button">
+            Admin
+          </a>
+        ) : (
+          ""
+        )}
+        <a
+          href="/userprofile"
+          className="sidebar-button"
+        >
+          User Profile
+        </a>
         <a
           href="/createschedule"
           className="sidebar-button sidebar-button-active"
@@ -749,11 +771,11 @@ export function CreateSchedule() {
               <div key={`schedulesemester-${semester}`}>
                 <input
                   type="radio"
-                  id={semester}
+                  id={semester.replaceAll(" ", "") + "2"}
                   name="time"
                   value={semester}
                 />
-                <label htmlFor={semester}>{semester}</label>
+                <label htmlFor={semester.replaceAll(" ", "") + "2"}>{semester}</label>
                 <br />
               </div>
             ))}

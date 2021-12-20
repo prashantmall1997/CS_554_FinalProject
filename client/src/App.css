@@ -41,18 +41,18 @@
 }
 
 body {
-  font-family: Geneva, Verdana, Tahoma, sans-serif;
+	font-family: Geneva, Verdana, Tahoma, sans-serif;
 }
 
 .home {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100vh;
-  background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
-  background-color: black;
-  background-size: cover;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	min-height: 100vh;
+	background: url("assets/images/homebg.jpg") no-repeat bottom fixed;
+	background-color: black;
+	background-size: cover;
 }
 
 .home-content {
@@ -309,11 +309,10 @@ input[type="radio"]:checked {
 }
 
 .add-remove-course {
-  border: none;
-  font-weight: bold;
-  font-size: 0.9rem;
-  background: transparent;
-
+	border: none;
+	font-weight: bold;
+	font-size: 0.9rem;
+	background: transparent;
 }
 
 /* .profileImage{
@@ -322,9 +321,8 @@ input[type="radio"]:checked {
 } */
 
 .profileButtons {
-  padding: 1rem;
+	padding: 1rem;
 }
-
 
 .navBar {
 	background-color: #bb0f17;
@@ -337,7 +335,6 @@ input[type="radio"]:checked {
 	top: 0;
 	width: 100%;
 	padding-left: 10px;
-	
 }
 
 .navBrand {
@@ -348,5 +345,7 @@ input[type="radio"]:checked {
 	color: white;
 	font-size: 1em;
 	text-align: left;
-	
+}
+.profilepagelink {
+	color: white;
 }

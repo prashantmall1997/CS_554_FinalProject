@@ -1,7 +1,7 @@
 import React,  { useEffect,useState} from 'react';
 import { Button, Form, Row, Col, Card} from 'react-bootstrap';
 //import userProfileImage from '../assets/images/userProfile.jpeg';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import { readUserByEmail, updateUser, readUserByUsername} from '../utils/api/apis/userApi.js';
 import { useSelector, useDispatch } from 'react-redux';
@@ -129,11 +129,17 @@ export function UserProfile() {
             <>
                 <div className="navBar">
                     SIT Scheduler 2.0
-                </div>
-                <div className="sidebar">
+                </div> 
+                <div className="sidebar sidebar-button-active">
+                    <a
+                    href="/userProfile"
+                    className="sidebar-button sidebar-button-active"
+                    >
+                    User Profile
+                    </a>
                     <a
                     href="/createschedule"
-                    className="sidebar-button sidebar-button-active"
+                    className="sidebar-button"
                     >
                     Create Schedule
                     </a>
@@ -159,8 +165,14 @@ export function UserProfile() {
                 </div>
                 <div className="sidebar">
                     <a
-                    href="/createschedule"
+                    href="/userProfile"
                     className="sidebar-button sidebar-button-active"
+                    >
+                    User Profile
+                    </a>
+                    <a
+                    href="/createschedule"
+                    className="sidebar-button"
                     >
                     Create Schedule
                     </a>
@@ -203,9 +215,22 @@ export function UserProfile() {
                 <div className="sidebar">
                     <div className="sidebar-text">Welcome, {userData.username}</div>
                     <br />
+                    {userData.isAdmin ? (
+                    <a href="/admin" className="sidebar-button">
+                        Admin
+                    </a>
+                    ) : (
+                    ""
+                    )}
+                    <a
+                    href="/userProfile"
+                    className="sidebar-button sidebar-button-active"
+                    >
+                    User Profile
+                    </a>
                     <a
                     href="/createschedule"
-                    className="sidebar-button sidebar-button-active"
+                    className="sidebar-button"
                     >
                     Create Schedule
                     </a>
